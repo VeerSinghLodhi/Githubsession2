@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Jackpot</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            background: linear-gradient(180deg, #4a148c 0%, #1a0033 100%);
+            min-height: 100vh;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            color: white;
+            padding: 0;
+            margin: 0;
+        }
+
+        .container-mobile {
+            max-width: 428px;
+            margin: 0 auto;
+            background: linear-gradient(180deg, #5e35b1 0%, #311b92 100%);
+            min-height: 100vh;
+            position: relative;
+        }
+
+        .header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 15px 20px;
+            background: rgba(0,0,0,0.2);
+        }
+
+        .header-title {
+            font-size: 20px;
+            font-weight: 600;
+            flex-grow: 1;
+            text-align: center;
+        }
+
+        .help-icon {
+            width: 32px;
+            height: 32px;
+            background: rgba(100, 181, 246, 0.3);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #64b5f6;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .currency-bar {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            padding: 20px;
+        }
+
+        .currency-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(0,0,0,0.2);
+            padding: 8px 20px;
+            border-radius: 20px;
+        }
+
+        .coin-icon, .rupee-icon {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 14px;
+        }
+
+        .coin-icon {
+            background: linear-gradient(135deg, #ffd700 0%, #ffed4e 100%);
+            color: #b8860b;
+        }
+
+        .rupee-icon {
+            background: #26a69a;
+            color: white;
+        }
+
+        .banner {
+            margin: 20px 20px;
+            background: linear-gradient(135deg, #e91e63 0%, #ff9800 50%, #ffc107 100%);
+            border-radius: 15px;
+            padding: 15px 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+        }
+
+        .banner-text h3 {
+            margin: 0;
+            font-size: 14px;
+            font-weight: 500;
+            opacity: 0.9;
+        }
+
+        .banner-text h2 {
+            margin: 0;
+            font-size: 24px;
+            font-weight: bold;
+        }
+
+        .banner-icon {
+            font-size: 50px;
+            opacity: 0.9;
+        }
+
+        .slot-container {
+            margin: 30px 20px;
+            background: rgba(0,0,0,0.3);
+            border-radius: 20px;
+            padding: 30px 20px;
+            position: relative;
+        }
+
+        .slot-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+            background: #000;
+            padding: 20px;
+            border-radius: 15px;
+            position: relative;
+        }
+
+        .slot-item {
+            aspect-ratio: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 40px;
+            background: rgba(139, 69, 19, 0.3);
+            border-radius: 10px;
+            transition: transform 0.1s;
+        }
+
+        .slot-item.spinning {
+            animation: spin 0.1s linear infinite;
+        }
+
+        @keyframes spin {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-5px); }
+        }
+
+        .arrow {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 30px;
+            height: 30px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 5px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-size: 20px;
+        }
+
+        .arrow-left { left: -15px; }
+        .arrow-right { right: -15px; }
+
+        .info-bar {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            margin: 30px 20px;
+            padding: 15px;
+        }
+
+        .info-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 16px;
+        }
+
+        .roll-btn {
+            margin: 20px 20px 40px;
+            background: linear-gradient(135deg, #26a69a 0%, #00897b 100%);
+            border: none;
+            padding: 15px;
+            border-radius: 12px;
+            color: white;
+            font-size: 18px;
+            font-weight: 600;
+            width: calc(100% - 40px);
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(38, 166, 154, 0.4);
+            transition: all 0.3s;
+        }
+
+        .roll-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(38, 166, 154, 0.6);
+        }
+
+        .roll-btn:disabled {
+            background: #555;
+            cursor: not-allowed;
+            box-shadow: none;
+        }
+
+        .back-btn {
+            background: transparent;
+            border: none;
+            color: white;
+            font-size: 24px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <div class="container-mobile">
+        <div class="header">
+            <button class="back-btn">←</button>
+            <div class="header-title">Jackpot</div>
+            <div class="help-icon">?</div>
+        </div>
+
+        <div class="currency-bar">
+            <div class="currency-item">
+                <div class="coin-icon">C</div>
+                <span id="coins">335</span>
+            </div>
+            <div class="currency-item">
+                <div class="rupee-icon">₹</div>
+                <span id="rupees">949</span>
+            </div>
+        </div>
+
+        <div class="banner">
+            <div class="banner-text">
+                <h3>Play & Win Lucky Draw</h3>
+                <h2>Tickets</h2>
+            </div>
+            <div class="banner-icon">🎟️</div>
+        </div>
+
+        <div class="slot-container">
+            <div class="arrow arrow-left">‹</div>
+            <div class="slot-grid" id="slotGrid">
+                <div class="slot-item" data-index="0">🎟️</div>
+                <div class="slot-item" data-index="1">🎫</div>
+                <div class="slot-item" data-index="2">🪙</div>
+                <div class="slot-item" data-index="3">🎫</div>
+                <div class="slot-item" data-index="4">🪙</div>
+                <div class="slot-item" data-index="5">💰</div>
+                <div class="slot-item" data-index="6">🪙</div>
+                <div class="slot-item" data-index="7">💰</div>
+                <div class="slot-item" data-index="8">🎟️</div>
+            </div>
+            <div class="arrow arrow-right">›</div>
+        </div>
+
+        <div class="info-bar">
+            <div class="info-item">
+                <div class="coin-icon">C</div>
+                <span><span id="rollCost">500</span>/roll</span>
+            </div>
+            <div style="color: rgba(255,255,255,0.5);">|</div>
+            <div class="info-item">
+                <span><span id="rollsLeft">3</span>/3 roll left</span>
+            </div>
+        </div>
+
+        <button class="roll-btn" id="rollBtn" onclick="spinSlots()">Roll</button>
+    </div>
+
+    <script>
+        const items = ['🎟️', '🎫', '🪙', '💰'];
+        let rollsLeft = 3;
+        let coins = 335;
+        let isSpinning = false;
+
+        function spinSlots() {
+            if (isSpinning || rollsLeft <= 0 || coins < 500) {
+                return;
+            }
+
+            isSpinning = true;
+            coins -= 500;
+            rollsLeft--;
+            
+            document.getElementById('coins').textContent = coins;
+            document.getElementById('rollsLeft').textContent = rollsLeft;
+            document.getElementById('rollBtn').disabled = true;
+
+            const slots = document.querySelectorAll('.slot-item');
+            
+            // Add spinning animation
+            slots.forEach(slot => slot.classList.add('spinning'));
+
+            // Animate each slot with random items
+            const spinDuration = 2000;
+            const spinInterval = 100;
+            let elapsed = 0;
+
+            const spinAnimation = setInterval(() => {
+                slots.forEach(slot => {
+                    slot.textContent = items[Math.floor(Math.random() * items.length)];
+                });
+                elapsed += spinInterval;
+
+                if (elapsed >= spinDuration) {
+                    clearInterval(spinAnimation);
+                    
+                    // Final result
+                    slots.forEach(slot => {
+                        slot.textContent = items[Math.floor(Math.random() * items.length)];
+                        slot.classList.remove('spinning');
+                    });
+
+                    isSpinning = false;
+                    
+                    if (rollsLeft > 0 && coins >= 500) {
+                        document.getElementById('rollBtn').disabled = false;
+                    }
+                }
+            }, spinInterval);
+        }
+
+        // Update button state
+        setInterval(() => {
+            const btn = document.getElementById('rollBtn');
+            if (rollsLeft <= 0) {
+                btn.textContent = 'No Rolls Left';
+                btn.disabled = true;
+            } else if (coins < 500) {
+                btn.textContent = 'Insufficient Coins';
+                btn.disabled = true;
+            }
+        }, 100);
+    </script>
+</body>
+</html>
