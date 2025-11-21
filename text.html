@@ -1,0 +1,3276 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rate Photos - HotOrNot</title>
+    <meta name="_csrf" th:content="${_csrf.token}" />
+    <meta name="_csrf_header" th:content="${_csrf.headerName}" />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.11.1/font/bootstrap-icons.min.css" rel="stylesheet">
+    <style>
+
+        :root {
+    --primary: #FA8231;
+    --secondary: #F97F51;
+    --accent: #FF6B9D;
+    --dark: #3D3D3D;
+    --light: #FFF5E6;
+    --gradient: linear-gradient(135deg, #FA8231 0%, #F97F51 50%, #FF6B9D 100%);
+        }
+
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: #0a0a0a;
+            color: #ffffff;
+            min-height: 100vh;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        .bg-gradient {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            overflow: hidden;
+        }
+
+        .bg-gradient::before,
+        .bg-gradient::after,
+        .bg-gradient span {
+            content: '';
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(80px);
+        }
+
+        .bg-gradient::before {
+            width: 500px;
+            height: 500px;
+            background: rgba(255, 0, 128, 0.2);
+            animation: float1 20s ease-in-out infinite;
+        }
+
+        .bg-gradient::after {
+            width: 600px;
+            height: 600px;
+            background: rgba(0, 255, 255, 0.15);
+            animation: float2 25s ease-in-out infinite;
+        }
+
+        .bg-gradient span {
+            width: 400px;
+            height: 400px;
+            background: rgba(255, 255, 0, 0.12);
+            animation: float3 18s ease-in-out infinite;
+        }
+
+        @keyframes float1 {
+            0%, 100% { transform: translate(10vw, 20vh) scale(1); }
+            25% { transform: translate(60vw, 70vh) scale(1.2); }
+            50% { transform: translate(80vw, 30vh) scale(0.9); }
+            75% { transform: translate(30vw, 80vh) scale(1.1); }
+        }
+
+        @keyframes float2 {
+            0%, 100% { transform: translate(70vw, 60vh) scale(1); }
+            33% { transform: translate(20vw, 20vh) scale(1.3); }
+            66% { transform: translate(50vw, 80vh) scale(0.8); }
+        }
+
+        @keyframes float3 {
+            0%, 100% { transform: translate(40vw, 10vh) scale(1); }
+            30% { transform: translate(10vw, 70vh) scale(1.2); }
+            60% { transform: translate(75vw, 50vh) scale(0.9); }
+            90% { transform: translate(55vw, 15vh) scale(1.1); }
+        }
+
+        .navbar {
+            background: rgba(10, 10, 10, 0.8) !important;
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .navbar-brand {
+            font-size: 1.8rem;
+            font-weight: 900;
+            letter-spacing: -1px;
+        }
+
+        .logo-hot {
+            background: linear-gradient(135deg, #ff0080, #ff8c00);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .logo-not {
+            color: #00ffff;
+        }
+
+        .nav-link {
+            color: rgba(255, 255, 255, 0.8) !important;
+            font-weight: 500;
+            transition: color 0.3s ease;
+            position: relative;
+            margin: 0 0.5rem;
+        }
+
+        .nav-link:hover {
+            color: #ff0080 !important;
+        }
+
+        .btn-neon {
+            background: linear-gradient(135deg, #ff0080, #ff8c00);
+            color: white;
+            border: none;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            box-shadow: 0 0 20px rgba(255, 0, 128, 0.5);
+            transition: all 0.3s ease;
+        }
+
+        .btn-neon:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 0 30px rgba(255, 0, 128, 0.8);
+            color: white;
+        }
+
+        .main-container {
+            max-width: 500px;
+            margin: 0 auto;
+            padding: 1rem;
+        }
+
+        .rating-card {
+            margin-bottom: 2rem;
+            position: relative;
+            scroll-snap-align: start;
+        }
+
+        .image-wrapper {
+            position: relative;
+            width: 100%;
+            height: 100vh;
+            max-height: 700px;
+            border-radius: 30px;
+            overflow: hidden;
+            background: linear-gradient(135deg, rgba(255, 0, 128, 0.2), rgba(0, 255, 255, 0.2));
+        }
+
+        .phuljhari-border {
+            position: absolute;
+            top: -6px;
+            left: -6px;
+            right: -6px;
+            bottom: -6px;
+            border-radius: 36px;
+            background: linear-gradient(135deg, #ff0080, #ff8c00, #ffd32a, #00ff88, #00ffff);
+            z-index: 1;
+            opacity: 0;
+            filter: blur(8px);
+            animation: sparkle 1.5s ease-in-out infinite;
+            pointer-events: none;
+        }
+
+        .phuljhari-border.active {
+            opacity: 1;
+        }
+
+        @keyframes sparkle {
+            0%, 100% { opacity: 0.8; filter: blur(8px) brightness(1); }
+            50% { opacity: 1; filter: blur(12px) brightness(1.3); }
+        }
+
+        .image-wrapper img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            position: relative;
+            z-index: 2;
+            border-radius: 30px;
+        }
+
+        .image-overlay {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            padding: 30px 20px 20px;
+            background: linear-gradient(to top, rgba(0, 0, 0, 0.8), rgba(0, 0, 0, 0.4), transparent);
+            z-index: 3;
+            border-radius: 0 0 30px 30px;
+        }
+
+        .overlay-content {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 20px;
+            padding: 20px;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 15px;
+        }
+
+        .avatar {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #ff0080, #00ffff);
+            border: 3px solid rgba(255, 255, 255, 0.5);
+        }
+
+        .username {
+            font-weight: 700;
+            color: #ffffff;
+            font-size: 1.2rem;
+            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
+        }
+
+        .caption {
+            color: rgba(255, 255, 255, 0.95);
+            font-size: 0.95rem;
+            line-height: 1.5;
+            margin-bottom: 10px;
+            text-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
+        }
+
+        .hashtags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .hashtag {
+            background: rgba(0, 255, 255, 0.2);
+            border: 1px solid rgba(0, 255, 255, 0.4);
+            color: #00ffff;
+            padding: 4px 12px;
+            border-radius: 15px;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+
+        .timer-container {
+            position: absolute;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 90%;
+            max-width: 400px;
+            z-index: 10;
+        }
+
+        .progress-container {
+            width: 100%;
+            height: 12px;
+            background: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(20px);
+            border-radius: 20px;
+            overflow: hidden;
+            position: relative;
+            border: 2px solid rgba(255, 255, 255, 0.15);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4), 0 0 0 1px rgba(255, 255, 255, 0.1);
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg,
+                #ff0080 0%,
+                #ff4757 20%,
+                #ff8c00 40%,
+                #ffd32a 60%,
+                #00ff88 80%,
+                #00ffff 100%
+            );
+            transition: width 1s linear;
+            box-shadow: 0 0 20px rgba(255, 0, 128, 0.8), 0 0 40px rgba(0, 255, 255, 0.6);
+            position: relative;
+            border-radius: 20px;
+        }
+
+        .progress-bar::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 50%;
+            background: linear-gradient(to bottom, rgba(255, 255, 255, 0.3), transparent);
+            border-radius: 20px 20px 0 0;
+        }
+
+        .progress-bar::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            right: 0;
+            width: 30px;
+            height: 30px;
+            background: radial-gradient(circle, rgba(255, 255, 255, 1) 0%, rgba(255, 255, 255, 0.8) 40%, transparent 70%);
+            transform: translate(50%, -50%);
+            filter: blur(3px);
+            animation: pulse-glow 1.5s ease-in-out infinite;
+        }
+
+        @keyframes pulse-glow {
+            0%, 100% {
+                opacity: 0.6;
+                transform: translate(50%, -50%) scale(1);
+            }
+            50% {
+                opacity: 1;
+                transform: translate(50%, -50%) scale(1.3);
+            }
+        }
+
+        .thermometer-container {
+            position: absolute;
+            right: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 60px;
+            height: 40%;
+            max-height: 300px;
+            z-index: 10;
+        }
+
+        .thermometer {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 255, 255, 0.1);
+            border: 2px solid #00ffff;
+            border-radius: 30px;
+            cursor: pointer;
+            overflow: hidden;
+            box-shadow: 0 0 20px rgba(0, 255, 255, 0.3);
+            transition: all 0.3s ease;
+        }
+
+        .thermometer:hover {
+            background: rgba(0, 255, 255, 0.2);
+            transform: scale(1.05);
+            box-shadow: 0 0 30px rgba(0, 255, 255, 0.5);
+        }
+
+        .thermometer.disabled {
+            pointer-events: none;
+            opacity: 0.5;
+        }
+
+        .thermometer-fill {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: linear-gradient(to top, #ff0080, #ff4757, #ff8c00, #ffd32a, #00ff88);
+            transition: height 0.3s ease;
+            border-radius: 0 0 30px 30px;
+        }
+
+        .thermometer-bulb {
+            position: absolute;
+            bottom: -18px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 50px;
+            height: 50px;
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 50%;
+            box-shadow: 0 0 20px rgba(255, 0, 128, 0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 2;
+        }
+
+        .thermometer-bulb-inner {
+            width: 35px;
+            height: 35px;
+            background: linear-gradient(135deg, #ff0080, #ff4757);
+            border-radius: 50%;
+            transition: background 0.3s ease;
+        }
+
+        .scale-markers {
+            position: absolute;
+            left: 8px;
+            top: 10px;
+            bottom: 40px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            font-size: 10px;
+            color: #000;
+            font-weight: 700;
+            text-shadow: 0 0 5px rgba(0, 255, 255, 0.5);
+            z-index:300;
+        }
+
+        .rating-badge {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            background: linear-gradient(135deg, #ff0080, #ff8c00);
+            color: white;
+            padding: 10px 20px;
+            border-radius: 25px;
+            font-weight: 800;
+            font-size: 1.3rem;
+            box-shadow: 0 0 30px rgba(255, 0, 128, 0.6);
+            z-index: 10;
+            display: none;
+        }
+
+        .rating-badge.show {
+            display: block;
+            animation: popIn 0.3s ease-out;
+        }
+
+        @keyframes popIn {
+            0% { transform: scale(0); }
+            50% { transform: scale(1.2); }
+            100% { transform: scale(1); }
+        }
+
+        .locked-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(5px);
+            border-radius: 30px;
+            z-index: 4;
+            display: none;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .locked-overlay.show {
+            display: flex;
+        }
+
+        .locked-icon {
+            font-size: 4rem;
+            color: #00ffff;
+            text-shadow: 0 0 30px rgba(0, 255, 255, 0.8);
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        @media (max-width: 576px) {
+            .thermometer-container {
+                width: 50px;
+                height: 50%;
+            }
+
+            .username {
+                font-size: 1rem;
+            }
+
+            .caption {
+                font-size: 0.9rem;
+            }
+        }
+
+
+         /* for popup starts here */
+
+        .popup-overlay {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100vw; height: 100vh;
+  /* background: rgba(0,0,0,0.6); */
+  background: #fff;
+  display: flex; align-items: center; justify-content: center;
+  z-index: 9999;
+  opacity: 0; visibility: hidden;
+  transition: opacity 0.4s ease;
+}
+
+.popup-overlay.show {
+  opacity: 1; visibility: visible;
+}
+
+.popup {
+  background: radial-gradient(circle, #222 0%, #000 100%);
+  padding: 30px 60px;
+  border-radius: 20px;
+  text-align: center;
+  color: white;
+  box-shadow: 0 0 40px rgba(255, 215, 0, 0.5);
+  position: relative;
+  overflow: hidden;
+  animation: popupScale 0.6s ease-out;
+}
+
+@keyframes popupScale {
+  0% { transform: scale(0.8); opacity: 0; }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+.badge-wrapper {
+  position: relative;
+  margin-bottom: 10px;
+}
+
+.badge {
+  background: linear-gradient(135deg, #ffd700, #ffb700);
+  width: 100px; height: 100px;
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  position: relative;
+  box-shadow: 0 0 30px rgba(255, 215, 0, 0.8);
+  animation: pulse 1.5s infinite;
+}
+
+.badge-text {
+  font-size: 2em;
+  font-weight: bold;
+  color: #fff;
+  text-shadow: 0 0 10px #fff;
+}
+
+.shine {
+  position: absolute;
+  top: 0; left: -75%;
+  width: 50%; height: 100%;
+  background: linear-gradient(120deg, rgba(255,255,255,0.2), rgba(255,255,255,0));
+  transform: skewX(-25deg);
+  animation: shine 2s infinite;
+}
+
+@keyframes shine {
+  0% { left: -75%; }
+  100% { left: 125%; }
+}
+
+.points-earned {
+  font-size: 1.4em;
+  margin-top: 10px;
+  color: #ffd700;
+  font-weight: bold;
+}
+
+@keyframes pulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.1); }
+}
+
+.close-btn {
+  position: absolute;
+  top: 12px;
+  right: 18px;
+  font-size: 28px;
+  color: #666;
+  background: none;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  z-index: 1001;
+}
+
+.close-btn:hover {
+  color: #000;
+  transform: rotate(90deg);
+}
+
+/* 3-dots at top right */
+.three-dots-menu {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    z-index: 20;
+}
+
+.dots-icon {
+    font-size: 28px;
+    color: var(--accent);
+    cursor: pointer;
+    padding: 8px;
+    border-radius: 50%;
+    background: rgba(0,0,0,0.4);
+    backdrop-filter: blur(5px);
+    transition: 0.2s;
+}
+
+.dots-icon:hover {
+    color: var(--primary);
+    transform: scale(1.1);
+}
+
+/* Dropdown */
+.dots-dropdown {
+    position: absolute;
+    right: 0;
+    top: 50px;
+    width: 130px;
+    background: rgba(0,0,0,0.8);
+    border: 1px solid rgba(255,255,255,0.2);
+    border-radius: 12px;
+    padding: 5px 0;
+    display: none;
+    backdrop-filter: blur(10px);
+}
+
+.dropdown-item {
+    padding: 10px;
+    color: var(--light);
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+.dropdown-item:hover {
+    background: rgba(255, 107, 157, 0.25); /* var(--accent) with transparency */
+}
+
+/* Modal Overlay */
+.report-modal-overlay {
+    position: fixed;
+    top: 0; left: 0;
+    width: 100vw; height: 100vh;
+    background: rgba(0,0,0,0.7);
+    /* background-color: #fff; */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    visibility: hidden;
+    opacity: 0;
+    transition: 0.4s ease;
+    z-index: 99999;
+}
+
+.report-modal-overlay.show {
+    visibility: visible;
+    opacity: 1;
+}
+
+/* Modal */
+.report-modal {
+    width: 90%;
+    max-width: 420px;
+    background: linear-gradient(135deg, var(--dark), #000);
+    padding: 25px;
+    border-radius: 20px;
+    border: 1px solid rgba(255,255,255,0.1);
+    color: var(--light);
+    box-shadow: 0 0 30px rgba(255, 107, 157, 0.4); /* accent shadow */
+    animation: popIn 0.4s ease;
+}
+
+.modal-title {
+    font-size: 1.6rem;
+    background: var(--gradient);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    font-weight: 800;
+}
+
+.reason-option {
+    display: block;
+    padding: 8px 0;
+    cursor: pointer;
+    font-size: 1rem;
+}
+
+.extra-comments {
+    width: 100%;
+    height: 90px;
+    background: rgba(255,255,255,0.1);
+    border: none;
+    border-radius: 10px;
+    padding: 10px;
+    color: var(--light);
+    margin-top: 10px;
+}
+
+.submit-report-btn {
+    width: 100%;
+    margin-top: 15px;
+    padding: 12px;
+    border: none;
+    border-radius: 12px;
+    background: var(--gradient);
+    color: white;
+    font-weight: 700;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+.submit-report-btn:hover {
+    transform: scale(1.03);
+}
+
+.close-report {
+    position: absolute;
+    right: 15px;
+    top: 12px;
+    font-size: 24px;
+    background: none;
+    border: none;
+    color: var(--light);
+    cursor: pointer;
+}
+
+        .report-modal {
+    position: relative;
+}
+
+.close-report {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background: transparent;
+    border: none;
+    font-size: 24px;
+    cursor: pointer;
+    color: #ff4d4d;
+}
+
+
+/* for popup */
+
+    .confirm-overlay,
+.success-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.6);
+    display: none;
+    justify-content: center;
+    align-items: center;
+    z-index: 10;
+}
+
+.confirm-box,
+.success-box {
+    background: white;
+    padding: 20px 30px;
+    border-radius: 8px;
+    text-align: center;
+    width: 320px;
+    animation: popupAnim 0.3s ease;
+}
+
+.confirm-buttons {
+    margin-top: 20px;
+    display: flex;
+    justify-content: space-around;
+}
+
+.yes-btn, .no-btn, .ok-btn {
+    margin-top: 10px;
+    padding: 8px 20px;
+   margin-right: 6px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+}
+
+.yes-btn { background: #ff4747; color: white; }
+.no-btn { background: #ccc; }
+.ok-btn { background: #4CAF50; color: white; }
+
+
+@keyframes popupAnim {
+    from { transform: scale(0.7); opacity: 0; }
+    to   { transform: scale(1); opacity: 1; }
+}
+
+
+    </style>
+</head>
+<body>
+<div class="bg-gradient">
+    <span></span>
+</div>
+
+<nav class="navbar navbar-expand-lg navbar-dark sticky-top">
+    <div class="container-fluid px-4">
+        <a class="navbar-brand" href="#">
+            <span class="logo-hot">Hot</span><span class="logo-not">Or</span><span class="logo-hot">Not</span>
+        </a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav ms-auto align-items-center">
+                <li class="nav-item">
+                    <a class="nav-link" href="#">Discover</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link active" href="#">Rate</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/user/dashboard">My Profile</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/user/add-new-post">Add new Post</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/logout">Logout</a>
+                </li>
+                <li class="nav-item ms-3">
+                    <button class="btn btn-neon btn-sm rounded-pill px-4">Join Now</button>
+                </li>
+            </ul>
+        </div>
+    </div>
+</nav>
+<!--    -->
+<div class="main-container">
+    <div th:each="post : ${posts}" class="rating-card" th:attr="data-id=${post.postId}">
+        <div class="image-wrapper">
+            <div class="phuljhari-border"></div>
+            <img th:src="@{/userphoto/{id}(id=${post.postId})}" alt="Profile">
+
+            <!-- for 3 dots -->
+            <!-- 3-Dots Menu -->
+            <div class="three-dots-menu">
+                <i class="bi bi-three-dots-vertical dots-icon"></i>
+                <!--th:href="@{/user/getreport}"-->
+                <div class="dots-dropdown">
+                    <a ><div class="dropdown-item report-btn">🚫 Report</div></a>
+                    <div class="dropdown-item block-btn">⛔ Block User</div>
+                </div>
+            </div>
+
+            <!--            for double report.-->
+            <div th:if="${param.duplicateReport}" class="alert alert-warning"  style="z-index:100000;">
+                You have already reported this post.
+            </div>
+
+
+            <!-- Timer Section -->
+            <div class="timer-container">
+                <div class="timer-text">10s</div>
+                <div class="progress-container">
+                    <div class="progress-bar"></div>
+                </div>
+            </div>
+
+            <div class="rating-badge">5</div>
+            <div class="locked-overlay">
+                <div class="locked-icon">🔒</div>
+            </div>
+
+            <div class="thermometer-container">
+                <div class="thermometer">
+                    <div class="scale-markers">
+                        <div>10</div>
+                        <div>8</div>
+                        <div>6</div>
+                        <div>4</div>
+                        <div>2</div>
+                    </div>
+                    <div class="thermometer-fill"></div>
+                    <div class="thermometer-bulb">
+                        <div class="thermometer-bulb-inner"></div>
+                    </div>
+                </div>
+            </div>
+
+            <form class="postRatingForm">
+                <input type="hidden"  name="userFrom" th:value="${user_master.userId}">
+                <input type="hidden"  name="userTo" th:value="${post.user.userId}">
+                <input type="hidden" name="postId" th:value="${post.postId}">
+            </form>
+
+            <div class="image-overlay">
+                <div class="overlay-content">
+                    <div class="user-info">
+                        <div class="avatar"></div>
+                        <div class="username" th:text="${post.user.username}">sarah_jones</div>
+                    </div>
+                    <div class="caption" th:text="${post.caption}">Living my best life ✨ Coffee lover and adventure seeker 🌍</div>
+                    <div class="hashtags">
+                        <span class="hashtag" th:text="${post.hashtag}">#lifestyle</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- for modal  inside loop for post id -->
+        <!-- REPORT MODAL -->
+        <div class="report-modal-overlay" id="reportModal">
+            <div class="report-modal">
+                <button class="close-report">&times;</button>
+                <!--        th:action="@{/user/reportPost}"-->
+<!--                <form id="reportForm"  th:action="@{/user/reportPost}" method="post">-->
+
+                <form class="reportForm">
+
+                    <h2 class="modal-title">Report Post</h2>
+                    <p class="modal-subtitle">Select a reason for reporting this post</p>
+
+                    <input type="hidden" id="postId" name="postId" th:value="${post.postId}">
+
+                    <ul class="reason-list">
+                        <li>
+                            <label>
+                                <input type="radio" name="reason" value="Harassment" required>
+                                Harassment / Bullying
+                            </label>
+                        </li>
+                        <li>
+                            <label>
+                                <input type="radio" name="reason" value="Spam" required>
+                                Spam or misleading content
+                            </label>
+                        </li>
+                        <li>
+                            <label>
+                                <input type="radio" name="reason" value="Hate Speech" required>
+                                Hate speech
+                            </label>
+                        </li>
+                        <li>
+                            <label>
+                                <input type="radio" name="reason" value="Explicit Content" required>
+                                Explicit or sexual content
+                            </label>
+                        </li>
+                        <li>
+                            <label>
+                                <input type="radio" name="reason" value="Violence" required>
+                                Violence or dangerous acts
+                            </label>
+                        </li>
+                        <li>
+                            <label>
+                                <input type="radio" name="reason" value="Other" required>
+                                Other
+                            </label>
+                        </li>
+                    </ul>
+                    <textarea class="extra-comments" id="comment" name="comment" placeholder="Additional comments (optional)" ></textarea>
+                    <button type="submit" id="submitReportBtn" class="submit-report-btn">Submit Report</button>
+                </form>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="popup-overlay" id="popupOverlay">
+    <div class="popup">
+        <button class="close-btn" onclick="closePopup()">&times;</button>
+
+        <div class="badge-wrapper">
+            <div class="badge">
+                <div class="shine"></div>
+                <div class="badge-text">+<span id="badgePoints">50</span></div>
+            </div>
+        </div>
+
+        <div class="points-earned" style="font-size:13px;"><span id="pointsText"></span></div>
+    </div>
+</div>
+
+
+<!-- CONFIRMATION POPUP -->
+<div class="confirm-overlay" id="confirmPopup" style="z-index:999999 !important;">
+    <div class="confirm-box">
+        <p style="color:black;">Are you sure you want to submit this report?</p>
+        <div class="confirm-buttons col-lg-12">
+            <button id="confirmYes" class="yes-btn col-lg-6 ">Yes</button>
+            <button id="confirmNo" class="no-btn col-lg-6">No</button>
+        </div>
+    </div>
+</div>
+
+<div style="display:none;" id="showSuccessFlag"></div>
+
+<!-- SUCCESS POPUP -->
+<div class="success-overlay" id="successPopup">
+    <div class="success-box">
+        <p style="color:black;">Report submitted successfully!</p>
+        <button id="successOk" class="ok-btn">OK</button>
+    </div>
+</div>
+
+
+<!--<div th:if="${popupPoints}">Hani</div>-->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/js/bootstrap.bundle.min.js"></script>
+
+
+
+<script>
+    let isReportModalOpen = false;  // 🔥 Global for all scripts
+</script>
+
+
+<script th:inline="javascript">
+    const popupPoints = /*[[${popupPoints}]]*/ null;
+
+    function showPopup(points) {
+        document.getElementById('badgePoints').textContent = '50';
+        document.getElementById('pointsText').textContent = points;
+        document.getElementById('pointsText').style.fontSize= '13px';
+
+        const overlay = document.getElementById('popupOverlay');
+        overlay.classList.add('show');
+
+        setTimeout(() => overlay.classList.remove('show'), 3000);
+    }
+
+    if (popupPoints) {
+        showPopup(popupPoints);   // no if-else required
+    }
+</script>
+
+<script th:inline="javascript">
+    const referralMessage = /*[[${referralMessage}]]*/ null;
+    const referralPoint = /*[[${referralPoint}]]*/ null;
+
+    function showPopup(message,point) {
+        document.getElementById('badgePoints').textContent = point;
+        document.getElementById('pointsText').textContent = message;
+        document.getElementById('pointsText').style.fontSize= '13px';
+
+        const overlay = document.getElementById('popupOverlay');
+        overlay.classList.add('show');
+
+        setTimeout(() => overlay.classList.remove('show'), 3000);
+    }
+
+    if (referralMessage) {
+        showPopup(referralMessage,referralPoint);
+    }
+</script>
+
+
+<!-- ✅ JavaScript -->
+<script>
+    const ratedCards = new Set();
+
+    window.addEventListener("load", () => {
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                const card = entry.target;
+                const cardId = card.dataset.id;
+
+                if (entry.isIntersecting && entry.intersectionRatio >= 0.7) {
+                    if (!card.dataset.timerStarted && !ratedCards.has(cardId)) {
+                        card.dataset.timerStarted = "true";
+                        startRatingTimer(card);
+                    }
+                }
+            });
+        }, { threshold: [0.7] });
+
+        document.querySelectorAll(".rating-card").forEach(card => observer.observe(card));
+    });
+
+    function startRatingTimer(card) {
+        const cardId = card.dataset.id;
+        const thermometer = card.querySelector(".thermometer");
+        const thermometerFill = card.querySelector(".thermometer-fill");
+        const bulbInner = card.querySelector(".thermometer-bulb-inner");
+        const phuljhariBorder = card.querySelector(".phuljhari-border");
+        const ratingBadge = card.querySelector(".rating-badge");
+        const lockedOverlay = card.querySelector(".locked-overlay");
+        const timerText = card.querySelector(".timer-text");
+        const progressBar = card.querySelector(".progress-bar");
+        const timerContainer = card.querySelector(".timer-container");
+
+        if (!thermometer || !thermometerFill) return;
+
+        let currentRating = 5;
+        let timeRemaining = 10;
+        let canRate = true;
+
+        updateThermometer(currentRating);
+        phuljhariBorder.classList.add('active');
+
+        const timerInterval = setInterval(() => {
+          if (isReportModalOpen) return; // ⛔ Pause timer when reporting
+timeRemaining--;
+
+            // Update opacity + timer text
+            phuljhariBorder.style.opacity = timeRemaining / 10;
+            timerText.textContent = timeRemaining + "s";
+
+            // YouTube-style progress shrink
+            progressBar.style.width = (timeRemaining / 10) * 100 + "%";
+
+            if (timeRemaining <= 0) {
+                clearInterval(timerInterval);
+                timerText.textContent = "Time's up!";
+                progressBar.style.width = "0%";
+                submitRating(currentRating);
+            }
+        }, 1000);
+
+        thermometer.addEventListener("click", handleThermometerClick);
+
+        function handleThermometerClick(e) {
+         if (!canRate || ratedCards.has(cardId) || isReportModalOpen) return;
+
+            const rect = thermometer.getBoundingClientRect();
+            const y = e.clientY - rect.top;
+            const usableHeight = rect.height - 40;
+            const rating = Math.round(((usableHeight - y) / usableHeight) * 10);
+            const finalRating = Math.max(1, Math.min(10, rating));
+
+            updateThermometer(finalRating);
+        }
+
+        function updateThermometer(rating) {
+            currentRating = rating;
+            const percentage = (rating / 10) * 100;
+            thermometerFill.style.height = percentage + "%";
+            ratingBadge.textContent = rating;
+
+            if (rating <= 3) {
+                bulbInner.style.background = "linear-gradient(135deg, #ff0080, #ff4757)";
+            } else if (rating <= 7) {
+                bulbInner.style.background = "linear-gradient(135deg, #ff8c00, #ffd32a)";
+            } else {
+                bulbInner.style.background = "linear-gradient(135deg, #00ff88, #26de81)";
+            }
+        }
+
+        function submitRating(rating) {
+            if (ratedCards.has(cardId)) return;
+            canRate = false;
+            ratedCards.add(cardId);
+
+            phuljhariBorder.style.opacity = '0';
+            phuljhariBorder.classList.remove('active');
+            thermometer.classList.add("disabled");
+            thermometer.removeEventListener("click", handleThermometerClick);
+            timerContainer.style.display = 'none';
+            ratingBadge.textContent = rating;
+            ratingBadge.classList.add('show');
+
+            setTimeout(() => {
+                lockedOverlay.classList.add('show');
+            }, 500);
+
+            console.log(`✅ Rating ${rating}/10 submitted for card ${cardId}`);
+
+            const form = card.querySelector(".postRatingForm");
+            const formData = new FormData(form);
+            formData.append("rating", rating);
+
+            const csrfToken = document.querySelector('meta[name="_csrf"]').getAttribute("content");
+            const csrfHeader = document.querySelector('meta[name="_csrf_header"]').getAttribute("content");
+
+
+            fetch('/saveRating', {
+                method: 'POST',
+                headers: {
+              [csrfHeader]: csrfToken
+          },
+                body: formData
+            })
+            .then(res => res.text())
+            .then(data => console.log("✅ Rating submitted:", data))
+            .catch(err => console.error("⚠️ Error submitting rating:", err));
+
+            // Auto-scroll to next card
+            setTimeout(() => {
+                const nextCard = card.nextElementSibling;
+                if (nextCard && nextCard.classList.contains('rating-card')) {
+                    nextCard.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'center'
+                    });
+                }
+            }, 800);
+        }
+    }
+</script>
+
+<script>let currentModal = null;
+
+// OPEN MODAL
+document.querySelectorAll(".report-btn").forEach(btn => {
+    btn.addEventListener("click", (e) => {
+
+        // Find the modal INSIDE this post
+        currentModal = e.target.closest(".rating-card").querySelector("#reportModal");
+
+        currentModal.classList.add("show");
+        isReportModalOpen = true;
+        document.querySelectorAll(".dots-dropdown").forEach(d => d.style.display = "none");
+    });
+});
+
+// CLOSE MODAL (button inside each modal)
+document.querySelectorAll(".close-report").forEach(closeBtn => {
+isReportModalOpen = true;
+    closeBtn.addEventListener("click", () => {
+        if (currentModal) currentModal.classList.remove("show");
+    });
+});
+
+
+// CONFIRMATION POPUP FUNCTION
+function checkConfirmation() {
+    return new Promise((resolve) => {
+        confirmPopup.style.display = "flex";
+
+        confirmYes.onclick = () => {
+            confirmPopup.style.display = "none";
+            resolve(true);
+        };
+
+        confirmNo.onclick = () => {
+            confirmPopup.style.display = "none";
+            resolve(false);
+        };
+    });
+}
+
+
+// HANDLE REPORT FORMS
+document.querySelectorAll(".reportForm").forEach((form) => {
+
+    form.addEventListener("submit", async function (e) {
+        e.preventDefault();
+
+        // Confirmation
+        const result = await checkConfirmation();
+        if (!result) return;
+
+        // Extract data from THIS form only
+        const postId = this.querySelector('input[name="postId"]').value;
+        const reason = this.querySelector('input[name="reason"]:checked').value;
+        const comment = this.querySelector('#comment').value;
+
+        const formData = new FormData();
+        formData.append("postId", postId);
+        formData.append("reason", reason);
+        formData.append("comment", comment);
+
+        const csrfToken = document.querySelector('meta[name="_csrf"]').getAttribute("content");
+        const csrfHeader = document.querySelector('meta[name="_csrf_header"]').getAttribute("content");
+
+        fetch('/user/reportPost', {
+            method: 'POST',
+            headers: { [csrfHeader]: csrfToken },
+            body: formData
+        })
+        .then(res => res.json())
+        .then(() => {
+
+            // Close only THIS post modal
+            if (currentModal) currentModal.classList.remove("show");
+
+            // Show success popup
+            successPopup.style.display = "flex";
+        })
+        .catch(err => console.error("Error:", err));
+    });
+});
+
+
+// SUCCESS POPUP
+successOk.addEventListener("click", function () {
+    successPopup.style.display = "none";
+});
+</script>
+
+<!--    <script>-->
+<!--        document.querySelectorAll(".dots-icon").forEach(dot => {-->
+<!--       dot.addEventListener("click", (e) => {-->
+<!--           const dropdown = e.target.parentElement.querySelector(".dots-dropdown");-->
+<!--           dropdown.style.display = dropdown.style.display === "block" ? "none" : "block";-->
+<!--       });-->
+<!--    });-->
+<!--    // OPEN MODAL-->
+<!--    document.querySelectorAll(".report-btn").forEach(btn => {-->
+<!--        btn.addEventListener("click", () => {-->
+<!--            isReportModalOpen = true;  // ⛔ Pause rating-->
+
+<!--            document.getElementById("reportModal").classList.add("show");-->
+<!--            document.querySelectorAll(".dots-dropdown").forEach(d => d.style.display = "none");-->
+<!--        });-->
+<!--    });-->
+
+<!--    // CLOSE MODAL-->
+<!--    document.querySelector(".close-report").addEventListener("click", () => {-->
+<!--        isReportModalOpen = false;-->
+<!--        document.getElementById("reportModal").classList.remove("show");-->
+<!--    });-->
+
+<!--     //for 3 dots-->
+
+<!--    // CONFIRMATION POPUP FUNCTION-->
+<!--    function checkConfirmation() {-->
+<!--       return new Promise((resolve) => {-->
+<!--           confirmPopup.style.display = "flex";-->
+
+<!--           confirmYes.onclick = () => {-->
+<!--               confirmPopup.style.display = "none";-->
+<!--               resolve(true);-->
+<!--           };-->
+
+<!--           confirmNo.onclick = () => {-->
+<!--               confirmPopup.style.display = "none";-->
+<!--               resolve(false);-->
+<!--           };-->
+<!--       });-->
+<!--    }-->
+
+
+<!--    // HANDLE ALL REPORT FORMS-->
+<!--    document.querySelectorAll(".reportForm").forEach((form, index) => {-->
+
+<!--       form.addEventListener("submit", async function (e) {-->
+<!--           e.preventDefault();-->
+
+<!--           // Ask confirmation-->
+<!--           const result = await checkConfirmation();-->
+<!--           if (!result) return;-->
+
+<!--           // Get values from THIS form (important!)-->
+<!--           const postId = this.querySelector('input[name="postId"]').value;-->
+<!--           const reason = this.querySelector('input[name="reason"]:checked').value;-->
+<!--           const comment = this.querySelector('#comment').value;-->
+
+<!--           const formData = new FormData();-->
+<!--           formData.append("postId", postId);-->
+<!--           formData.append("reason", reason);-->
+<!--           formData.append("comment", comment);-->
+
+<!--           const csrfToken = document.querySelector('meta[name="_csrf"]').getAttribute("content");-->
+<!--           const csrfHeader = document.querySelector('meta[name="_csrf_header"]').getAttribute("content");-->
+
+<!--           // SEND FETCH REQUEST-->
+<!--           fetch('/user/reportPost', {-->
+<!--               method: 'POST',-->
+<!--               headers: { [csrfHeader]: csrfToken },-->
+<!--               body: formData-->
+<!--           })-->
+<!--           .then(res => res.json())-->
+<!--           .then(data => {-->
+<!--                console.log("Response "+data);-->
+<!--               // Close this modal-->
+
+
+
+<!--               // Show success popup-->
+<!--               successPopup.style.display = "flex";-->
+<!--           })-->
+<!--           .catch(err => console.error("Error:", err));-->
+<!--       });-->
+<!--    });-->
+
+
+<!--    // SUCCESS POPUP OK BUTTON-->
+<!--    successOk.addEventListener("click", function () {-->
+<!--       successPopup.style.display = "none";-->
+<!--    });-->
+
+<!--    </script>-->
+
+
+<!--<script>-->
+<!--    //const reportForm = document.getElementById("reportForm");-->
+<!--    const submitBtn = document.getElementById("submitReportBtn");-->
+
+<!--    const confirmPopup = document.getElementById("confirmPopup");-->
+<!--    const successPopup = document.getElementById("successPopup");-->
+
+<!--    const confirmYes = document.getElementById("confirmYes");-->
+<!--    const confirmNo = document.getElementById("confirmNo");-->
+<!--    const successOk = document.getElementById("successOk");-->
+
+
+<!--      reportForm.addEventListener("submit",async function (e) {-->
+
+<!--        e.preventDefault();-->
+<!--        const result = await checkConfirmation();-->
+
+
+<!--        const postId = document.getElementById("postId").value;-->
+<!--        const reason = document.querySelector('input[name="reason"]:checked').value;-->
+<!--        const comment = document.getElementById("comment").value;-->
+
+
+<!--        const formData = new FormData();-->
+<!--        formData.append("postId", postId);-->
+<!--        formData.append("reason", reason);-->
+<!--        formData.append("comment",comment);-->
+
+<!--        const csrfToken = document.querySelector('meta[name="_csrf"]').getAttribute("content");-->
+<!--        const csrfHeader = document.querySelector('meta[name="_csrf_header"]').getAttribute("content");-->
+
+<!--        if(result===true){-->
+<!--        fetch('/user/reportPost', {-->
+<!--            method: 'POST',-->
+<!--            headers: {-->
+<!--                [csrfHeader]: csrfToken-->
+<!--            },-->
+<!--            body: formData-->
+<!--        })-->
+<!--        .then(res => res.json())-->
+<!--        .then(data => console.log("Response:", data))-->
+<!--        .catch(err => console.error("Error:", err));-->
+
+<!--        }-->
+<!--    });-->
+
+
+<!--  function checkConfirmation() {-->
+<!--    return new Promise((resolve) => {-->
+
+<!--        // Show your popup-->
+<!--        confirmPopup.style.display = "block";-->
+
+<!--        // YES → resolve true-->
+<!--        confirmYes.onclick = function () {-->
+<!--            confirmPopup.style.display = "none";-->
+<!--            resolve(true);-->
+<!--        };-->
+
+<!--        // NO → resolve false-->
+<!--        confirmNo.onclick = function () {-->
+<!--            confirmPopup.style.display = "none";-->
+<!--            resolve(false);-->
+<!--        };-->
+<!--    });-->
+<!--}-->
+
+
+
+<!--    // Optional: Close success popup-->
+<!--    if (successOk) {-->
+<!--        successOk.addEventListener("click", function () {-->
+<!--            successPopup.style.display = "none";-->
+<!--        });-->
+<!--    }-->
+
+<!--        // AFTER submit SUCCESS POPUP-->
+<!--    // &#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;-->
+<!--    if (document.getElementById("showSuccessFlag")) {-->
+<!--        successPopup.style.display = "flex";-->
+<!--    }-->
+
+<!--    successOk.addEventListener("click", function () {-->
+<!--        successPopup.style.display = "none";-->
+<!--    });-->
+<!--</script>-->
+
+
+
+
+</body>
+</html>
+
+<!--<!DOCTYPE html>-->
+<!--<html lang="en" xmlns:th="http://www.thymeleaf.org">-->
+<!--<head>-->
+<!--    <meta charset="UTF-8">-->
+<!--    <meta name="viewport" content="width=device-width, initial-scale=1.0">-->
+<!--    <title>Rate Photos - HotOrNot</title>-->
+<!--    <meta name="_csrf" th:content="${_csrf.token}" />-->
+<!--    <meta name="_csrf_header" th:content="${_csrf.headerName}" />-->
+<!--    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/css/bootstrap.min.css" rel="stylesheet">-->
+<!--    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.11.1/font/bootstrap-icons.min.css" rel="stylesheet">-->
+<!--    <style>-->
+<!--        * {-->
+<!--            margin: 0;-->
+<!--            padding: 0;-->
+<!--            box-sizing: border-box;-->
+<!--        }-->
+
+<!--        body {-->
+<!--            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;-->
+<!--            background: #ffffff;-->
+<!--            color: #2d2d2d;-->
+<!--            min-height: 100vh;-->
+<!--            position: relative;-->
+<!--            overflow-x: hidden;-->
+<!--        }-->
+
+<!--        .bg-gradient {-->
+<!--            position: fixed;-->
+<!--            top: 0;-->
+<!--            left: 0;-->
+<!--            width: 100%;-->
+<!--            height: 100%;-->
+<!--            z-index: -1;-->
+<!--            overflow: hidden;-->
+<!--            background: linear-gradient(135deg, #FFF5F0 0%, #FFE8F0 50%, #FFF0F5 100%);-->
+<!--        }-->
+
+<!--        .bg-gradient::before,-->
+<!--        .bg-gradient::after,-->
+<!--        .bg-gradient span {-->
+<!--            content: '';-->
+<!--            position: absolute;-->
+<!--            border-radius: 50%;-->
+<!--            filter: blur(100px);-->
+<!--        }-->
+
+<!--        .bg-gradient::before {-->
+<!--            width: 600px;-->
+<!--            height: 600px;-->
+<!--            background: rgba(250, 130, 49, 0.15);-->
+<!--            animation: float1 20s ease-in-out infinite;-->
+<!--        }-->
+
+<!--        .bg-gradient::after {-->
+<!--            width: 700px;-->
+<!--            height: 700px;-->
+<!--            background: rgba(255, 107, 157, 0.12);-->
+<!--            animation: float2 25s ease-in-out infinite;-->
+<!--        }-->
+
+<!--        .bg-gradient span {-->
+<!--            width: 500px;-->
+<!--            height: 500px;-->
+<!--            background: rgba(249, 127, 81, 0.1);-->
+<!--            animation: float3 18s ease-in-out infinite;-->
+<!--        }-->
+
+<!--        @keyframes float1 {-->
+<!--            0%, 100% { transform: translate(10vw, 20vh) scale(1); }-->
+<!--            25% { transform: translate(60vw, 70vh) scale(1.3); }-->
+<!--            50% { transform: translate(80vw, 30vh) scale(0.9); }-->
+<!--            75% { transform: translate(30vw, 80vh) scale(1.2); }-->
+<!--        }-->
+
+<!--        @keyframes float2 {-->
+<!--            0%, 100% { transform: translate(70vw, 60vh) scale(1); }-->
+<!--            33% { transform: translate(20vw, 20vh) scale(1.4); }-->
+<!--            66% { transform: translate(50vw, 80vh) scale(0.8); }-->
+<!--        }-->
+
+<!--        @keyframes float3 {-->
+<!--            0%, 100% { transform: translate(40vw, 10vh) scale(1); }-->
+<!--            30% { transform: translate(10vw, 70vh) scale(1.3); }-->
+<!--            60% { transform: translate(75vw, 50vh) scale(0.9); }-->
+<!--            90% { transform: translate(55vw, 15vh) scale(1.2); }-->
+<!--        }-->
+
+<!--        .navbar {-->
+<!--            background: rgba(255, 255, 255, 0.95) !important;-->
+<!--            backdrop-filter: blur(20px);-->
+<!--            border-bottom: 2px solid rgba(250, 130, 49, 0.2);-->
+<!--            box-shadow: 0 4px 20px rgba(250, 130, 49, 0.1);-->
+<!--        }-->
+
+<!--        .navbar-brand {-->
+<!--            font-size: 1.8rem;-->
+<!--            font-weight: 900;-->
+<!--            letter-spacing: -1px;-->
+<!--        }-->
+
+<!--        .logo-hot {-->
+<!--            background: linear-gradient(135deg, #FA8231 0%, #F97F51 50%);-->
+<!--            -webkit-background-clip: text;-->
+<!--            -webkit-text-fill-color: transparent;-->
+<!--            background-clip: text;-->
+<!--        }-->
+
+<!--        .logo-not {-->
+<!--            color: #FF6B9D;-->
+<!--        }-->
+
+<!--        .nav-link {-->
+<!--            color: #555 !important;-->
+<!--            font-weight: 600;-->
+<!--            transition: all 0.3s ease;-->
+<!--            position: relative;-->
+<!--            margin: 0 0.5rem;-->
+<!--        }-->
+
+<!--        .nav-link:hover {-->
+<!--            color: #FA8231 !important;-->
+<!--            transform: translateY(-2px);-->
+<!--        }-->
+
+<!--        .nav-link.active {-->
+<!--            color: #FA8231 !important;-->
+<!--        }-->
+
+<!--        .btn-neon {-->
+<!--            background: linear-gradient(135deg, #FA8231 0%, #F97F51 50%, #FF6B9D 100%);-->
+<!--            color: white;-->
+<!--            border: none;-->
+<!--            font-weight: 700;-->
+<!--            text-transform: uppercase;-->
+<!--            letter-spacing: 1px;-->
+<!--            box-shadow: 0 4px 15px rgba(250, 130, 49, 0.4);-->
+<!--            transition: all 0.3s ease;-->
+<!--        }-->
+
+<!--        .btn-neon:hover {-->
+<!--            transform: translateY(-3px);-->
+<!--            box-shadow: 0 6px 25px rgba(250, 130, 49, 0.6);-->
+<!--            color: white;-->
+<!--        }-->
+
+<!--        .main-container {-->
+<!--            max-width: 500px;-->
+<!--            margin: 0 auto;-->
+<!--            padding: 1rem;-->
+<!--        }-->
+
+<!--        .rating-card {-->
+<!--            margin-bottom: 2rem;-->
+<!--            position: relative;-->
+<!--            scroll-snap-align: start;-->
+<!--        }-->
+
+<!--        .image-wrapper {-->
+<!--            position: relative;-->
+<!--            width: 100%;-->
+<!--            height: 100vh;-->
+<!--            max-height: 700px;-->
+<!--            border-radius: 30px;-->
+<!--            overflow: hidden;-->
+<!--            background: linear-gradient(135deg, rgba(250, 130, 49, 0.15), rgba(255, 107, 157, 0.15));-->
+<!--        }-->
+
+<!--        .phuljhari-border {-->
+<!--            position: absolute;-->
+<!--            top: -6px;-->
+<!--            left: -6px;-->
+<!--            right: -6px;-->
+<!--            bottom: -6px;-->
+<!--            border-radius: 36px;-->
+<!--            background: linear-gradient(135deg, #FA8231, #F97F51, #FFD700, #00ff88, #FF6B9D);-->
+<!--            z-index: 1;-->
+<!--            opacity: 0;-->
+<!--            filter: blur(8px);-->
+<!--            animation: sparkle 1.5s ease-in-out infinite;-->
+<!--            pointer-events: none;-->
+<!--        }-->
+
+<!--        .phuljhari-border.active {-->
+<!--            opacity: 1;-->
+<!--        }-->
+
+<!--        @keyframes sparkle {-->
+<!--            0%, 100% { opacity: 0.8; filter: blur(8px) brightness(1); }-->
+<!--            50% { opacity: 1; filter: blur(12px) brightness(1.3); }-->
+<!--        }-->
+
+<!--        .image-wrapper img {-->
+<!--            width: 100%;-->
+<!--            height: 100%;-->
+<!--            object-fit: cover;-->
+<!--            position: relative;-->
+<!--            z-index: 2;-->
+<!--            border-radius: 30px;-->
+<!--        }-->
+
+<!--        .image-overlay {-->
+<!--            position: absolute;-->
+<!--            bottom: 0;-->
+<!--            left: 0;-->
+<!--            right: 0;-->
+<!--            padding: 30px 20px 20px;-->
+<!--            background: linear-gradient(to top, rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.3), transparent);-->
+<!--            z-index: 3;-->
+<!--            border-radius: 0 0 30px 30px;-->
+<!--        }-->
+
+<!--        .overlay-content {-->
+<!--            background: rgba(255, 255, 255, 0.15);-->
+<!--            backdrop-filter: blur(20px);-->
+<!--            border: 1px solid rgba(255, 255, 255, 0.3);-->
+<!--            border-radius: 20px;-->
+<!--            padding: 20px;-->
+<!--        }-->
+
+<!--        .user-info {-->
+<!--            display: flex;-->
+<!--            align-items: center;-->
+<!--            gap: 12px;-->
+<!--            margin-bottom: 15px;-->
+<!--        }-->
+
+<!--        .avatar {-->
+<!--            width: 50px;-->
+<!--            height: 50px;-->
+<!--            border-radius: 50%;-->
+<!--            background: linear-gradient(135deg, #FA8231, #FF6B9D);-->
+<!--            border: 3px solid rgba(255, 255, 255, 0.7);-->
+<!--        }-->
+
+<!--        .username {-->
+<!--            font-weight: 700;-->
+<!--            color: #ffffff;-->
+<!--            font-size: 1.2rem;-->
+<!--            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);-->
+<!--        }-->
+
+<!--        .caption {-->
+<!--            color: rgba(255, 255, 255, 0.95);-->
+<!--            font-size: 0.95rem;-->
+<!--            line-height: 1.5;-->
+<!--            margin-bottom: 10px;-->
+<!--            text-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);-->
+<!--        }-->
+
+<!--        .hashtags {-->
+<!--            display: flex;-->
+<!--            flex-wrap: wrap;-->
+<!--            gap: 8px;-->
+<!--        }-->
+
+<!--        .hashtag {-->
+<!--            background: rgba(250, 130, 49, 0.3);-->
+<!--            border: 1px solid rgba(250, 130, 49, 0.5);-->
+<!--            color: #FFD700;-->
+<!--            padding: 4px 12px;-->
+<!--            border-radius: 15px;-->
+<!--            font-size: 0.85rem;-->
+<!--            font-weight: 600;-->
+<!--        }-->
+
+<!--        .timer-container {-->
+<!--            position: absolute;-->
+<!--            top: 20px;-->
+<!--            left: 50%;-->
+<!--            transform: translateX(-50%);-->
+<!--            width: 90%;-->
+<!--            max-width: 400px;-->
+<!--            z-index: 10;-->
+<!--        }-->
+
+<!--        .progress-container {-->
+<!--            width: 100%;-->
+<!--            height: 12px;-->
+<!--            background: rgba(0, 0, 0, 0.4);-->
+<!--            backdrop-filter: blur(20px);-->
+<!--            border-radius: 20px;-->
+<!--            overflow: hidden;-->
+<!--            position: relative;-->
+<!--            border: 2px solid rgba(255, 255, 255, 0.2);-->
+<!--            box-shadow: 0 4px 20px rgba(250, 130, 49, 0.3);-->
+<!--        }-->
+
+<!--        .progress-bar {-->
+<!--            width: 100%;-->
+<!--            height: 100%;-->
+<!--            background: linear-gradient(90deg,-->
+<!--                #FA8231 0%,-->
+<!--                #F97F51 20%,-->
+<!--                #FF8C42 40%,-->
+<!--                #FFD32A 60%,-->
+<!--                #00ff88 80%,-->
+<!--                #FF6B9D 100%-->
+<!--            );-->
+<!--            transition: width 1s linear;-->
+<!--            box-shadow: 0 0 20px rgba(250, 130, 49, 0.8), 0 0 40px rgba(255, 107, 157, 0.6);-->
+<!--            position: relative;-->
+<!--            border-radius: 20px;-->
+<!--        }-->
+
+<!--        .progress-bar::before {-->
+<!--            content: '';-->
+<!--            position: absolute;-->
+<!--            top: 0;-->
+<!--            left: 0;-->
+<!--            right: 0;-->
+<!--            height: 50%;-->
+<!--            background: linear-gradient(to bottom, rgba(255, 255, 255, 0.3), transparent);-->
+<!--            border-radius: 20px 20px 0 0;-->
+<!--        }-->
+
+<!--        .progress-bar::after {-->
+<!--            content: '';-->
+<!--            position: absolute;-->
+<!--            top: 50%;-->
+<!--            right: 0;-->
+<!--            width: 30px;-->
+<!--            height: 30px;-->
+<!--            background: radial-gradient(circle, rgba(255, 255, 255, 1) 0%, rgba(255, 255, 255, 0.8) 40%, transparent 70%);-->
+<!--            transform: translate(50%, -50%);-->
+<!--            filter: blur(3px);-->
+<!--            animation: pulse-glow 1.5s ease-in-out infinite;-->
+<!--        }-->
+
+<!--        @keyframes pulse-glow {-->
+<!--            0%, 100% {-->
+<!--                opacity: 0.6;-->
+<!--                transform: translate(50%, -50%) scale(1);-->
+<!--            }-->
+<!--            50% {-->
+<!--                opacity: 1;-->
+<!--                transform: translate(50%, -50%) scale(1.3);-->
+<!--            }-->
+<!--        }-->
+
+<!--        .thermometer-container {-->
+<!--            position: absolute;-->
+<!--            right: 20px;-->
+<!--            top: 50%;-->
+<!--            transform: translateY(-50%);-->
+<!--            width: 60px;-->
+<!--            height: 40%;-->
+<!--            max-height: 300px;-->
+<!--            z-index: 10;-->
+<!--        }-->
+
+<!--        .thermometer {-->
+<!--            position: relative;-->
+<!--            width: 100%;-->
+<!--            height: 100%;-->
+<!--            background: rgba(250, 130, 49, 0.1);-->
+<!--            border: 3px solid #FA8231;-->
+<!--            border-radius: 30px;-->
+<!--            cursor: pointer;-->
+<!--            overflow: hidden;-->
+<!--            box-shadow: 0 0 20px rgba(250, 130, 49, 0.4);-->
+<!--            transition: all 0.3s ease;-->
+<!--        }-->
+
+<!--        .thermometer:hover {-->
+<!--            background: rgba(250, 130, 49, 0.2);-->
+<!--            transform: scale(1.05);-->
+<!--            box-shadow: 0 0 30px rgba(250, 130, 49, 0.6);-->
+<!--        }-->
+
+<!--        .thermometer.disabled {-->
+<!--            pointer-events: none;-->
+<!--            opacity: 0.5;-->
+<!--        }-->
+
+<!--        .thermometer-fill {-->
+<!--            position: absolute;-->
+<!--            bottom: 0;-->
+<!--            left: 0;-->
+<!--            right: 0;-->
+<!--            background: linear-gradient(to top, #FA8231, #F97F51, #FF8C42, #FFD32A, #00ff88);-->
+<!--            transition: height 0.3s ease;-->
+<!--            border-radius: 0 0 30px 30px;-->
+<!--        }-->
+
+<!--        .thermometer-bulb {-->
+<!--            position: absolute;-->
+<!--            bottom: -18px;-->
+<!--            left: 50%;-->
+<!--            transform: translateX(-50%);-->
+<!--            width: 50px;-->
+<!--            height: 50px;-->
+<!--            background: rgba(255, 255, 255, 0.95);-->
+<!--            border-radius: 50%;-->
+<!--            box-shadow: 0 0 20px rgba(250, 130, 49, 0.5);-->
+<!--            display: flex;-->
+<!--            align-items: center;-->
+<!--            justify-content: center;-->
+<!--            z-index: 2;-->
+<!--        }-->
+
+<!--        .thermometer-bulb-inner {-->
+<!--            width: 35px;-->
+<!--            height: 35px;-->
+<!--            background: linear-gradient(135deg, #FA8231, #F97F51);-->
+<!--            border-radius: 50%;-->
+<!--            transition: background 0.3s ease;-->
+<!--        }-->
+
+<!--        .scale-markers {-->
+<!--            position: absolute;-->
+<!--            left: 8px;-->
+<!--            top: 10px;-->
+<!--            bottom: 40px;-->
+<!--            display: flex;-->
+<!--            flex-direction: column;-->
+<!--            justify-content: space-between;-->
+<!--            font-size: 10px;-->
+<!--            color: #2d2d2d;-->
+<!--            font-weight: 700;-->
+<!--            text-shadow: 0 0 5px rgba(255, 255, 255, 0.8);-->
+<!--            z-index: 300;-->
+<!--        }-->
+
+<!--        .rating-badge {-->
+<!--            position: absolute;-->
+<!--            top: 20px;-->
+<!--            left: 20px;-->
+<!--            background: linear-gradient(135deg, #FA8231 0%, #FF6B9D 100%);-->
+<!--            color: white;-->
+<!--            padding: 10px 20px;-->
+<!--            border-radius: 25px;-->
+<!--            font-weight: 800;-->
+<!--            font-size: 1.3rem;-->
+<!--            box-shadow: 0 4px 20px rgba(250, 130, 49, 0.6);-->
+<!--            z-index: 10;-->
+<!--            display: none;-->
+<!--        }-->
+
+<!--        .rating-badge.show {-->
+<!--            display: block;-->
+<!--            animation: popIn 0.3s ease-out;-->
+<!--        }-->
+
+<!--        @keyframes popIn {-->
+<!--            0% { transform: scale(0); }-->
+<!--            50% { transform: scale(1.2); }-->
+<!--            100% { transform: scale(1); }-->
+<!--        }-->
+
+<!--        .locked-overlay {-->
+<!--            position: absolute;-->
+<!--            top: 0;-->
+<!--            left: 0;-->
+<!--            right: 0;-->
+<!--            bottom: 0;-->
+<!--            background: rgba(250, 130, 49, 0.3);-->
+<!--            backdrop-filter: blur(5px);-->
+<!--            border-radius: 30px;-->
+<!--            z-index: 4;-->
+<!--            display: none;-->
+<!--            align-items: center;-->
+<!--            justify-content: center;-->
+<!--        }-->
+
+<!--        .locked-overlay.show {-->
+<!--            display: flex;-->
+<!--        }-->
+
+<!--        .locked-icon {-->
+<!--            font-size: 4rem;-->
+<!--            color: #FA8231;-->
+<!--            text-shadow: 0 0 30px rgba(250, 130, 49, 0.8);-->
+<!--            animation: pulse 2s ease-in-out infinite;-->
+<!--        }-->
+
+<!--        /* Popup Styles */-->
+<!--        .popup-overlay {-->
+<!--            position: fixed;-->
+<!--            top: 0;-->
+<!--            left: 0;-->
+<!--            width: 100vw;-->
+<!--            height: 100vh;-->
+<!--            background: rgba(0, 0, 0, 0.7);-->
+<!--            display: flex;-->
+<!--            align-items: center;-->
+<!--            justify-content: center;-->
+<!--            z-index: 9999;-->
+<!--            opacity: 0;-->
+<!--            visibility: hidden;-->
+<!--            transition: opacity 0.4s ease;-->
+<!--        }-->
+
+<!--        .popup-overlay.show {-->
+<!--            opacity: 1;-->
+<!--            visibility: visible;-->
+<!--        }-->
+
+<!--        .popup {-->
+<!--            background: linear-gradient(135deg, rgba(255, 255, 255, 0.95), rgba(255, 248, 240, 0.95));-->
+<!--            padding: 40px 60px;-->
+<!--            border-radius: 25px;-->
+<!--            text-align: center;-->
+<!--            color: #2d2d2d;-->
+<!--            box-shadow: 0 10px 50px rgba(250, 130, 49, 0.4);-->
+<!--            border: 3px solid rgba(250, 130, 49, 0.3);-->
+<!--            position: relative;-->
+<!--            overflow: hidden;-->
+<!--            animation: popupScale 0.6s ease-out;-->
+<!--        }-->
+
+<!--        @keyframes popupScale {-->
+<!--            0% { transform: scale(0.8); opacity: 0; }-->
+<!--            100% { transform: scale(1); opacity: 1; }-->
+<!--        }-->
+
+<!--        .badge-wrapper {-->
+<!--            position: relative;-->
+<!--            margin-bottom: 15px;-->
+<!--        }-->
+
+<!--        .badge {-->
+<!--            background: linear-gradient(135deg, #FA8231, #F97F51, #FF6B9D);-->
+<!--            width: 120px;-->
+<!--            height: 120px;-->
+<!--            border-radius: 50%;-->
+<!--            display: flex;-->
+<!--            align-items: center;-->
+<!--            justify-content: center;-->
+<!--            margin: 0 auto;-->
+<!--            position: relative;-->
+<!--            box-shadow: 0 0 40px rgba(250, 130, 49, 0.6);-->
+<!--            animation: pulse 1.5s infinite;-->
+<!--        }-->
+
+<!--        .badge-text {-->
+<!--            font-size: 2.5em;-->
+<!--            font-weight: bold;-->
+<!--            color: #fff;-->
+<!--            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);-->
+<!--        }-->
+
+<!--        .shine {-->
+<!--            position: absolute;-->
+<!--            top: 0;-->
+<!--            left: -75%;-->
+<!--            width: 50%;-->
+<!--            height: 100%;-->
+<!--            background: linear-gradient(120deg, rgba(255, 255, 255, 0.4), rgba(255, 255, 255, 0));-->
+<!--            transform: skewX(-25deg);-->
+<!--            animation: shine 2s infinite;-->
+<!--        }-->
+
+<!--        @keyframes shine {-->
+<!--            0% { left: -75%; }-->
+<!--            100% { left: 125%; }-->
+<!--        }-->
+
+<!--        .points-earned {-->
+<!--            font-size: 1.2em;-->
+<!--            margin-top: 15px;-->
+<!--            color: #FA8231;-->
+<!--            font-weight: 700;-->
+<!--        }-->
+
+<!--        @keyframes pulse {-->
+<!--            0%, 100% { transform: scale(1); }-->
+<!--            50% { transform: scale(1.08); }-->
+<!--        }-->
+
+<!--        .close-btn {-->
+<!--            position: absolute;-->
+<!--            top: 15px;-->
+<!--            right: 20px;-->
+<!--            font-size: 32px;-->
+<!--            color: #999;-->
+<!--            background: none;-->
+<!--            border: none;-->
+<!--            cursor: pointer;-->
+<!--            transition: all 0.2s ease;-->
+<!--            z-index: 1001;-->
+<!--        }-->
+
+<!--        .close-btn:hover {-->
+<!--            color: #FA8231;-->
+<!--            transform: rotate(90deg);-->
+<!--        }-->
+
+<!--        @media (max-width: 576px) {-->
+<!--            .thermometer-container {-->
+<!--                width: 50px;-->
+<!--                height: 50%;-->
+<!--            }-->
+
+<!--            .username {-->
+<!--                font-size: 1rem;-->
+<!--            }-->
+
+<!--            .caption {-->
+<!--                font-size: 0.9rem;-->
+<!--            }-->
+
+<!--            .popup {-->
+<!--                padding: 30px 40px;-->
+<!--            }-->
+
+<!--            .badge {-->
+<!--                width: 100px;-->
+<!--                height: 100px;-->
+<!--            }-->
+
+<!--            .badge-text {-->
+<!--                font-size: 2em;-->
+<!--            }-->
+<!--        }-->
+<!--    </style>-->
+<!--</head>-->
+<!--<body>-->
+<!--<div class="bg-gradient">-->
+<!--    <span></span>-->
+<!--</div>-->
+
+<!--<nav class="navbar navbar-expand-lg navbar-light sticky-top">-->
+<!--    <div class="container-fluid px-4">-->
+<!--        <a class="navbar-brand" href="#">-->
+<!--            <span class="logo-hot">Hot</span><span class="logo-not">Or</span><span class="logo-hot">Not</span>-->
+<!--        </a>-->
+<!--        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">-->
+<!--            <span class="navbar-toggler-icon"></span>-->
+<!--        </button>-->
+<!--        <div class="collapse navbar-collapse" id="navbarNav">-->
+<!--            <ul class="navbar-nav ms-auto align-items-center">-->
+<!--                <li class="nav-item">-->
+<!--                    <a class="nav-link" href="#">Discover</a>-->
+<!--                </li>-->
+<!--                <li class="nav-item">-->
+<!--                    <a class="nav-link active" href="#">Rate</a>-->
+<!--                </li>-->
+<!--                <li class="nav-item">-->
+<!--                    <a class="nav-link" href="/user/dashboard">My Profile</a>-->
+<!--                </li>-->
+<!--                <li class="nav-item">-->
+<!--                    <a class="nav-link" href="/user/add-new-post">Add new Post</a>-->
+<!--                </li>-->
+<!--                <li class="nav-item">-->
+<!--                    <a class="nav-link" href="/logout">Logout</a>-->
+<!--                </li>-->
+<!--                <li class="nav-item ms-3">-->
+<!--                    <button class="btn btn-neon btn-sm rounded-pill px-4">Join Now</button>-->
+<!--                </li>-->
+<!--            </ul>-->
+<!--        </div>-->
+<!--    </div>-->
+<!--</nav>-->
+
+<!--<div class="main-container">-->
+<!--    <div th:each="post : ${posts}" class="rating-card" th:attr="data-id=${post.postId}">-->
+<!--        <div class="image-wrapper">-->
+<!--            <div class="phuljhari-border"></div>-->
+<!--            <img th:src="@{/userphoto/{id}(id=${post.postId})}" alt="Profile">-->
+
+<!--            &lt;!&ndash; Timer Section &ndash;&gt;-->
+<!--            <div class="timer-container">-->
+<!--                <div class="timer-text">10s</div>-->
+<!--                <div class="progress-container">-->
+<!--                    <div class="progress-bar"></div>-->
+<!--                </div>-->
+<!--            </div>-->
+
+<!--            <div class="rating-badge">5</div>-->
+<!--            <div class="locked-overlay">-->
+<!--                <div class="locked-icon">🔒</div>-->
+<!--            </div>-->
+
+<!--            <div class="thermometer-container">-->
+<!--                <div class="thermometer">-->
+<!--                    <div class="scale-markers">-->
+<!--                        <div>10</div>-->
+<!--                        <div>8</div>-->
+<!--                        <div>6</div>-->
+<!--                        <div>4</div>-->
+<!--                        <div>2</div>-->
+<!--                    </div>-->
+<!--                    <div class="thermometer-fill"></div>-->
+<!--                    <div class="thermometer-bulb">-->
+<!--                        <div class="thermometer-bulb-inner"></div>-->
+<!--                    </div>-->
+<!--                </div>-->
+<!--            </div>-->
+
+<!--            <form class="postRatingForm">-->
+<!--                <input type="hidden" id="userFrom" name="userFrom" th:value="${user_master.userId}">-->
+<!--                <input type="hidden" id="userTo" name="userTo" th:value="${post.user.userId}">-->
+<!--                <input type="hidden" name="postId" th:value="${post.postId}">-->
+<!--            </form>-->
+
+<!--            <div class="image-overlay">-->
+<!--                <div class="overlay-content">-->
+<!--                    <div class="user-info">-->
+<!--                        <div class="avatar"></div>-->
+<!--                        <div class="username" th:text="${post.user.username}">sarah_jones</div>-->
+<!--                    </div>-->
+<!--                    <div class="caption" th:text="${post.caption}">Living my best life ✨ Coffee lover and adventure seeker 🌍</div>-->
+<!--                    <div class="hashtags">-->
+<!--                        <span class="hashtag" th:text="${post.hashtag}">#lifestyle</span>-->
+<!--                    </div>-->
+<!--                </div>-->
+<!--            </div>-->
+<!--        </div>-->
+<!--    </div>-->
+<!--</div>-->
+
+<!--<div class="popup-overlay" id="popupOverlay">-->
+<!--    <div class="popup">-->
+<!--        <button class="close-btn" onclick="closePopup()">&times;</button>-->
+
+<!--        <div class="badge-wrapper">-->
+<!--            <div class="badge">-->
+<!--                <div class="shine"></div>-->
+<!--                <div class="badge-text">+<span id="badgePoints">50</span></div>-->
+<!--            </div>-->
+<!--        </div>-->
+
+<!--        <div class="points-earned" style="font-size:13px;"><span id="pointsText"></span></div>-->
+<!--    </div>-->
+<!--</div>-->
+
+<!--<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/js/bootstrap.bundle.min.js"></script>-->
+
+<!--<script th:inline="javascript">-->
+<!--    const popupPoints = /*[[${popupPoints}]]*/ null;-->
+
+<!--    function showPopup(points) {-->
+<!--        document.getElementById('badgePoints').textContent = '50';-->
+<!--        document.getElementById('pointsText').textContent = points;-->
+<!--        document.getElementById('pointsText').style.fontSize = '13px';-->
+
+<!--        const overlay = document.getElementById('popupOverlay');-->
+<!--        overlay.classList.add('show');-->
+
+<!--        setTimeout(() => overlay.classList.remove('show'), 3000);-->
+<!--    }-->
+
+<!--    function closePopup() {-->
+<!--        document.getElementById('popupOverlay').classList.remove('show');-->
+<!--    }-->
+
+<!--    if (popupPoints) {-->
+<!--        showPopup(popupPoints);-->
+<!--    }-->
+<!--</script>-->
+
+<!--<script th:inline="javascript">-->
+<!--    const referralMessage = /*[[${referralMessage}]]*/ null;-->
+<!--    const referralPoint = /*[[${referralPoint}]]*/ null;-->
+
+<!--    function showPopup(message, point) {-->
+<!--        document.getElementById('badgePoints').textContent = point;-->
+<!--        document.getElementById('pointsText').textContent = message;-->
+<!--        document.getElementById('pointsText').style.fontSize = '13px';-->
+
+<!--        const overlay = document.getElementById('popupOverlay');-->
+<!--        overlay.classList.add('show');-->
+
+<!--        setTimeout(() => overlay.classList.remove('show'), 3000);-->
+<!--    }-->
+
+<!--    if (referralMessage) {-->
+<!--        showPopup(referralMessage, referralPoint);-->
+<!--    }-->
+<!--</script>-->
+
+<!--<script>-->
+<!--    const ratedCards = new Set();-->
+
+<!--    window.addEventListener("load", () => {-->
+<!--        const observer = new IntersectionObserver((entries) => {-->
+<!--            entries.forEach(entry => {-->
+<!--                const card = entry.target;-->
+<!--                const cardId = card.dataset.id;-->
+
+<!--                if (entry.isIntersecting && entry.intersectionRatio >= 0.7) {-->
+<!--                    if (!card.dataset.timerStarted && !ratedCards.has(cardId)) {-->
+<!--                        card.dataset.timerStarted = "true";-->
+<!--                        startRatingTimer(card);-->
+<!--                    }-->
+<!--                }-->
+<!--            });-->
+<!--        }, { threshold: [0.7] });-->
+
+<!--        document.querySelectorAll(".rating-card").forEach(card => observer.observe(card));-->
+<!--    });-->
+
+<!--    function startRatingTimer(card) {-->
+<!--        const cardId = card.dataset.id;-->
+<!--        const thermometer = card.querySelector(".thermometer");-->
+<!--        const thermometerFill = card.querySelector(".thermometer-fill");-->
+<!--        const bulbInner = card.querySelector(".thermometer-bulb-inner");-->
+<!--        const phuljhariBorder = card.querySelector(".phuljhari-border");-->
+<!--        const ratingBadge = card.querySelector(".rating-badge");-->
+<!--        const lockedOverlay = card.querySelector(".locked-overlay");-->
+<!--        const timerText = card.querySelector(".timer-text");-->
+<!--        const progressBar = card.querySelector(".progress-bar");-->
+<!--        const timerContainer = card.querySelector(".timer-container");-->
+
+<!--        if (!thermometer || !thermometerFill) return;-->
+
+<!--        let currentRating = 5;-->
+<!--        let timeRemaining = 10;-->
+<!--        let canRate = true;-->
+
+<!--        updateThermometer(currentRating);-->
+<!--        phuljhariBorder.classList.add('active');-->
+
+<!--        const timerInterval = setInterval(() => {-->
+<!--            timeRemaining&#45;&#45;;-->
+
+<!--            phuljhariBorder.style.opacity = timeRemaining / 10;-->
+<!--            timerText.textContent = timeRemaining + "s";-->
+<!--            progressBar.style.width = (timeRemaining / 10) * 100 + "%";-->
+
+<!--            if (timeRemaining <= 0) {-->
+<!--                clearInterval(timerInterval);-->
+<!--                timerText.textContent = "Time's up!";-->
+<!--                progressBar.style.width = "0%";-->
+<!--                submitRating(currentRating);-->
+<!--            }-->
+<!--        }, 1000);-->
+
+<!--        thermometer.addEventListener("click", handleThermometerClick);-->
+
+<!--        function handleThermometerClick(e) {-->
+<!--            if (!canRate || ratedCards.has(cardId)) return;-->
+
+<!--            const rect = thermometer.getBoundingClientRect();-->
+<!--            const y = e.clientY - rect.top;-->
+<!--            const usableHeight = rect.height - 40;-->
+<!--            const rating = Math.round(((usableHeight - y) / usableHeight) * 10);-->
+<!--            const finalRating = Math.max(1, Math.min(10, rating));-->
+
+<!--            updateThermometer(finalRating);-->
+<!--        }-->
+
+<!--        function updateThermometer(rating) {-->
+<!--            currentRating = rating;-->
+<!--            const percentage = (rating / 10) * 100;-->
+<!--            thermometerFill.style.height = percentage + "%";-->
+<!--            ratingBadge.textContent = rating;-->
+
+<!--            if (rating <= 3) {-->
+<!--                bulbInner.style.background = "linear-gradient(135deg, #FA8231, #F97F51)";-->
+<!--            } else if (rating <= 7) {-->
+<!--                bulbInner.style.background = "linear-gradient(135deg, #FF8C42, #FFD32A)";-->
+<!--            } else {-->
+<!--                bulbInner.style.background = "linear-gradient(135deg, #00ff88, #26de81)";-->
+<!--            }-->
+<!--        }-->
+
+<!--        function submitRating(rating) {-->
+<!--            if (ratedCards.has(cardId)) return;-->
+<!--            canRate = false;-->
+<!--            ratedCards.add(cardId);-->
+
+<!--            phuljhariBorder.style.opacity = '0';-->
+<!--            phuljhariBorder.classList.remove('active');-->
+<!--            thermometer.classList.add("disabled");-->
+<!--            thermometer.removeEventListener("click", handleThermometerClick);-->
+<!--            timerContainer.style.display = 'none';-->
+<!--            ratingBadge.textContent = rating;-->
+<!--            ratingBadge.classList.add('show');-->
+
+<!--            setTimeout(() => {-->
+<!--                lockedOverlay.classList.add('show');-->
+<!--            }, 500);-->
+
+<!--            console.log(`✅ Rating ${rating}/10 submitted for card ${cardId}`);-->
+
+<!--            const form = card.querySelector(".postRatingForm");-->
+<!--            const formData = new FormData(form);-->
+<!--            formData.append("rating", rating);-->
+
+<!--            const csrfToken = document.querySelector('meta[name="_csrf"]').getAttribute("content");-->
+<!--            const csrfHeader = document.querySelector('meta[name="_csrf_header"]').getAttribute("content");-->
+
+<!--            fetch('/saveRating', {-->
+<!--                method: 'POST',-->
+<!--                headers: {-->
+<!--                    [csrfHeader]: csrfToken-->
+<!--                },-->
+<!--                body: formData-->
+<!--            })-->
+<!--            .then(res => res.text())-->
+<!--            .then(data => console.log("✅ Rating submitted:", data))-->
+<!--            .catch(err => console.error("⚠️ Error submitting rating:", err));-->
+
+<!--            // Auto-scroll to next card-->
+<!--            setTimeout(() => {-->
+<!--                const nextCard = card.nextElementSibling;-->
+<!--                if (nextCard && nextCard.classList.contains('rating-card')) {-->
+<!--                    nextCard.scrollIntoView({-->
+<!--                        behavior: 'smooth',-->
+<!--                        block: 'center'-->
+<!--                    });-->
+<!--                }-->
+<!--            }, 800);-->
+<!--        }-->
+<!--    }-->
+<!--</script>-->
+<!--</body>-->
+<!--</html>-->
+
+<!--&lt;!&ndash;<!DOCTYPE html>&ndash;&gt;-->
+<!--&lt;!&ndash;<html lang="en" xmlns:th="http://www.thymeleaf.org">&ndash;&gt;-->
+<!--&lt;!&ndash;<head>&ndash;&gt;-->
+<!--&lt;!&ndash;    <meta charset="UTF-8">&ndash;&gt;-->
+<!--&lt;!&ndash;    <meta name="viewport" content="width=device-width, initial-scale=1.0">&ndash;&gt;-->
+<!--&lt;!&ndash;    <title>Rate Photos - HotOrNot</title>&ndash;&gt;-->
+<!--&lt;!&ndash;    <meta name="_csrf" th:content="${_csrf.token}" />&ndash;&gt;-->
+<!--&lt;!&ndash;    <meta name="_csrf_header" th:content="${_csrf.headerName}" />&ndash;&gt;-->
+<!--&lt;!&ndash;    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/css/bootstrap.min.css" rel="stylesheet">&ndash;&gt;-->
+<!--&lt;!&ndash;    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.11.1/font/bootstrap-icons.min.css" rel="stylesheet">&ndash;&gt;-->
+<!--&lt;!&ndash;    <style>&ndash;&gt;-->
+<!--&lt;!&ndash;        * {&ndash;&gt;-->
+<!--&lt;!&ndash;            margin: 0;&ndash;&gt;-->
+<!--&lt;!&ndash;            padding: 0;&ndash;&gt;-->
+<!--&lt;!&ndash;            box-sizing: border-box;&ndash;&gt;-->
+<!--&lt;!&ndash;        }&ndash;&gt;-->
+
+<!--&lt;!&ndash;        body {&ndash;&gt;-->
+<!--&lt;!&ndash;            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;&ndash;&gt;-->
+<!--&lt;!&ndash;            background: #0a0a0a;&ndash;&gt;-->
+<!--&lt;!&ndash;            color: #ffffff;&ndash;&gt;-->
+<!--&lt;!&ndash;            min-height: 100vh;&ndash;&gt;-->
+<!--&lt;!&ndash;            position: relative;&ndash;&gt;-->
+<!--&lt;!&ndash;            overflow-x: hidden;&ndash;&gt;-->
+<!--&lt;!&ndash;        }&ndash;&gt;-->
+
+<!--&lt;!&ndash;        .bg-gradient {&ndash;&gt;-->
+<!--&lt;!&ndash;            position: fixed;&ndash;&gt;-->
+<!--&lt;!&ndash;            top: 0;&ndash;&gt;-->
+<!--&lt;!&ndash;            left: 0;&ndash;&gt;-->
+<!--&lt;!&ndash;            width: 100%;&ndash;&gt;-->
+<!--&lt;!&ndash;            height: 100%;&ndash;&gt;-->
+<!--&lt;!&ndash;            z-index: -1;&ndash;&gt;-->
+<!--&lt;!&ndash;            overflow: hidden;&ndash;&gt;-->
+<!--&lt;!&ndash;        }&ndash;&gt;-->
+
+<!--&lt;!&ndash;        .bg-gradient::before,&ndash;&gt;-->
+<!--&lt;!&ndash;        .bg-gradient::after,&ndash;&gt;-->
+<!--&lt;!&ndash;        .bg-gradient span {&ndash;&gt;-->
+<!--&lt;!&ndash;            content: '';&ndash;&gt;-->
+<!--&lt;!&ndash;            position: absolute;&ndash;&gt;-->
+<!--&lt;!&ndash;            border-radius: 50%;&ndash;&gt;-->
+<!--&lt;!&ndash;            filter: blur(80px);&ndash;&gt;-->
+<!--&lt;!&ndash;        }&ndash;&gt;-->
+
+<!--&lt;!&ndash;        .bg-gradient::before {&ndash;&gt;-->
+<!--&lt;!&ndash;            width: 500px;&ndash;&gt;-->
+<!--&lt;!&ndash;            height: 500px;&ndash;&gt;-->
+<!--&lt;!&ndash;            background: rgba(255, 0, 128, 0.2);&ndash;&gt;-->
+<!--&lt;!&ndash;            animation: float1 20s ease-in-out infinite;&ndash;&gt;-->
+<!--&lt;!&ndash;        }&ndash;&gt;-->
+
+<!--&lt;!&ndash;        .bg-gradient::after {&ndash;&gt;-->
+<!--&lt;!&ndash;            width: 600px;&ndash;&gt;-->
+<!--&lt;!&ndash;            height: 600px;&ndash;&gt;-->
+<!--&lt;!&ndash;            background: rgba(0, 255, 255, 0.15);&ndash;&gt;-->
+<!--&lt;!&ndash;            animation: float2 25s ease-in-out infinite;&ndash;&gt;-->
+<!--&lt;!&ndash;        }&ndash;&gt;-->
+
+<!--&lt;!&ndash;        .bg-gradient span {&ndash;&gt;-->
+<!--&lt;!&ndash;            width: 400px;&ndash;&gt;-->
+<!--&lt;!&ndash;            height: 400px;&ndash;&gt;-->
+<!--&lt;!&ndash;            background: rgba(255, 255, 0, 0.12);&ndash;&gt;-->
+<!--&lt;!&ndash;            animation: float3 18s ease-in-out infinite;&ndash;&gt;-->
+<!--&lt;!&ndash;        }&ndash;&gt;-->
+
+<!--&lt;!&ndash;        @keyframes float1 {&ndash;&gt;-->
+<!--&lt;!&ndash;            0%, 100% { transform: translate(10vw, 20vh) scale(1); }&ndash;&gt;-->
+<!--&lt;!&ndash;            25% { transform: translate(60vw, 70vh) scale(1.2); }&ndash;&gt;-->
+<!--&lt;!&ndash;            50% { transform: translate(80vw, 30vh) scale(0.9); }&ndash;&gt;-->
+<!--&lt;!&ndash;            75% { transform: translate(30vw, 80vh) scale(1.1); }&ndash;&gt;-->
+<!--&lt;!&ndash;        }&ndash;&gt;-->
+
+<!--&lt;!&ndash;        @keyframes float2 {&ndash;&gt;-->
+<!--&lt;!&ndash;            0%, 100% { transform: translate(70vw, 60vh) scale(1); }&ndash;&gt;-->
+<!--&lt;!&ndash;            33% { transform: translate(20vw, 20vh) scale(1.3); }&ndash;&gt;-->
+<!--&lt;!&ndash;            66% { transform: translate(50vw, 80vh) scale(0.8); }&ndash;&gt;-->
+<!--&lt;!&ndash;        }&ndash;&gt;-->
+
+<!--&lt;!&ndash;        @keyframes float3 {&ndash;&gt;-->
+<!--&lt;!&ndash;            0%, 100% { transform: translate(40vw, 10vh) scale(1); }&ndash;&gt;-->
+<!--&lt;!&ndash;            30% { transform: translate(10vw, 70vh) scale(1.2); }&ndash;&gt;-->
+<!--&lt;!&ndash;            60% { transform: translate(75vw, 50vh) scale(0.9); }&ndash;&gt;-->
+<!--&lt;!&ndash;            90% { transform: translate(55vw, 15vh) scale(1.1); }&ndash;&gt;-->
+<!--&lt;!&ndash;        }&ndash;&gt;-->
+
+<!--&lt;!&ndash;        .navbar {&ndash;&gt;-->
+<!--&lt;!&ndash;            background: rgba(10, 10, 10, 0.8) !important;&ndash;&gt;-->
+<!--&lt;!&ndash;            backdrop-filter: blur(20px);&ndash;&gt;-->
+<!--&lt;!&ndash;            border-bottom: 1px solid rgba(255, 255, 255, 0.1);&ndash;&gt;-->
+<!--&lt;!&ndash;        }&ndash;&gt;-->
+
+<!--&lt;!&ndash;        .navbar-brand {&ndash;&gt;-->
+<!--&lt;!&ndash;            font-size: 1.8rem;&ndash;&gt;-->
+<!--&lt;!&ndash;            font-weight: 900;&ndash;&gt;-->
+<!--&lt;!&ndash;            letter-spacing: -1px;&ndash;&gt;-->
+<!--&lt;!&ndash;        }&ndash;&gt;-->
+
+<!--&lt;!&ndash;        .logo-hot {&ndash;&gt;-->
+<!--&lt;!&ndash;            background: linear-gradient(135deg, #ff0080, #ff8c00);&ndash;&gt;-->
+<!--&lt;!&ndash;            -webkit-background-clip: text;&ndash;&gt;-->
+<!--&lt;!&ndash;            -webkit-text-fill-color: transparent;&ndash;&gt;-->
+<!--&lt;!&ndash;            background-clip: text;&ndash;&gt;-->
+<!--&lt;!&ndash;        }&ndash;&gt;-->
+
+<!--&lt;!&ndash;        .logo-not {&ndash;&gt;-->
+<!--&lt;!&ndash;            color: #00ffff;&ndash;&gt;-->
+<!--&lt;!&ndash;        }&ndash;&gt;-->
+
+<!--&lt;!&ndash;        .nav-link {&ndash;&gt;-->
+<!--&lt;!&ndash;            color: rgba(255, 255, 255, 0.8) !important;&ndash;&gt;-->
+<!--&lt;!&ndash;            font-weight: 500;&ndash;&gt;-->
+<!--&lt;!&ndash;            transition: color 0.3s ease;&ndash;&gt;-->
+<!--&lt;!&ndash;            position: relative;&ndash;&gt;-->
+<!--&lt;!&ndash;            margin: 0 0.5rem;&ndash;&gt;-->
+<!--&lt;!&ndash;        }&ndash;&gt;-->
+
+<!--&lt;!&ndash;        .nav-link:hover {&ndash;&gt;-->
+<!--&lt;!&ndash;            color: #ff0080 !important;&ndash;&gt;-->
+<!--&lt;!&ndash;        }&ndash;&gt;-->
+
+<!--&lt;!&ndash;        .btn-neon {&ndash;&gt;-->
+<!--&lt;!&ndash;            background: linear-gradient(135deg, #ff0080, #ff8c00);&ndash;&gt;-->
+<!--&lt;!&ndash;            color: white;&ndash;&gt;-->
+<!--&lt;!&ndash;            border: none;&ndash;&gt;-->
+<!--&lt;!&ndash;            font-weight: 700;&ndash;&gt;-->
+<!--&lt;!&ndash;            text-transform: uppercase;&ndash;&gt;-->
+<!--&lt;!&ndash;            letter-spacing: 1px;&ndash;&gt;-->
+<!--&lt;!&ndash;            box-shadow: 0 0 20px rgba(255, 0, 128, 0.5);&ndash;&gt;-->
+<!--&lt;!&ndash;            transition: all 0.3s ease;&ndash;&gt;-->
+<!--&lt;!&ndash;        }&ndash;&gt;-->
+
+<!--&lt;!&ndash;        .btn-neon:hover {&ndash;&gt;-->
+<!--&lt;!&ndash;            transform: translateY(-2px);&ndash;&gt;-->
+<!--&lt;!&ndash;            box-shadow: 0 0 30px rgba(255, 0, 128, 0.8);&ndash;&gt;-->
+<!--&lt;!&ndash;            color: white;&ndash;&gt;-->
+<!--&lt;!&ndash;        }&ndash;&gt;-->
+
+<!--&lt;!&ndash;        .main-container {&ndash;&gt;-->
+<!--&lt;!&ndash;            max-width: 500px;&ndash;&gt;-->
+<!--&lt;!&ndash;            margin: 0 auto;&ndash;&gt;-->
+<!--&lt;!&ndash;            padding: 1rem;&ndash;&gt;-->
+<!--&lt;!&ndash;        }&ndash;&gt;-->
+
+<!--&lt;!&ndash;        .rating-card {&ndash;&gt;-->
+<!--&lt;!&ndash;            margin-bottom: 2rem;&ndash;&gt;-->
+<!--&lt;!&ndash;            position: relative;&ndash;&gt;-->
+<!--&lt;!&ndash;            scroll-snap-align: start;&ndash;&gt;-->
+<!--&lt;!&ndash;        }&ndash;&gt;-->
+
+<!--&lt;!&ndash;        .image-wrapper {&ndash;&gt;-->
+<!--&lt;!&ndash;            position: relative;&ndash;&gt;-->
+<!--&lt;!&ndash;            width: 100%;&ndash;&gt;-->
+<!--&lt;!&ndash;            height: 100vh;&ndash;&gt;-->
+<!--&lt;!&ndash;            max-height: 700px;&ndash;&gt;-->
+<!--&lt;!&ndash;            border-radius: 30px;&ndash;&gt;-->
+<!--&lt;!&ndash;            overflow: hidden;&ndash;&gt;-->
+<!--&lt;!&ndash;            background: linear-gradient(135deg, rgba(255, 0, 128, 0.2), rgba(0, 255, 255, 0.2));&ndash;&gt;-->
+<!--&lt;!&ndash;        }&ndash;&gt;-->
+
+<!--&lt;!&ndash;        .phuljhari-border {&ndash;&gt;-->
+<!--&lt;!&ndash;            position: absolute;&ndash;&gt;-->
+<!--&lt;!&ndash;            top: -6px;&ndash;&gt;-->
+<!--&lt;!&ndash;            left: -6px;&ndash;&gt;-->
+<!--&lt;!&ndash;            right: -6px;&ndash;&gt;-->
+<!--&lt;!&ndash;            bottom: -6px;&ndash;&gt;-->
+<!--&lt;!&ndash;            border-radius: 36px;&ndash;&gt;-->
+<!--&lt;!&ndash;            background: linear-gradient(135deg, #ff0080, #ff8c00, #ffd32a, #00ff88, #00ffff);&ndash;&gt;-->
+<!--&lt;!&ndash;            z-index: 1;&ndash;&gt;-->
+<!--&lt;!&ndash;            opacity: 0;&ndash;&gt;-->
+<!--&lt;!&ndash;            filter: blur(8px);&ndash;&gt;-->
+<!--&lt;!&ndash;            animation: sparkle 1.5s ease-in-out infinite;&ndash;&gt;-->
+<!--&lt;!&ndash;            pointer-events: none;&ndash;&gt;-->
+<!--&lt;!&ndash;        }&ndash;&gt;-->
+
+<!--&lt;!&ndash;        .phuljhari-border.active {&ndash;&gt;-->
+<!--&lt;!&ndash;            opacity: 1;&ndash;&gt;-->
+<!--&lt;!&ndash;        }&ndash;&gt;-->
+
+<!--&lt;!&ndash;        @keyframes sparkle {&ndash;&gt;-->
+<!--&lt;!&ndash;            0%, 100% { opacity: 0.8; filter: blur(8px) brightness(1); }&ndash;&gt;-->
+<!--&lt;!&ndash;            50% { opacity: 1; filter: blur(12px) brightness(1.3); }&ndash;&gt;-->
+<!--&lt;!&ndash;        }&ndash;&gt;-->
+
+<!--&lt;!&ndash;        .image-wrapper img {&ndash;&gt;-->
+<!--&lt;!&ndash;            width: 100%;&ndash;&gt;-->
+<!--&lt;!&ndash;            height: 100%;&ndash;&gt;-->
+<!--&lt;!&ndash;            object-fit: cover;&ndash;&gt;-->
+<!--&lt;!&ndash;            position: relative;&ndash;&gt;-->
+<!--&lt;!&ndash;            z-index: 2;&ndash;&gt;-->
+<!--&lt;!&ndash;            border-radius: 30px;&ndash;&gt;-->
+<!--&lt;!&ndash;        }&ndash;&gt;-->
+
+<!--&lt;!&ndash;        .image-overlay {&ndash;&gt;-->
+<!--&lt;!&ndash;            position: absolute;&ndash;&gt;-->
+<!--&lt;!&ndash;            bottom: 0;&ndash;&gt;-->
+<!--&lt;!&ndash;            left: 0;&ndash;&gt;-->
+<!--&lt;!&ndash;            right: 0;&ndash;&gt;-->
+<!--&lt;!&ndash;            padding: 30px 20px 20px;&ndash;&gt;-->
+<!--&lt;!&ndash;            background: linear-gradient(to top, rgba(0, 0, 0, 0.8), rgba(0, 0, 0, 0.4), transparent);&ndash;&gt;-->
+<!--&lt;!&ndash;            z-index: 3;&ndash;&gt;-->
+<!--&lt;!&ndash;            border-radius: 0 0 30px 30px;&ndash;&gt;-->
+<!--&lt;!&ndash;        }&ndash;&gt;-->
+
+<!--&lt;!&ndash;        .overlay-content {&ndash;&gt;-->
+<!--&lt;!&ndash;            background: rgba(255, 255, 255, 0.1);&ndash;&gt;-->
+<!--&lt;!&ndash;            backdrop-filter: blur(20px);&ndash;&gt;-->
+<!--&lt;!&ndash;            border: 1px solid rgba(255, 255, 255, 0.2);&ndash;&gt;-->
+<!--&lt;!&ndash;            border-radius: 20px;&ndash;&gt;-->
+<!--&lt;!&ndash;            padding: 20px;&ndash;&gt;-->
+<!--&lt;!&ndash;        }&ndash;&gt;-->
+
+<!--&lt;!&ndash;        .user-info {&ndash;&gt;-->
+<!--&lt;!&ndash;            display: flex;&ndash;&gt;-->
+<!--&lt;!&ndash;            align-items: center;&ndash;&gt;-->
+<!--&lt;!&ndash;            gap: 12px;&ndash;&gt;-->
+<!--&lt;!&ndash;            margin-bottom: 15px;&ndash;&gt;-->
+<!--&lt;!&ndash;        }&ndash;&gt;-->
+
+<!--&lt;!&ndash;        .avatar {&ndash;&gt;-->
+<!--&lt;!&ndash;            width: 50px;&ndash;&gt;-->
+<!--&lt;!&ndash;            height: 50px;&ndash;&gt;-->
+<!--&lt;!&ndash;            border-radius: 50%;&ndash;&gt;-->
+<!--&lt;!&ndash;            background: linear-gradient(135deg, #ff0080, #00ffff);&ndash;&gt;-->
+<!--&lt;!&ndash;            border: 3px solid rgba(255, 255, 255, 0.5);&ndash;&gt;-->
+<!--&lt;!&ndash;        }&ndash;&gt;-->
+
+<!--&lt;!&ndash;        .username {&ndash;&gt;-->
+<!--&lt;!&ndash;            font-weight: 700;&ndash;&gt;-->
+<!--&lt;!&ndash;            color: #ffffff;&ndash;&gt;-->
+<!--&lt;!&ndash;            font-size: 1.2rem;&ndash;&gt;-->
+<!--&lt;!&ndash;            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);&ndash;&gt;-->
+<!--&lt;!&ndash;        }&ndash;&gt;-->
+
+<!--&lt;!&ndash;        .caption {&ndash;&gt;-->
+<!--&lt;!&ndash;            color: rgba(255, 255, 255, 0.95);&ndash;&gt;-->
+<!--&lt;!&ndash;            font-size: 0.95rem;&ndash;&gt;-->
+<!--&lt;!&ndash;            line-height: 1.5;&ndash;&gt;-->
+<!--&lt;!&ndash;            margin-bottom: 10px;&ndash;&gt;-->
+<!--&lt;!&ndash;            text-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);&ndash;&gt;-->
+<!--&lt;!&ndash;        }&ndash;&gt;-->
+
+<!--&lt;!&ndash;        .hashtags {&ndash;&gt;-->
+<!--&lt;!&ndash;            display: flex;&ndash;&gt;-->
+<!--&lt;!&ndash;            flex-wrap: wrap;&ndash;&gt;-->
+<!--&lt;!&ndash;            gap: 8px;&ndash;&gt;-->
+<!--&lt;!&ndash;        }&ndash;&gt;-->
+
+<!--&lt;!&ndash;        .hashtag {&ndash;&gt;-->
+<!--&lt;!&ndash;            background: rgba(0, 255, 255, 0.2);&ndash;&gt;-->
+<!--&lt;!&ndash;            border: 1px solid rgba(0, 255, 255, 0.4);&ndash;&gt;-->
+<!--&lt;!&ndash;            color: #00ffff;&ndash;&gt;-->
+<!--&lt;!&ndash;            padding: 4px 12px;&ndash;&gt;-->
+<!--&lt;!&ndash;            border-radius: 15px;&ndash;&gt;-->
+<!--&lt;!&ndash;            font-size: 0.85rem;&ndash;&gt;-->
+<!--&lt;!&ndash;            font-weight: 600;&ndash;&gt;-->
+<!--&lt;!&ndash;        }&ndash;&gt;-->
+
+<!--&lt;!&ndash;        .timer-container {&ndash;&gt;-->
+<!--&lt;!&ndash;            position: absolute;&ndash;&gt;-->
+<!--&lt;!&ndash;            top: 20px;&ndash;&gt;-->
+<!--&lt;!&ndash;            left: 50%;&ndash;&gt;-->
+<!--&lt;!&ndash;            transform: translateX(-50%);&ndash;&gt;-->
+<!--&lt;!&ndash;            width: 90%;&ndash;&gt;-->
+<!--&lt;!&ndash;            max-width: 400px;&ndash;&gt;-->
+<!--&lt;!&ndash;            z-index: 10;&ndash;&gt;-->
+<!--&lt;!&ndash;        }&ndash;&gt;-->
+
+<!--&lt;!&ndash;        .progress-container {&ndash;&gt;-->
+<!--&lt;!&ndash;            width: 100%;&ndash;&gt;-->
+<!--&lt;!&ndash;            height: 12px;&ndash;&gt;-->
+<!--&lt;!&ndash;            background: rgba(0, 0, 0, 0.6);&ndash;&gt;-->
+<!--&lt;!&ndash;            backdrop-filter: blur(20px);&ndash;&gt;-->
+<!--&lt;!&ndash;            border-radius: 20px;&ndash;&gt;-->
+<!--&lt;!&ndash;            overflow: hidden;&ndash;&gt;-->
+<!--&lt;!&ndash;            position: relative;&ndash;&gt;-->
+<!--&lt;!&ndash;            border: 2px solid rgba(255, 255, 255, 0.15);&ndash;&gt;-->
+<!--&lt;!&ndash;            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4), 0 0 0 1px rgba(255, 255, 255, 0.1);&ndash;&gt;-->
+<!--&lt;!&ndash;        }&ndash;&gt;-->
+
+<!--&lt;!&ndash;        .progress-bar {&ndash;&gt;-->
+<!--&lt;!&ndash;            width: 100%;&ndash;&gt;-->
+<!--&lt;!&ndash;            height: 100%;&ndash;&gt;-->
+<!--&lt;!&ndash;            background: linear-gradient(90deg,&ndash;&gt;-->
+<!--&lt;!&ndash;                #ff0080 0%,&ndash;&gt;-->
+<!--&lt;!&ndash;                #ff4757 20%,&ndash;&gt;-->
+<!--&lt;!&ndash;                #ff8c00 40%,&ndash;&gt;-->
+<!--&lt;!&ndash;                #ffd32a 60%,&ndash;&gt;-->
+<!--&lt;!&ndash;                #00ff88 80%,&ndash;&gt;-->
+<!--&lt;!&ndash;                #00ffff 100%&ndash;&gt;-->
+<!--&lt;!&ndash;            );&ndash;&gt;-->
+<!--&lt;!&ndash;            transition: width 1s linear;&ndash;&gt;-->
+<!--&lt;!&ndash;            box-shadow: 0 0 20px rgba(255, 0, 128, 0.8), 0 0 40px rgba(0, 255, 255, 0.6);&ndash;&gt;-->
+<!--&lt;!&ndash;            position: relative;&ndash;&gt;-->
+<!--&lt;!&ndash;            border-radius: 20px;&ndash;&gt;-->
+<!--&lt;!&ndash;        }&ndash;&gt;-->
+
+<!--&lt;!&ndash;        .progress-bar::before {&ndash;&gt;-->
+<!--&lt;!&ndash;            content: '';&ndash;&gt;-->
+<!--&lt;!&ndash;            position: absolute;&ndash;&gt;-->
+<!--&lt;!&ndash;            top: 0;&ndash;&gt;-->
+<!--&lt;!&ndash;            left: 0;&ndash;&gt;-->
+<!--&lt;!&ndash;            right: 0;&ndash;&gt;-->
+<!--&lt;!&ndash;            height: 50%;&ndash;&gt;-->
+<!--&lt;!&ndash;            background: linear-gradient(to bottom, rgba(255, 255, 255, 0.3), transparent);&ndash;&gt;-->
+<!--&lt;!&ndash;            border-radius: 20px 20px 0 0;&ndash;&gt;-->
+<!--&lt;!&ndash;        }&ndash;&gt;-->
+
+<!--&lt;!&ndash;        .progress-bar::after {&ndash;&gt;-->
+<!--&lt;!&ndash;            content: '';&ndash;&gt;-->
+<!--&lt;!&ndash;            position: absolute;&ndash;&gt;-->
+<!--&lt;!&ndash;            top: 50%;&ndash;&gt;-->
+<!--&lt;!&ndash;            right: 0;&ndash;&gt;-->
+<!--&lt;!&ndash;            width: 30px;&ndash;&gt;-->
+<!--&lt;!&ndash;            height: 30px;&ndash;&gt;-->
+<!--&lt;!&ndash;            background: radial-gradient(circle, rgba(255, 255, 255, 1) 0%, rgba(255, 255, 255, 0.8) 40%, transparent 70%);&ndash;&gt;-->
+<!--&lt;!&ndash;            transform: translate(50%, -50%);&ndash;&gt;-->
+<!--&lt;!&ndash;            filter: blur(3px);&ndash;&gt;-->
+<!--&lt;!&ndash;            animation: pulse-glow 1.5s ease-in-out infinite;&ndash;&gt;-->
+<!--&lt;!&ndash;        }&ndash;&gt;-->
+
+<!--&lt;!&ndash;        @keyframes pulse-glow {&ndash;&gt;-->
+<!--&lt;!&ndash;            0%, 100% {&ndash;&gt;-->
+<!--&lt;!&ndash;                opacity: 0.6;&ndash;&gt;-->
+<!--&lt;!&ndash;                transform: translate(50%, -50%) scale(1);&ndash;&gt;-->
+<!--&lt;!&ndash;            }&ndash;&gt;-->
+<!--&lt;!&ndash;            50% {&ndash;&gt;-->
+<!--&lt;!&ndash;                opacity: 1;&ndash;&gt;-->
+<!--&lt;!&ndash;                transform: translate(50%, -50%) scale(1.3);&ndash;&gt;-->
+<!--&lt;!&ndash;            }&ndash;&gt;-->
+<!--&lt;!&ndash;        }&ndash;&gt;-->
+
+<!--&lt;!&ndash;        .thermometer-container {&ndash;&gt;-->
+<!--&lt;!&ndash;            position: absolute;&ndash;&gt;-->
+<!--&lt;!&ndash;            right: 20px;&ndash;&gt;-->
+<!--&lt;!&ndash;            top: 50%;&ndash;&gt;-->
+<!--&lt;!&ndash;            transform: translateY(-50%);&ndash;&gt;-->
+<!--&lt;!&ndash;            width: 60px;&ndash;&gt;-->
+<!--&lt;!&ndash;            height: 40%;&ndash;&gt;-->
+<!--&lt;!&ndash;            max-height: 300px;&ndash;&gt;-->
+<!--&lt;!&ndash;            z-index: 10;&ndash;&gt;-->
+<!--&lt;!&ndash;        }&ndash;&gt;-->
+
+<!--&lt;!&ndash;        .thermometer {&ndash;&gt;-->
+<!--&lt;!&ndash;            position: relative;&ndash;&gt;-->
+<!--&lt;!&ndash;            width: 100%;&ndash;&gt;-->
+<!--&lt;!&ndash;            height: 100%;&ndash;&gt;-->
+<!--&lt;!&ndash;            background: rgba(0, 255, 255, 0.1);&ndash;&gt;-->
+<!--&lt;!&ndash;            border: 2px solid #00ffff;&ndash;&gt;-->
+<!--&lt;!&ndash;            border-radius: 30px;&ndash;&gt;-->
+<!--&lt;!&ndash;            cursor: pointer;&ndash;&gt;-->
+<!--&lt;!&ndash;            overflow: hidden;&ndash;&gt;-->
+<!--&lt;!&ndash;            box-shadow: 0 0 20px rgba(0, 255, 255, 0.3);&ndash;&gt;-->
+<!--&lt;!&ndash;            transition: all 0.3s ease;&ndash;&gt;-->
+<!--&lt;!&ndash;        }&ndash;&gt;-->
+
+<!--&lt;!&ndash;        .thermometer:hover {&ndash;&gt;-->
+<!--&lt;!&ndash;            background: rgba(0, 255, 255, 0.2);&ndash;&gt;-->
+<!--&lt;!&ndash;            transform: scale(1.05);&ndash;&gt;-->
+<!--&lt;!&ndash;            box-shadow: 0 0 30px rgba(0, 255, 255, 0.5);&ndash;&gt;-->
+<!--&lt;!&ndash;        }&ndash;&gt;-->
+
+<!--&lt;!&ndash;        .thermometer.disabled {&ndash;&gt;-->
+<!--&lt;!&ndash;            pointer-events: none;&ndash;&gt;-->
+<!--&lt;!&ndash;            opacity: 0.5;&ndash;&gt;-->
+<!--&lt;!&ndash;        }&ndash;&gt;-->
+
+<!--&lt;!&ndash;        .thermometer-fill {&ndash;&gt;-->
+<!--&lt;!&ndash;            position: absolute;&ndash;&gt;-->
+<!--&lt;!&ndash;            bottom: 0;&ndash;&gt;-->
+<!--&lt;!&ndash;            left: 0;&ndash;&gt;-->
+<!--&lt;!&ndash;            right: 0;&ndash;&gt;-->
+<!--&lt;!&ndash;            background: linear-gradient(to top, #ff0080, #ff4757, #ff8c00, #ffd32a, #00ff88);&ndash;&gt;-->
+<!--&lt;!&ndash;            transition: height 0.3s ease;&ndash;&gt;-->
+<!--&lt;!&ndash;            border-radius: 0 0 30px 30px;&ndash;&gt;-->
+<!--&lt;!&ndash;        }&ndash;&gt;-->
+
+<!--&lt;!&ndash;        .thermometer-bulb {&ndash;&gt;-->
+<!--&lt;!&ndash;            position: absolute;&ndash;&gt;-->
+<!--&lt;!&ndash;            bottom: -18px;&ndash;&gt;-->
+<!--&lt;!&ndash;            left: 50%;&ndash;&gt;-->
+<!--&lt;!&ndash;            transform: translateX(-50%);&ndash;&gt;-->
+<!--&lt;!&ndash;            width: 50px;&ndash;&gt;-->
+<!--&lt;!&ndash;            height: 50px;&ndash;&gt;-->
+<!--&lt;!&ndash;            background: rgba(255, 255, 255, 0.9);&ndash;&gt;-->
+<!--&lt;!&ndash;            border-radius: 50%;&ndash;&gt;-->
+<!--&lt;!&ndash;            box-shadow: 0 0 20px rgba(255, 0, 128, 0.5);&ndash;&gt;-->
+<!--&lt;!&ndash;            display: flex;&ndash;&gt;-->
+<!--&lt;!&ndash;            align-items: center;&ndash;&gt;-->
+<!--&lt;!&ndash;            justify-content: center;&ndash;&gt;-->
+<!--&lt;!&ndash;            z-index: 2;&ndash;&gt;-->
+<!--&lt;!&ndash;        }&ndash;&gt;-->
+
+<!--&lt;!&ndash;        .thermometer-bulb-inner {&ndash;&gt;-->
+<!--&lt;!&ndash;            width: 35px;&ndash;&gt;-->
+<!--&lt;!&ndash;            height: 35px;&ndash;&gt;-->
+<!--&lt;!&ndash;            background: linear-gradient(135deg, #ff0080, #ff4757);&ndash;&gt;-->
+<!--&lt;!&ndash;            border-radius: 50%;&ndash;&gt;-->
+<!--&lt;!&ndash;            transition: background 0.3s ease;&ndash;&gt;-->
+<!--&lt;!&ndash;        }&ndash;&gt;-->
+
+<!--&lt;!&ndash;        .scale-markers {&ndash;&gt;-->
+<!--&lt;!&ndash;            position: absolute;&ndash;&gt;-->
+<!--&lt;!&ndash;            left: 8px;&ndash;&gt;-->
+<!--&lt;!&ndash;            top: 10px;&ndash;&gt;-->
+<!--&lt;!&ndash;            bottom: 40px;&ndash;&gt;-->
+<!--&lt;!&ndash;            display: flex;&ndash;&gt;-->
+<!--&lt;!&ndash;            flex-direction: column;&ndash;&gt;-->
+<!--&lt;!&ndash;            justify-content: space-between;&ndash;&gt;-->
+<!--&lt;!&ndash;            font-size: 10px;&ndash;&gt;-->
+<!--&lt;!&ndash;            color: #000;&ndash;&gt;-->
+<!--&lt;!&ndash;            font-weight: 700;&ndash;&gt;-->
+<!--&lt;!&ndash;            text-shadow: 0 0 5px rgba(0, 255, 255, 0.5);&ndash;&gt;-->
+<!--&lt;!&ndash;            z-index:300;&ndash;&gt;-->
+<!--&lt;!&ndash;        }&ndash;&gt;-->
+
+<!--&lt;!&ndash;        .rating-badge {&ndash;&gt;-->
+<!--&lt;!&ndash;            position: absolute;&ndash;&gt;-->
+<!--&lt;!&ndash;            top: 20px;&ndash;&gt;-->
+<!--&lt;!&ndash;            left: 20px;&ndash;&gt;-->
+<!--&lt;!&ndash;            background: linear-gradient(135deg, #ff0080, #ff8c00);&ndash;&gt;-->
+<!--&lt;!&ndash;            color: white;&ndash;&gt;-->
+<!--&lt;!&ndash;            padding: 10px 20px;&ndash;&gt;-->
+<!--&lt;!&ndash;            border-radius: 25px;&ndash;&gt;-->
+<!--&lt;!&ndash;            font-weight: 800;&ndash;&gt;-->
+<!--&lt;!&ndash;            font-size: 1.3rem;&ndash;&gt;-->
+<!--&lt;!&ndash;            box-shadow: 0 0 30px rgba(255, 0, 128, 0.6);&ndash;&gt;-->
+<!--&lt;!&ndash;            z-index: 10;&ndash;&gt;-->
+<!--&lt;!&ndash;            display: none;&ndash;&gt;-->
+<!--&lt;!&ndash;        }&ndash;&gt;-->
+
+<!--&lt;!&ndash;        .rating-badge.show {&ndash;&gt;-->
+<!--&lt;!&ndash;            display: block;&ndash;&gt;-->
+<!--&lt;!&ndash;            animation: popIn 0.3s ease-out;&ndash;&gt;-->
+<!--&lt;!&ndash;        }&ndash;&gt;-->
+
+<!--&lt;!&ndash;        @keyframes popIn {&ndash;&gt;-->
+<!--&lt;!&ndash;            0% { transform: scale(0); }&ndash;&gt;-->
+<!--&lt;!&ndash;            50% { transform: scale(1.2); }&ndash;&gt;-->
+<!--&lt;!&ndash;            100% { transform: scale(1); }&ndash;&gt;-->
+<!--&lt;!&ndash;        }&ndash;&gt;-->
+
+<!--&lt;!&ndash;        .locked-overlay {&ndash;&gt;-->
+<!--&lt;!&ndash;            position: absolute;&ndash;&gt;-->
+<!--&lt;!&ndash;            top: 0;&ndash;&gt;-->
+<!--&lt;!&ndash;            left: 0;&ndash;&gt;-->
+<!--&lt;!&ndash;            right: 0;&ndash;&gt;-->
+<!--&lt;!&ndash;            bottom: 0;&ndash;&gt;-->
+<!--&lt;!&ndash;            background: rgba(0, 0, 0, 0.5);&ndash;&gt;-->
+<!--&lt;!&ndash;            backdrop-filter: blur(5px);&ndash;&gt;-->
+<!--&lt;!&ndash;            border-radius: 30px;&ndash;&gt;-->
+<!--&lt;!&ndash;            z-index: 4;&ndash;&gt;-->
+<!--&lt;!&ndash;            display: none;&ndash;&gt;-->
+<!--&lt;!&ndash;            align-items: center;&ndash;&gt;-->
+<!--&lt;!&ndash;            justify-content: center;&ndash;&gt;-->
+<!--&lt;!&ndash;        }&ndash;&gt;-->
+
+<!--&lt;!&ndash;        .locked-overlay.show {&ndash;&gt;-->
+<!--&lt;!&ndash;            display: flex;&ndash;&gt;-->
+<!--&lt;!&ndash;        }&ndash;&gt;-->
+
+<!--&lt;!&ndash;        .locked-icon {&ndash;&gt;-->
+<!--&lt;!&ndash;            font-size: 4rem;&ndash;&gt;-->
+<!--&lt;!&ndash;            color: #00ffff;&ndash;&gt;-->
+<!--&lt;!&ndash;            text-shadow: 0 0 30px rgba(0, 255, 255, 0.8);&ndash;&gt;-->
+<!--&lt;!&ndash;            animation: pulse 2s ease-in-out infinite;&ndash;&gt;-->
+<!--&lt;!&ndash;        }&ndash;&gt;-->
+
+<!--&lt;!&ndash;        @media (max-width: 576px) {&ndash;&gt;-->
+<!--&lt;!&ndash;            .thermometer-container {&ndash;&gt;-->
+<!--&lt;!&ndash;                width: 50px;&ndash;&gt;-->
+<!--&lt;!&ndash;                height: 50%;&ndash;&gt;-->
+<!--&lt;!&ndash;            }&ndash;&gt;-->
+
+<!--&lt;!&ndash;            .username {&ndash;&gt;-->
+<!--&lt;!&ndash;                font-size: 1rem;&ndash;&gt;-->
+<!--&lt;!&ndash;            }&ndash;&gt;-->
+
+<!--&lt;!&ndash;            .caption {&ndash;&gt;-->
+<!--&lt;!&ndash;                font-size: 0.9rem;&ndash;&gt;-->
+<!--&lt;!&ndash;            }&ndash;&gt;-->
+<!--&lt;!&ndash;        }&ndash;&gt;-->
+
+
+<!--&lt;!&ndash;         /* for popup starts here */&ndash;&gt;-->
+
+<!--&lt;!&ndash;        .popup-overlay {&ndash;&gt;-->
+<!--&lt;!&ndash;  position: fixed;&ndash;&gt;-->
+<!--&lt;!&ndash;  top: 0; left: 0;&ndash;&gt;-->
+<!--&lt;!&ndash;  width: 100vw; height: 100vh;&ndash;&gt;-->
+<!--&lt;!&ndash;  background: rgba(0,0,0,0.6);&ndash;&gt;-->
+<!--&lt;!&ndash;  display: flex; align-items: center; justify-content: center;&ndash;&gt;-->
+<!--&lt;!&ndash;  z-index: 9999;&ndash;&gt;-->
+<!--&lt;!&ndash;  opacity: 0; visibility: hidden;&ndash;&gt;-->
+<!--&lt;!&ndash;  transition: opacity 0.4s ease;&ndash;&gt;-->
+<!--&lt;!&ndash;}&ndash;&gt;-->
+
+<!--&lt;!&ndash;.popup-overlay.show {&ndash;&gt;-->
+<!--&lt;!&ndash;  opacity: 1; visibility: visible;&ndash;&gt;-->
+<!--&lt;!&ndash;}&ndash;&gt;-->
+
+<!--&lt;!&ndash;.popup {&ndash;&gt;-->
+<!--&lt;!&ndash;  background: radial-gradient(circle, #222 0%, #000 100%);&ndash;&gt;-->
+<!--&lt;!&ndash;  padding: 30px 60px;&ndash;&gt;-->
+<!--&lt;!&ndash;  border-radius: 20px;&ndash;&gt;-->
+<!--&lt;!&ndash;  text-align: center;&ndash;&gt;-->
+<!--&lt;!&ndash;  color: white;&ndash;&gt;-->
+<!--&lt;!&ndash;  box-shadow: 0 0 40px rgba(255, 215, 0, 0.5);&ndash;&gt;-->
+<!--&lt;!&ndash;  position: relative;&ndash;&gt;-->
+<!--&lt;!&ndash;  overflow: hidden;&ndash;&gt;-->
+<!--&lt;!&ndash;  animation: popupScale 0.6s ease-out;&ndash;&gt;-->
+<!--&lt;!&ndash;}&ndash;&gt;-->
+
+<!--&lt;!&ndash;@keyframes popupScale {&ndash;&gt;-->
+<!--&lt;!&ndash;  0% { transform: scale(0.8); opacity: 0; }&ndash;&gt;-->
+<!--&lt;!&ndash;  100% { transform: scale(1); opacity: 1; }&ndash;&gt;-->
+<!--&lt;!&ndash;}&ndash;&gt;-->
+
+<!--&lt;!&ndash;.badge-wrapper {&ndash;&gt;-->
+<!--&lt;!&ndash;  position: relative;&ndash;&gt;-->
+<!--&lt;!&ndash;  margin-bottom: 10px;&ndash;&gt;-->
+<!--&lt;!&ndash;}&ndash;&gt;-->
+
+<!--&lt;!&ndash;.badge {&ndash;&gt;-->
+<!--&lt;!&ndash;  background: linear-gradient(135deg, #ffd700, #ffb700);&ndash;&gt;-->
+<!--&lt;!&ndash;  width: 100px; height: 100px;&ndash;&gt;-->
+<!--&lt;!&ndash;  border-radius: 50%;&ndash;&gt;-->
+<!--&lt;!&ndash;  display: flex; align-items: center; justify-content: center;&ndash;&gt;-->
+<!--&lt;!&ndash;  position: relative;&ndash;&gt;-->
+<!--&lt;!&ndash;  box-shadow: 0 0 30px rgba(255, 215, 0, 0.8);&ndash;&gt;-->
+<!--&lt;!&ndash;  animation: pulse 1.5s infinite;&ndash;&gt;-->
+<!--&lt;!&ndash;}&ndash;&gt;-->
+
+<!--&lt;!&ndash;.badge-text {&ndash;&gt;-->
+<!--&lt;!&ndash;  font-size: 2em;&ndash;&gt;-->
+<!--&lt;!&ndash;  font-weight: bold;&ndash;&gt;-->
+<!--&lt;!&ndash;  color: #fff;&ndash;&gt;-->
+<!--&lt;!&ndash;  text-shadow: 0 0 10px #fff;&ndash;&gt;-->
+<!--&lt;!&ndash;}&ndash;&gt;-->
+
+<!--&lt;!&ndash;.shine {&ndash;&gt;-->
+<!--&lt;!&ndash;  position: absolute;&ndash;&gt;-->
+<!--&lt;!&ndash;  top: 0; left: -75%;&ndash;&gt;-->
+<!--&lt;!&ndash;  width: 50%; height: 100%;&ndash;&gt;-->
+<!--&lt;!&ndash;  background: linear-gradient(120deg, rgba(255,255,255,0.2), rgba(255,255,255,0));&ndash;&gt;-->
+<!--&lt;!&ndash;  transform: skewX(-25deg);&ndash;&gt;-->
+<!--&lt;!&ndash;  animation: shine 2s infinite;&ndash;&gt;-->
+<!--&lt;!&ndash;}&ndash;&gt;-->
+
+<!--&lt;!&ndash;@keyframes shine {&ndash;&gt;-->
+<!--&lt;!&ndash;  0% { left: -75%; }&ndash;&gt;-->
+<!--&lt;!&ndash;  100% { left: 125%; }&ndash;&gt;-->
+<!--&lt;!&ndash;}&ndash;&gt;-->
+
+<!--&lt;!&ndash;.points-earned {&ndash;&gt;-->
+<!--&lt;!&ndash;  font-size: 1.4em;&ndash;&gt;-->
+<!--&lt;!&ndash;  margin-top: 10px;&ndash;&gt;-->
+<!--&lt;!&ndash;  color: #ffd700;&ndash;&gt;-->
+<!--&lt;!&ndash;  font-weight: bold;&ndash;&gt;-->
+<!--&lt;!&ndash;}&ndash;&gt;-->
+
+<!--&lt;!&ndash;@keyframes pulse {&ndash;&gt;-->
+<!--&lt;!&ndash;  0%, 100% { transform: scale(1); }&ndash;&gt;-->
+<!--&lt;!&ndash;  50% { transform: scale(1.1); }&ndash;&gt;-->
+<!--&lt;!&ndash;}&ndash;&gt;-->
+
+<!--&lt;!&ndash;.close-btn {&ndash;&gt;-->
+<!--&lt;!&ndash;  position: absolute;&ndash;&gt;-->
+<!--&lt;!&ndash;  top: 12px;&ndash;&gt;-->
+<!--&lt;!&ndash;  right: 18px;&ndash;&gt;-->
+<!--&lt;!&ndash;  font-size: 28px;&ndash;&gt;-->
+<!--&lt;!&ndash;  color: #666;&ndash;&gt;-->
+<!--&lt;!&ndash;  background: none;&ndash;&gt;-->
+<!--&lt;!&ndash;  border: none;&ndash;&gt;-->
+<!--&lt;!&ndash;  cursor: pointer;&ndash;&gt;-->
+<!--&lt;!&ndash;  transition: all 0.2s ease;&ndash;&gt;-->
+<!--&lt;!&ndash;  z-index: 1001;&ndash;&gt;-->
+<!--&lt;!&ndash;}&ndash;&gt;-->
+
+<!--&lt;!&ndash;.close-btn:hover {&ndash;&gt;-->
+<!--&lt;!&ndash;  color: #000;&ndash;&gt;-->
+<!--&lt;!&ndash;  transform: rotate(90deg);&ndash;&gt;-->
+<!--&lt;!&ndash;}&ndash;&gt;-->
+
+<!--&lt;!&ndash;    </style>&ndash;&gt;-->
+<!--&lt;!&ndash;</head>&ndash;&gt;-->
+<!--&lt;!&ndash;<body>&ndash;&gt;-->
+<!--&lt;!&ndash;<div class="bg-gradient">&ndash;&gt;-->
+<!--&lt;!&ndash;    <span></span>&ndash;&gt;-->
+<!--&lt;!&ndash;</div>&ndash;&gt;-->
+
+<!--&lt;!&ndash;<nav class="navbar navbar-expand-lg navbar-dark sticky-top">&ndash;&gt;-->
+<!--&lt;!&ndash;    <div class="container-fluid px-4">&ndash;&gt;-->
+<!--&lt;!&ndash;        <a class="navbar-brand" href="#">&ndash;&gt;-->
+<!--&lt;!&ndash;            <span class="logo-hot">Hot</span><span class="logo-not">Or</span><span class="logo-hot">Not</span>&ndash;&gt;-->
+<!--&lt;!&ndash;        </a>&ndash;&gt;-->
+<!--&lt;!&ndash;        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">&ndash;&gt;-->
+<!--&lt;!&ndash;            <span class="navbar-toggler-icon"></span>&ndash;&gt;-->
+<!--&lt;!&ndash;        </button>&ndash;&gt;-->
+<!--&lt;!&ndash;        <div class="collapse navbar-collapse" id="navbarNav">&ndash;&gt;-->
+<!--&lt;!&ndash;            <ul class="navbar-nav ms-auto align-items-center">&ndash;&gt;-->
+<!--&lt;!&ndash;                <li class="nav-item">&ndash;&gt;-->
+<!--&lt;!&ndash;                    <a class="nav-link" href="#">Discover</a>&ndash;&gt;-->
+<!--&lt;!&ndash;                </li>&ndash;&gt;-->
+<!--&lt;!&ndash;                <li class="nav-item">&ndash;&gt;-->
+<!--&lt;!&ndash;                    <a class="nav-link active" href="#">Rate</a>&ndash;&gt;-->
+<!--&lt;!&ndash;                </li>&ndash;&gt;-->
+<!--&lt;!&ndash;                <li class="nav-item">&ndash;&gt;-->
+<!--&lt;!&ndash;                    <a class="nav-link" href="/user/dashboard">My Profile</a>&ndash;&gt;-->
+<!--&lt;!&ndash;                </li>&ndash;&gt;-->
+<!--&lt;!&ndash;                <li class="nav-item">&ndash;&gt;-->
+<!--&lt;!&ndash;                    <a class="nav-link" href="/user/add-new-post">Add new Post</a>&ndash;&gt;-->
+<!--&lt;!&ndash;                </li>&ndash;&gt;-->
+<!--&lt;!&ndash;                <li class="nav-item">&ndash;&gt;-->
+<!--&lt;!&ndash;                    <a class="nav-link" href="/logout">Logout</a>&ndash;&gt;-->
+<!--&lt;!&ndash;                </li>&ndash;&gt;-->
+<!--&lt;!&ndash;                <li class="nav-item ms-3">&ndash;&gt;-->
+<!--&lt;!&ndash;                    <button class="btn btn-neon btn-sm rounded-pill px-4">Join Now</button>&ndash;&gt;-->
+<!--&lt;!&ndash;                </li>&ndash;&gt;-->
+<!--&lt;!&ndash;            </ul>&ndash;&gt;-->
+<!--&lt;!&ndash;        </div>&ndash;&gt;-->
+<!--&lt;!&ndash;    </div>&ndash;&gt;-->
+<!--&lt;!&ndash;</nav>&ndash;&gt;-->
+
+<!--&lt;!&ndash;<div class="main-container">&ndash;&gt;-->
+<!--&lt;!&ndash;    <div th:each="post : ${posts}" class="rating-card" th:attr="data-id=${post.postId}">&ndash;&gt;-->
+<!--&lt;!&ndash;        <div class="image-wrapper">&ndash;&gt;-->
+<!--&lt;!&ndash;            <div class="phuljhari-border"></div>&ndash;&gt;-->
+<!--&lt;!&ndash;            <img th:src="@{/userphoto/{id}(id=${post.postId})}" alt="Profile">&ndash;&gt;-->
+
+<!--&lt;!&ndash;            &lt;!&ndash; Timer Section &ndash;&gt;&ndash;&gt;-->
+<!--&lt;!&ndash;            <div class="timer-container">&ndash;&gt;-->
+<!--&lt;!&ndash;                <div class="timer-text">10s</div>&ndash;&gt;-->
+<!--&lt;!&ndash;                <div class="progress-container">&ndash;&gt;-->
+<!--&lt;!&ndash;                    <div class="progress-bar"></div>&ndash;&gt;-->
+<!--&lt;!&ndash;                </div>&ndash;&gt;-->
+<!--&lt;!&ndash;            </div>&ndash;&gt;-->
+
+<!--&lt;!&ndash;            <div class="rating-badge">5</div>&ndash;&gt;-->
+<!--&lt;!&ndash;            <div class="locked-overlay">&ndash;&gt;-->
+<!--&lt;!&ndash;                <div class="locked-icon">🔒</div>&ndash;&gt;-->
+<!--&lt;!&ndash;            </div>&ndash;&gt;-->
+
+<!--&lt;!&ndash;            <div class="thermometer-container">&ndash;&gt;-->
+<!--&lt;!&ndash;                <div class="thermometer">&ndash;&gt;-->
+<!--&lt;!&ndash;                    <div class="scale-markers">&ndash;&gt;-->
+<!--&lt;!&ndash;                        <div>10</div>&ndash;&gt;-->
+<!--&lt;!&ndash;                        <div>8</div>&ndash;&gt;-->
+<!--&lt;!&ndash;                        <div>6</div>&ndash;&gt;-->
+<!--&lt;!&ndash;                        <div>4</div>&ndash;&gt;-->
+<!--&lt;!&ndash;                        <div>2</div>&ndash;&gt;-->
+<!--&lt;!&ndash;                    </div>&ndash;&gt;-->
+<!--&lt;!&ndash;                    <div class="thermometer-fill"></div>&ndash;&gt;-->
+<!--&lt;!&ndash;                    <div class="thermometer-bulb">&ndash;&gt;-->
+<!--&lt;!&ndash;                        <div class="thermometer-bulb-inner"></div>&ndash;&gt;-->
+<!--&lt;!&ndash;                    </div>&ndash;&gt;-->
+<!--&lt;!&ndash;                </div>&ndash;&gt;-->
+<!--&lt;!&ndash;            </div>&ndash;&gt;-->
+
+<!--&lt;!&ndash;            <form class="postRatingForm">&ndash;&gt;-->
+<!--&lt;!&ndash;                <input type="hidden" id="userFrom" name="userFrom" th:value="${user_master.userId}">&ndash;&gt;-->
+<!--&lt;!&ndash;                <input type="hidden" id="userTo" name="userTo" th:value="${post.user.userId}">&ndash;&gt;-->
+<!--&lt;!&ndash;                <input type="hidden" name="postId" th:value="${post.postId}">&ndash;&gt;-->
+<!--&lt;!&ndash;            </form>&ndash;&gt;-->
+
+<!--&lt;!&ndash;            <div class="image-overlay">&ndash;&gt;-->
+<!--&lt;!&ndash;                <div class="overlay-content">&ndash;&gt;-->
+<!--&lt;!&ndash;                    <div class="user-info">&ndash;&gt;-->
+<!--&lt;!&ndash;                        <div class="avatar"></div>&ndash;&gt;-->
+<!--&lt;!&ndash;                        <div class="username" th:text="${post.user.username}">sarah_jones</div>&ndash;&gt;-->
+<!--&lt;!&ndash;                    </div>&ndash;&gt;-->
+<!--&lt;!&ndash;                    <div class="caption" th:text="${post.caption}">Living my best life ✨ Coffee lover and adventure seeker 🌍</div>&ndash;&gt;-->
+<!--&lt;!&ndash;                    <div class="hashtags">&ndash;&gt;-->
+<!--&lt;!&ndash;                        <span class="hashtag" th:text="${post.hashtag}">#lifestyle</span>&ndash;&gt;-->
+<!--&lt;!&ndash;                    </div>&ndash;&gt;-->
+<!--&lt;!&ndash;                </div>&ndash;&gt;-->
+<!--&lt;!&ndash;            </div>&ndash;&gt;-->
+<!--&lt;!&ndash;        </div>&ndash;&gt;-->
+<!--&lt;!&ndash;    </div>&ndash;&gt;-->
+<!--&lt;!&ndash;</div>&ndash;&gt;-->
+
+<!--&lt;!&ndash;<div class="popup-overlay" id="popupOverlay">&ndash;&gt;-->
+<!--&lt;!&ndash;    <div class="popup">&ndash;&gt;-->
+<!--&lt;!&ndash;        <button class="close-btn" onclick="closePopup()">&times;</button>&ndash;&gt;-->
+
+<!--&lt;!&ndash;        <div class="badge-wrapper">&ndash;&gt;-->
+<!--&lt;!&ndash;            <div class="badge">&ndash;&gt;-->
+<!--&lt;!&ndash;                <div class="shine"></div>&ndash;&gt;-->
+<!--&lt;!&ndash;                <div class="badge-text">+<span id="badgePoints">50</span></div>&ndash;&gt;-->
+<!--&lt;!&ndash;            </div>&ndash;&gt;-->
+<!--&lt;!&ndash;        </div>&ndash;&gt;-->
+
+<!--&lt;!&ndash;        <div class="points-earned" style="font-size:13px;"><span id="pointsText"></span></div>&ndash;&gt;-->
+<!--&lt;!&ndash;    </div>&ndash;&gt;-->
+<!--&lt;!&ndash;</div>&ndash;&gt;-->
+<!--&lt;!&ndash;&lt;!&ndash;<div th:if="${popupPoints}">Hani</div>&ndash;&gt;&ndash;&gt;-->
+<!--&lt;!&ndash;<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/js/bootstrap.bundle.min.js"></script>&ndash;&gt;-->
+
+
+<!--&lt;!&ndash;<script th:inline="javascript">&ndash;&gt;-->
+<!--&lt;!&ndash;    const popupPoints = /*[[${popupPoints}]]*/ null;&ndash;&gt;-->
+
+<!--&lt;!&ndash;    function showPopup(points) {&ndash;&gt;-->
+<!--&lt;!&ndash;        document.getElementById('badgePoints').textContent = '50';&ndash;&gt;-->
+<!--&lt;!&ndash;        document.getElementById('pointsText').textContent = points;&ndash;&gt;-->
+<!--&lt;!&ndash;        document.getElementById('pointsText').style.fontSize= '13px';&ndash;&gt;-->
+
+<!--&lt;!&ndash;        const overlay = document.getElementById('popupOverlay');&ndash;&gt;-->
+<!--&lt;!&ndash;        overlay.classList.add('show');&ndash;&gt;-->
+
+<!--&lt;!&ndash;        setTimeout(() => overlay.classList.remove('show'), 3000);&ndash;&gt;-->
+<!--&lt;!&ndash;    }&ndash;&gt;-->
+
+<!--&lt;!&ndash;    if (popupPoints) {&ndash;&gt;-->
+<!--&lt;!&ndash;        showPopup(popupPoints);   // no if-else required&ndash;&gt;-->
+<!--&lt;!&ndash;    }&ndash;&gt;-->
+<!--&lt;!&ndash;</script>&ndash;&gt;-->
+
+<!--&lt;!&ndash;<script th:inline="javascript">&ndash;&gt;-->
+<!--&lt;!&ndash;    const referralMessage = /*[[${referralMessage}]]*/ null;&ndash;&gt;-->
+<!--&lt;!&ndash;    const referralPoint = /*[[${referralPoint}]]*/ null;&ndash;&gt;-->
+
+<!--&lt;!&ndash;    function showPopup(message,point) {&ndash;&gt;-->
+<!--&lt;!&ndash;        document.getElementById('badgePoints').textContent = point;&ndash;&gt;-->
+<!--&lt;!&ndash;        document.getElementById('pointsText').textContent = message;&ndash;&gt;-->
+<!--&lt;!&ndash;        document.getElementById('pointsText').style.fontSize= '13px';&ndash;&gt;-->
+
+<!--&lt;!&ndash;        const overlay = document.getElementById('popupOverlay');&ndash;&gt;-->
+<!--&lt;!&ndash;        overlay.classList.add('show');&ndash;&gt;-->
+
+<!--&lt;!&ndash;        setTimeout(() => overlay.classList.remove('show'), 3000);&ndash;&gt;-->
+<!--&lt;!&ndash;    }&ndash;&gt;-->
+
+<!--&lt;!&ndash;    if (referralMessage) {&ndash;&gt;-->
+<!--&lt;!&ndash;        showPopup(referralMessage,referralPoint);&ndash;&gt;-->
+<!--&lt;!&ndash;    }&ndash;&gt;-->
+<!--&lt;!&ndash;</script>&ndash;&gt;-->
+
+
+<!--&lt;!&ndash;&lt;!&ndash; ✅ JavaScript &ndash;&gt;&ndash;&gt;-->
+<!--&lt;!&ndash;<script>&ndash;&gt;-->
+<!--&lt;!&ndash;    const ratedCards = new Set();&ndash;&gt;-->
+
+<!--&lt;!&ndash;    window.addEventListener("load", () => {&ndash;&gt;-->
+<!--&lt;!&ndash;        const observer = new IntersectionObserver((entries) => {&ndash;&gt;-->
+<!--&lt;!&ndash;            entries.forEach(entry => {&ndash;&gt;-->
+<!--&lt;!&ndash;                const card = entry.target;&ndash;&gt;-->
+<!--&lt;!&ndash;                const cardId = card.dataset.id;&ndash;&gt;-->
+
+<!--&lt;!&ndash;                if (entry.isIntersecting && entry.intersectionRatio >= 0.7) {&ndash;&gt;-->
+<!--&lt;!&ndash;                    if (!card.dataset.timerStarted && !ratedCards.has(cardId)) {&ndash;&gt;-->
+<!--&lt;!&ndash;                        card.dataset.timerStarted = "true";&ndash;&gt;-->
+<!--&lt;!&ndash;                        startRatingTimer(card);&ndash;&gt;-->
+<!--&lt;!&ndash;                    }&ndash;&gt;-->
+<!--&lt;!&ndash;                }&ndash;&gt;-->
+<!--&lt;!&ndash;            });&ndash;&gt;-->
+<!--&lt;!&ndash;        }, { threshold: [0.7] });&ndash;&gt;-->
+
+<!--&lt;!&ndash;        document.querySelectorAll(".rating-card").forEach(card => observer.observe(card));&ndash;&gt;-->
+<!--&lt;!&ndash;    });&ndash;&gt;-->
+
+<!--&lt;!&ndash;    function startRatingTimer(card) {&ndash;&gt;-->
+<!--&lt;!&ndash;        const cardId = card.dataset.id;&ndash;&gt;-->
+<!--&lt;!&ndash;        const thermometer = card.querySelector(".thermometer");&ndash;&gt;-->
+<!--&lt;!&ndash;        const thermometerFill = card.querySelector(".thermometer-fill");&ndash;&gt;-->
+<!--&lt;!&ndash;        const bulbInner = card.querySelector(".thermometer-bulb-inner");&ndash;&gt;-->
+<!--&lt;!&ndash;        const phuljhariBorder = card.querySelector(".phuljhari-border");&ndash;&gt;-->
+<!--&lt;!&ndash;        const ratingBadge = card.querySelector(".rating-badge");&ndash;&gt;-->
+<!--&lt;!&ndash;        const lockedOverlay = card.querySelector(".locked-overlay");&ndash;&gt;-->
+<!--&lt;!&ndash;        const timerText = card.querySelector(".timer-text");&ndash;&gt;-->
+<!--&lt;!&ndash;        const progressBar = card.querySelector(".progress-bar");&ndash;&gt;-->
+<!--&lt;!&ndash;        const timerContainer = card.querySelector(".timer-container");&ndash;&gt;-->
+
+<!--&lt;!&ndash;        if (!thermometer || !thermometerFill) return;&ndash;&gt;-->
+
+<!--&lt;!&ndash;        let currentRating = 5;&ndash;&gt;-->
+<!--&lt;!&ndash;        let timeRemaining = 10;&ndash;&gt;-->
+<!--&lt;!&ndash;        let canRate = true;&ndash;&gt;-->
+
+<!--&lt;!&ndash;        updateThermometer(currentRating);&ndash;&gt;-->
+<!--&lt;!&ndash;        phuljhariBorder.classList.add('active');&ndash;&gt;-->
+
+<!--&lt;!&ndash;        const timerInterval = setInterval(() => {&ndash;&gt;-->
+<!--&lt;!&ndash;            timeRemaining&#45;&#45;;&ndash;&gt;-->
+
+<!--&lt;!&ndash;            // Update opacity + timer text&ndash;&gt;-->
+<!--&lt;!&ndash;            phuljhariBorder.style.opacity = timeRemaining / 10;&ndash;&gt;-->
+<!--&lt;!&ndash;            timerText.textContent = timeRemaining + "s";&ndash;&gt;-->
+
+<!--&lt;!&ndash;            // YouTube-style progress shrink&ndash;&gt;-->
+<!--&lt;!&ndash;            progressBar.style.width = (timeRemaining / 10) * 100 + "%";&ndash;&gt;-->
+
+<!--&lt;!&ndash;            if (timeRemaining <= 0) {&ndash;&gt;-->
+<!--&lt;!&ndash;                clearInterval(timerInterval);&ndash;&gt;-->
+<!--&lt;!&ndash;                timerText.textContent = "Time's up!";&ndash;&gt;-->
+<!--&lt;!&ndash;                progressBar.style.width = "0%";&ndash;&gt;-->
+<!--&lt;!&ndash;                submitRating(currentRating);&ndash;&gt;-->
+<!--&lt;!&ndash;            }&ndash;&gt;-->
+<!--&lt;!&ndash;        }, 1000);&ndash;&gt;-->
+
+<!--&lt;!&ndash;        thermometer.addEventListener("click", handleThermometerClick);&ndash;&gt;-->
+
+<!--&lt;!&ndash;        function handleThermometerClick(e) {&ndash;&gt;-->
+<!--&lt;!&ndash;            if (!canRate || ratedCards.has(cardId)) return;&ndash;&gt;-->
+
+<!--&lt;!&ndash;            const rect = thermometer.getBoundingClientRect();&ndash;&gt;-->
+<!--&lt;!&ndash;            const y = e.clientY - rect.top;&ndash;&gt;-->
+<!--&lt;!&ndash;            const usableHeight = rect.height - 40;&ndash;&gt;-->
+<!--&lt;!&ndash;            const rating = Math.round(((usableHeight - y) / usableHeight) * 10);&ndash;&gt;-->
+<!--&lt;!&ndash;            const finalRating = Math.max(1, Math.min(10, rating));&ndash;&gt;-->
+
+<!--&lt;!&ndash;            updateThermometer(finalRating);&ndash;&gt;-->
+<!--&lt;!&ndash;        }&ndash;&gt;-->
+
+<!--&lt;!&ndash;        function updateThermometer(rating) {&ndash;&gt;-->
+<!--&lt;!&ndash;            currentRating = rating;&ndash;&gt;-->
+<!--&lt;!&ndash;            const percentage = (rating / 10) * 100;&ndash;&gt;-->
+<!--&lt;!&ndash;            thermometerFill.style.height = percentage + "%";&ndash;&gt;-->
+<!--&lt;!&ndash;            ratingBadge.textContent = rating;&ndash;&gt;-->
+
+<!--&lt;!&ndash;            if (rating <= 3) {&ndash;&gt;-->
+<!--&lt;!&ndash;                bulbInner.style.background = "linear-gradient(135deg, #ff0080, #ff4757)";&ndash;&gt;-->
+<!--&lt;!&ndash;            } else if (rating <= 7) {&ndash;&gt;-->
+<!--&lt;!&ndash;                bulbInner.style.background = "linear-gradient(135deg, #ff8c00, #ffd32a)";&ndash;&gt;-->
+<!--&lt;!&ndash;            } else {&ndash;&gt;-->
+<!--&lt;!&ndash;                bulbInner.style.background = "linear-gradient(135deg, #00ff88, #26de81)";&ndash;&gt;-->
+<!--&lt;!&ndash;            }&ndash;&gt;-->
+<!--&lt;!&ndash;        }&ndash;&gt;-->
+
+<!--&lt;!&ndash;        function submitRating(rating) {&ndash;&gt;-->
+<!--&lt;!&ndash;            if (ratedCards.has(cardId)) return;&ndash;&gt;-->
+<!--&lt;!&ndash;            canRate = false;&ndash;&gt;-->
+<!--&lt;!&ndash;            ratedCards.add(cardId);&ndash;&gt;-->
+
+<!--&lt;!&ndash;            phuljhariBorder.style.opacity = '0';&ndash;&gt;-->
+<!--&lt;!&ndash;            phuljhariBorder.classList.remove('active');&ndash;&gt;-->
+<!--&lt;!&ndash;            thermometer.classList.add("disabled");&ndash;&gt;-->
+<!--&lt;!&ndash;            thermometer.removeEventListener("click", handleThermometerClick);&ndash;&gt;-->
+<!--&lt;!&ndash;            timerContainer.style.display = 'none';&ndash;&gt;-->
+<!--&lt;!&ndash;            ratingBadge.textContent = rating;&ndash;&gt;-->
+<!--&lt;!&ndash;            ratingBadge.classList.add('show');&ndash;&gt;-->
+
+<!--&lt;!&ndash;            setTimeout(() => {&ndash;&gt;-->
+<!--&lt;!&ndash;                lockedOverlay.classList.add('show');&ndash;&gt;-->
+<!--&lt;!&ndash;            }, 500);&ndash;&gt;-->
+
+<!--&lt;!&ndash;            console.log(`✅ Rating ${rating}/10 submitted for card ${cardId}`);&ndash;&gt;-->
+
+<!--&lt;!&ndash;            const form = card.querySelector(".postRatingForm");&ndash;&gt;-->
+<!--&lt;!&ndash;            const formData = new FormData(form);&ndash;&gt;-->
+<!--&lt;!&ndash;            formData.append("rating", rating);&ndash;&gt;-->
+
+<!--&lt;!&ndash;              const csrfToken = document.querySelector('meta[name="_csrf"]').getAttribute("content");&ndash;&gt;-->
+<!--&lt;!&ndash;     const csrfHeader = document.querySelector('meta[name="_csrf_header"]').getAttribute("content");&ndash;&gt;-->
+
+
+<!--&lt;!&ndash;            fetch('/saveRating', {&ndash;&gt;-->
+<!--&lt;!&ndash;                method: 'POST',&ndash;&gt;-->
+<!--&lt;!&ndash;                headers: {&ndash;&gt;-->
+<!--&lt;!&ndash;              [csrfHeader]: csrfToken&ndash;&gt;-->
+<!--&lt;!&ndash;          },&ndash;&gt;-->
+<!--&lt;!&ndash;                body: formData&ndash;&gt;-->
+<!--&lt;!&ndash;            })&ndash;&gt;-->
+<!--&lt;!&ndash;            .then(res => res.text())&ndash;&gt;-->
+<!--&lt;!&ndash;            .then(data => console.log("✅ Rating submitted:", data))&ndash;&gt;-->
+<!--&lt;!&ndash;            .catch(err => console.error("⚠️ Error submitting rating:", err));&ndash;&gt;-->
+
+<!--&lt;!&ndash;            // Auto-scroll to next card&ndash;&gt;-->
+<!--&lt;!&ndash;            setTimeout(() => {&ndash;&gt;-->
+<!--&lt;!&ndash;                const nextCard = card.nextElementSibling;&ndash;&gt;-->
+<!--&lt;!&ndash;                if (nextCard && nextCard.classList.contains('rating-card')) {&ndash;&gt;-->
+<!--&lt;!&ndash;                    nextCard.scrollIntoView({&ndash;&gt;-->
+<!--&lt;!&ndash;                        behavior: 'smooth',&ndash;&gt;-->
+<!--&lt;!&ndash;                        block: 'center'&ndash;&gt;-->
+<!--&lt;!&ndash;                    });&ndash;&gt;-->
+<!--&lt;!&ndash;                }&ndash;&gt;-->
+<!--&lt;!&ndash;            }, 800);&ndash;&gt;-->
+<!--&lt;!&ndash;        }&ndash;&gt;-->
+<!--&lt;!&ndash;    }&ndash;&gt;-->
+<!--&lt;!&ndash;</script>&ndash;&gt;-->
+<!--&lt;!&ndash;</body>&ndash;&gt;-->
+<!--&lt;!&ndash;</html>&ndash;&gt;-->

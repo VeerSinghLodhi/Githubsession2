@@ -9,7 +9,7 @@
     <meta name="_csrf_header" th:content="${_csrf.headerName}" />
     <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.11.1/font/bootstrap-icons.min.css"
-        rel="stylesheet">
+          rel="stylesheet">
     <style>
         * {
             margin: 0;
@@ -964,264 +964,264 @@
 </head>
 
 <body>
-    <div class="bg-gradient">
-        <span></span>
+<div class="bg-gradient">
+    <span></span>
+</div>
+
+<!-- Mobile Logo (top-left corner) -->
+<a href="#" class="mobile-logo">
+    <span class="logo-hot">Hot</span><span class="logo-not">Or</span><span class="logo-hot">Not</span>
+</a>
+
+<!-- Desktop Navigation -->
+<nav class="navbar-desktop navbar navbar-expand-lg navbar-light sticky-top">
+    <div class="container-fluid px-4">
+        <a class="navbar-brand" href="#">
+            <span class="logo-hot">Hot</span><span class="logo-not">Or</span><span class="logo-hot">Not</span>
+        </a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav ms-auto align-items-center">
+                <li class="nav-item">
+                    <a class="nav-link" href="/user/dashboard">Dashboard</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/user/rating">Rate</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link active" href="/user/add-new-post">Add Post</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/user/games">Games</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link " href="/user/mutual-crush">Mutual Crush</a>
+                </li>
+                <li class="nav-item ms-3">
+                    <a href="/logout" class="btn btn-neon btn-sm rounded-pill px-4">Logout</a>
+                </li>
+            </ul>
+        </div>
     </div>
+</nav>
 
-    <!-- Mobile Logo (top-left corner) -->
-    <a href="#" class="mobile-logo">
-        <span class="logo-hot">Hot</span><span class="logo-not">Or</span><span class="logo-hot">Not</span>
+<!-- Mobile Bottom Navigation -->
+<nav class="bottom-nav">
+    <a href="/user/rating" class="bottom-nav-item">
+        <i class="bi bi-fire"></i>
+        <span>Rate</span>
     </a>
+    <a href="/user/games" class="bottom-nav-item">
+        <i class="bi bi-controller"></i>
+        <span>Games</span>
+    </a>
+    <a href="/user/add-new-post" class="bottom-nav-item active">
+        <i class="bi bi-plus-circle-fill"></i>
+        <span>Add Post</span>
+    </a>
+    <a href="/user/mutual-crush" class="bottom-nav-item ">
+        <i class="bi bi-heart-fill"></i>
+        <span>Crush</span>
+    </a>
+    <a href="/user/dashboard" class="bottom-nav-item">
+        <i class="bi bi-house-door-fill"></i>
+        <span>Dashboard</span>
+    </a>
+</nav>
 
-    <!-- Desktop Navigation -->
-    <nav class="navbar-desktop navbar navbar-expand-lg navbar-light sticky-top">
-        <div class="container-fluid px-4">
-            <a class="navbar-brand" href="#">
-                <span class="logo-hot">Hot</span><span class="logo-not">Or</span><span class="logo-hot">Not</span>
-            </a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav ms-auto align-items-center">
-                    <li class="nav-item">
-                        <a class="nav-link" href="/user/dashboard">Dashboard</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="/user/rating">Rate</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link active" href="/user/add-new-post">Add Post</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="/user/games">Games</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link " href="/user/mutual-crush">Mutual Crush</a>
-                    </li>
-                    <li class="nav-item ms-3">
-                        <a href="/logout" class="btn btn-neon btn-sm rounded-pill px-4">Logout</a>
-                    </li>
-                </ul>
-            </div>
+<div class="main-container">
+    <div class="container text-center mb-4 mt-5">
+        <div class="input-group" style="max-width: 400px; margin: auto;">
+            <input id="searchInput" type="text" class="form-control rounded-start-pill px-3 py-2"
+                   placeholder="Search Karna Padega..">
+            <button class="btn btn-neon rounded-end-pill px-4" onclick="searchUser()">Search</button>
         </div>
-    </nav>
-
-    <!-- Mobile Bottom Navigation -->
-    <nav class="bottom-nav">
-        <a href="/user/rating" class="bottom-nav-item">
-            <i class="bi bi-fire"></i>
-            <span>Rate</span>
-        </a>
-        <a href="/user/games" class="bottom-nav-item">
-            <i class="bi bi-controller"></i>
-            <span>Games</span>
-        </a>
-        <a href="/user/add-new-post" class="bottom-nav-item active">
-            <i class="bi bi-plus-circle-fill"></i>
-            <span>Add Post</span>
-        </a>
-        <a href="/user/mutual-crush" class="bottom-nav-item ">
-            <i class="bi bi-heart-fill"></i>
-            <span>Crush</span>
-        </a>
-        <a href="/user/dashboard" class="bottom-nav-item">
-            <i class="bi bi-house-door-fill"></i>
-            <span>Dashboard</span>
-        </a>
-    </nav>
-
-    <div class="main-container">
-        <div class="container text-center mb-4 mt-5">
-            <div class="input-group" style="max-width: 400px; margin: auto;">
-                <input id="searchInput" type="text" class="form-control rounded-start-pill px-3 py-2"
-                    placeholder="Search Karna Padega..">
-                <button class="btn btn-neon rounded-end-pill px-4" onclick="searchUser()">Search</button>
-            </div>
-        </div>
-        <button onclick="searchUser1()" th:value="${whereami}" id="whereami"><i class="bi bi-arrow-down">Me</i></button>
+    </div>
+    <button onclick="searchUser1()" th:value="${whereami}" id="whereami"><i class="bi bi-arrow-down">Me</i></button>
 
 
-        <div class="leaderboard-hero">
+    <div class="leaderboard-hero">
             <span class="leaderboard-badge">
                 🏆 Top Rated Members
             </span>
-            <h1 class="leaderboard-title">
-                Our <span class="gradient-text">Top Stars</span>
-            </h1>
-            <p class="leaderboard-subtitle">
-                Discover the most popular and highly rated members in our community
-            </p>
-        </div>
+        <h1 class="leaderboard-title">
+            Our <span class="gradient-text">Top Stars</span>
+        </h1>
+        <p class="leaderboard-subtitle">
+            Discover the most popular and highly rated members in our community
+        </p>
+    </div>
 
-        <div class="top-winners-section">
-            <div class="winners-wrapper">
-                <div th:each="user, iterStat : ${users}" th:if="${iterStat.index < 3}" class="winner-card"
-                    th:classappend="${iterStat.index == 0 ? ' position-1' : iterStat.index == 1 ? ' position-2'  : ' position-3' }">
+    <div class="top-winners-section">
+        <div class="winners-wrapper">
+            <div th:each="user, iterStat : ${users}" th:if="${iterStat.index < 3}" class="winner-card"
+                 th:classappend="${iterStat.index == 0 ? ' position-1' : iterStat.index == 1 ? ' position-2'  : ' position-3' }">
 
-                    <div class="performer-avatar-wrapper">
-                        <div class="position-number" th:text="${iterStat.index + 1}"></div>
-                        <a th:href="@{'/user/dashboard/' + ${user.userId}}" class="text-decoration-none">
-                            <div class="performer-avatar-blob">
-                                <img th:if="${user.profilePhoto!=null}" th:src="@{'/user/' + ${user.userId} + '/photo'}"
-                                    alt="User Photo">
-                                <img th:if="${user.profilePhoto==null}" src="/noprofilepic.png" alt="User Photo">
-                            </div>
-                        </a>
-                    </div>
-                    <div class="winner-username" th:text="${user.username}"></div>
+                <div class="performer-avatar-wrapper">
+                    <div class="position-number" th:text="${iterStat.index + 1}"></div>
+                    <a th:href="@{'/user/dashboard/' + ${user.userId}}" class="text-decoration-none">
+                        <div class="performer-avatar-blob">
+                            <img th:if="${user.profilePhoto!=null}" th:src="@{'/user/' + ${user.userId} + '/photo'}"
+                                 alt="User Photo">
+                            <img th:if="${user.profilePhoto==null}" src="/noprofilepic.png" alt="User Photo">
+                        </div>
+                    </a>
                 </div>
+                <div class="winner-username" th:text="${user.username}"></div>
             </div>
         </div>
+    </div>
 
-        <div class="section-divider">Top 7 People</div>
-        <div class="top-performers-grid">
-            <div th:each="user, iterStat : ${users}" th:if="${iterStat.index >= 3 && iterStat.index < 10}"
-                class="performer-card" th:classappend="${(iterStat.index - 3) % 7 == 0 ? ' color-variant-1' :
+    <div class="section-divider">Top 7 People</div>
+    <div class="top-performers-grid">
+        <div th:each="user, iterStat : ${users}" th:if="${iterStat.index >= 3 && iterStat.index < 10}"
+             class="performer-card" th:classappend="${(iterStat.index - 3) % 7 == 0 ? ' color-variant-1' :
                          (iterStat.index - 3) % 7 == 1 ? ' color-variant-2' :
                          (iterStat.index - 3) % 7 == 2 ? ' color-variant-3' :
                          (iterStat.index - 3) % 7 == 3 ? ' color-variant-4' :
                          (iterStat.index - 3) % 7 == 4 ? ' color-variant-5' :
                          (iterStat.index - 3) % 7 == 5 ? ' color-variant-6' : ' color-variant-7'}">
-                <a th:href="@{'/user/dashboard/' + ${user.userId}}" class="text-decoration-none">
-                    <div class="performer-avatar-wrapper">
-                        <div class="performer-avatar-blob">
-                            <img th:if="${user.profilePhoto!=null}" th:src="@{'/user/' + ${user.userId} + '/photo'}"
-                                alt="User Photo">
-                            <img th:if="${user.profilePhoto==null}" src="/noprofilepic.png" alt="User Photo">
-                        </div>
+            <a th:href="@{'/user/dashboard/' + ${user.userId}}" class="text-decoration-none">
+                <div class="performer-avatar-wrapper">
+                    <div class="performer-avatar-blob">
+                        <img th:if="${user.profilePhoto!=null}" th:src="@{'/user/' + ${user.userId} + '/photo'}"
+                             alt="User Photo">
+                        <img th:if="${user.profilePhoto==null}" src="/noprofilepic.png" alt="User Photo">
                     </div>
-                </a>
-                <div class="performer-username" th:text="${user.username}"></div>
-            </div>
-        </div>
-
-        <div class="section-divider">Other Competitors</div>
-        <div class="remaining-section">
-            <table class="leaderboard-table">
-                <thead>
-                    <tr>
-                        <th>Rank</th>
-                        <th>Member</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr th:each="user, iterStat : ${users}" th:if="${iterStat.index >= 10}">
-                        <td th:text="${iterStat.index + 1}"></td>
-                        <td>
-                            <a th:href="@{'/user/dashboard/' + ${user.userId}}" class="text-decoration-none">
-                                <div class="d-flex flex-column align-items-center">
-                                    <img th:if="${user.profilePhoto!=null}"
-                                        th:src="@{'/user/' + ${user.userId} + '/photo'}" alt="User Photo">
-                                    <img th:if="${user.profilePhoto==null}" src="/noprofilepic.png" alt="User Photo">
-                                    <span class="username mt-2" th:text="${user.username}"></span>
-                                </div>
-                            </a>
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
-
-
-        <button id="backToTop" onclick="scrollToTop()">↑</button>
-
-
-
-
-    </div>
-
-    <div class="popup-overlay" id="popupOverlay">
-        <div class="popup">
-            <button class="close-btn" onclick="closePopup()">&times;</button>
-
-            <div class="badge-wrapper">
-                <div class="badge">
-                    <div class="shine"></div>
-                    <div class="badge-text">+<span id="badgePoints">50</span></div>
                 </div>
-            </div>
-
-            <div class="points-earned" style="font-size:13px;"><span id="pointsText">You earned 50 points!</span></div>
+            </a>
+            <div class="performer-username" th:text="${user.username}"></div>
         </div>
     </div>
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/js/bootstrap.bundle.min.js"></script>
+    <div class="section-divider">Other Competitors</div>
+    <div class="remaining-section">
+        <table class="leaderboard-table">
+            <thead>
+            <tr>
+                <th>Rank</th>
+                <th>Member</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="user, iterStat : ${users}" th:if="${iterStat.index >= 10}">
+                <td th:text="${iterStat.index + 1}"></td>
+                <td>
+                    <a th:href="@{'/user/dashboard/' + ${user.userId}}" class="text-decoration-none">
+                        <div class="d-flex flex-column align-items-center">
+                            <img th:if="${user.profilePhoto!=null}"
+                                 th:src="@{'/user/' + ${user.userId} + '/photo'}" alt="User Photo">
+                            <img th:if="${user.profilePhoto==null}" src="/noprofilepic.png" alt="User Photo">
+                            <span class="username mt-2" th:text="${user.username}"></span>
+                        </div>
+                    </a>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
 
-    <script>
 
-        // Active nav state management for mobile
-        document.addEventListener('DOMContentLoaded', function () {
-            const currentPath = window.location.pathname;
-            const navItems = document.querySelectorAll('.bottom-nav-item');
+    <button id="backToTop" onclick="scrollToTop()">↑</button>
 
-            navItems.forEach(item => {
-                if (item.getAttribute('href') === currentPath) {
-                    item.classList.add('active');
-                }
-            });
-        });
-    </script>
-    <script>
 
-        function searchUser1() {
-            const whereami = document.getElementById('whereami').value.trim().toLowerCase();
-            if (!whereami) return;
-            const usernames = document.querySelectorAll(".username, .performer-username, .winner-username");
-            let found = false;
-            usernames.forEach(el => {
-                const usernameText = el.textContent.trim().toLowerCase();
-                el.classList.remove("highlighted");
-                if (usernameText === whereami) {
-                    found = true;
-                    el.scrollIntoView({ behavior: "smooth", block: "center" });
-                    el.classList.add("highlighted");
-                }
-                setTimeout(() => el.classList.remove("highlighted"), 5000);
-            });
-            if (!found) {
-                alert("Couldn't find user: " + whereami);
-            }
-        }
-        function searchUser() {
-            const input = document.getElementById("searchInput").value.trim().toLowerCase();
-            if (!input) return;
-            const usernames = document.querySelectorAll(".username, .performer-username, .winner-username");
-            let found = false;
-            usernames.forEach(el => {
-                const usernameText = el.textContent.trim().toLowerCase();
-                el.classList.remove("highlighted");
-                if (usernameText === input) {
-                    found = true;
-                    el.scrollIntoView({ behavior: "smooth", block: "center" });
-                    el.classList.add("highlighted");
-                }
-                setTimeout(() => el.classList.remove("highlighted"), 5000);
-            });
-            if (!found) {
-                alert("Sahi Name Dal Lo Sir");
-            }
-        }
-    </script>
-    <script>
-        const btn = document.getElementById("backToTop");
 
-        window.addEventListener("scroll", () => {
-            const scrollY = window.scrollY;
 
-            if (scrollY > 100) {
-                btn.style.display = "block";
-                btn.style.opacity = "1";
-            } else {
-                btn.style.opacity = "0";
-                setTimeout(() => btn.style.display = "none", 400);
+</div>
+
+<div class="popup-overlay" id="popupOverlay">
+    <div class="popup">
+        <button class="close-btn" onclick="closePopup()">&times;</button>
+
+        <div class="badge-wrapper">
+            <div class="badge">
+                <div class="shine"></div>
+                <div class="badge-text">+<span id="badgePoints">50</span></div>
+            </div>
+        </div>
+
+        <div class="points-earned" style="font-size:13px;"><span id="pointsText">You earned 50 points!</span></div>
+    </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/js/bootstrap.bundle.min.js"></script>
+
+<script>
+
+    // Active nav state management for mobile
+    document.addEventListener('DOMContentLoaded', function () {
+        const currentPath = window.location.pathname;
+        const navItems = document.querySelectorAll('.bottom-nav-item');
+
+        navItems.forEach(item => {
+            if (item.getAttribute('href') === currentPath) {
+                item.classList.add('active');
             }
         });
+    });
+</script>
+<script>
 
-        function scrollToTop() {
-            window.scrollTo({ top: 0, behavior: "smooth" });
+    function searchUser1() {
+        const whereami = document.getElementById('whereami').value.trim().toLowerCase();
+        if (!whereami) return;
+        const usernames = document.querySelectorAll(".username, .performer-username, .winner-username");
+        let found = false;
+        usernames.forEach(el => {
+            const usernameText = el.textContent.trim().toLowerCase();
+            el.classList.remove("highlighted");
+            if (usernameText === whereami) {
+                found = true;
+                el.scrollIntoView({ behavior: "smooth", block: "center" });
+                el.classList.add("highlighted");
+            }
+            setTimeout(() => el.classList.remove("highlighted"), 5000);
+        });
+        if (!found) {
+            alert("Couldn't find user: " + whereami);
         }
-    </script>
+    }
+    function searchUser() {
+        const input = document.getElementById("searchInput").value.trim().toLowerCase();
+        if (!input) return;
+        const usernames = document.querySelectorAll(".username, .performer-username, .winner-username");
+        let found = false;
+        usernames.forEach(el => {
+            const usernameText = el.textContent.trim().toLowerCase();
+            el.classList.remove("highlighted");
+            if (usernameText === input) {
+                found = true;
+                el.scrollIntoView({ behavior: "smooth", block: "center" });
+                el.classList.add("highlighted");
+            }
+            setTimeout(() => el.classList.remove("highlighted"), 5000);
+        });
+        if (!found) {
+            alert("Sahi Name Dal Lo Sir");
+        }
+    }
+</script>
+<script>
+    const btn = document.getElementById("backToTop");
+
+    window.addEventListener("scroll", () => {
+        const scrollY = window.scrollY;
+
+        if (scrollY > 100) {
+            btn.style.display = "block";
+            btn.style.opacity = "1";
+        } else {
+            btn.style.opacity = "0";
+            setTimeout(() => btn.style.display = "none", 400);
+        }
+    });
+
+    function scrollToTop() {
+        window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+</script>
 </body>
 
 </html>
