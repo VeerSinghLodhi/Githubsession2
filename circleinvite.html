@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>HotOrNot Premium Group Invite</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Epilogue:wght@400;500;600;700;800&amp;family=Plus+Jakarta+Sans:wght@400;500;600;700&amp;display=swap"
+        rel="stylesheet" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+        rel="stylesheet" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+        rel="stylesheet" />
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#e6193c",
+                        "brand-orange": "#FF7A00",
+                        "background-light": "#ffffff",
+                        "background-dark": "#1a1a1a",
+                    },
+                    fontFamily: {
+                        "display": ["Epilogue", "sans-serif"],
+                        "body": ["Plus Jakarta Sans", "sans-serif"]
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0.5rem",
+                        "lg": "1rem",
+                        "xl": "1.5rem",
+                        "full": "9999px"
+                    },
+                },
+            },
+        }
+    </script>
+    <style>
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+        }
+
+        .header-font {
+            font-family: 'Epilogue', sans-serif;
+        }
+
+        .bg-orb {
+            filter: blur(80px);
+            z-index: -1;
+        }
+
+        .glass-search {
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+        }
+
+        .invite-gradient {
+            background: linear-gradient(135deg, #e6193c 0%, #FF7A00 100%);
+        }
+    </style>
+    <style>
+        body {
+            min-height: max(884px, 100dvh);
+        }
+    </style>
+</head>
+
+<body class="bg-background-light dark:bg-background-dark min-h-screen relative overflow-x-hidden">
+    <!-- Subtle Background Orbs -->
+    <div class="fixed top-[-10%] left-[-10%] w-[50%] h-[50%] bg-primary/10 rounded-full bg-orb"></div>
+    <div class="fixed bottom-[-10%] right-[-10%] w-[50%] h-[50%] bg-brand-orange/10 rounded-full bg-orb"></div>
+    <!-- Sticky Header -->
+    <header
+        class="sticky top-0 z-50 bg-white/80 dark:bg-background-dark/80 backdrop-blur-md border-b border-gray-100 dark:border-gray-800">
+        <div class="flex items-center px-4 h-16 max-w-md mx-auto justify-between">
+            <div class="flex items-center gap-4">
+                <button class="text-primary hover:bg-primary/5 p-2 rounded-full transition-colors">
+                    <span class="material-symbols-outlined text-3xl font-bold">chevron_left</span>
+                </button>
+                <h1 class="header-font text-[#181112] dark:text-white text-xl font-extrabold tracking-tight">Manage
+                    Invites</h1>
+            </div>
+            <div class="size-10 flex items-center justify-center">
+                <span class="material-symbols-outlined text-gray-400">more_horiz</span>
+            </div>
+        </div>
+    </header>
+    <main class="max-w-md mx-auto pb-24">
+        <!-- Group Selection -->
+        <div class="px-4 py-6">
+            <label class="flex flex-col gap-2">
+                <p class="text-gray-500 dark:text-gray-400 text-xs font-bold uppercase tracking-widest ml-1">Current
+                    Group</p>
+                <div class="relative">
+                    <select
+                        class="appearance-none w-full bg-white dark:bg-gray-900 border-2 border-brand-orange/30 focus:border-brand-orange focus:ring-0 rounded-xl h-14 px-4 text-[#181112] dark:text-white font-semibold transition-all">
+                        <option value="vip-lounge">Elite VIP Lounge</option>
+                        <option value="creators-hub">Creators Hub</option>
+                        <option value="weekend-warriors">Weekend Warriors</option>
+                    </select>
+                    <div
+                        class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-4 text-brand-orange">
+                        <span class="material-symbols-outlined">unfold_more</span>
+                    </div>
+                </div>
+            </label>
+        </div>
+        <!-- Glassmorphism Search Bar -->
+        <div class="px-4 py-2 sticky top-16 z-40">
+            <div
+                class="glass-search flex items-center border border-white/50 dark:border-gray-700 shadow-sm rounded-xl overflow-hidden px-4 h-14 group transition-all focus-within:ring-2 focus-within:ring-brand-orange/50">
+                <span class="material-symbols-outlined text-brand-orange mr-3">search</span>
+                <input
+                    class="bg-transparent border-none focus:ring-0 w-full text-base font-medium placeholder:text-gray-400 dark:text-white"
+                    placeholder="Search users to invite" type="text" />
+            </div>
+        </div>
+        <!-- Section Header -->
+        <div class="px-4 pt-8 pb-4 flex items-center justify-between">
+            <h3 class="header-font text-lg font-bold text-[#181112] dark:text-white">Suggested for you</h3>
+            <span class="text-primary text-xs font-bold uppercase tracking-tighter">View All</span>
+        </div>
+        <!-- User Results List -->
+        <div class="flex flex-col gap-3 px-4">
+            <!-- List Item 1 -->
+            <div
+                class="flex items-center gap-4 bg-white/60 dark:bg-gray-900/60 backdrop-blur-sm p-3 rounded-xl border border-white/50 dark:border-gray-800 shadow-sm">
+                <div class="relative shrink-0">
+                    <div class="size-14 rounded-full border-2 border-brand-orange/30 p-0.5">
+                        <div class="w-full h-full rounded-full bg-center bg-cover"
+                            data-alt="Young woman with colorful hair portrait"
+                            style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuCAcSKPaAOI9M7Wcz6dKyAPXjyA3hgXpgVNKoJ9GsVcaxlRpsp93bhah2IP-yZWJvP-zgZjpa-uGJsN9Dz9LzPDI4vYPUj4Nx5N_iuwhkeFnKEvVMYjg1RfpOf7lL4wL2nbMpahn0OXEW1U1OIwZZ5Y_KDGJQtTsaF3CumiwPURe6MEsTPdl11AscrC69Bs4jiASn2H0wZLsGCKEi51HUVA7_kZZxWXHvj3sOGCGHnpQ8mTq6oJoEfWj7lWIhiwU5T4W9Ke4DKjdHk')">
+                        </div>
+                    </div>
+                    <div class="absolute bottom-0 right-0 size-4 bg-green-500 border-2 border-white rounded-full"></div>
+                </div>
+                <div class="flex-1 min-w-0">
+                    <p class="text-[#181112] dark:text-white font-bold text-base truncate">sarah_style</p>
+                    <p class="text-gray-500 text-sm font-medium">12 mutual friends</p>
+                </div>
+                <button
+                    class="invite-gradient text-white px-6 py-2 rounded-full font-bold text-sm shadow-md shadow-primary/20 hover:scale-105 active:scale-95 transition-transform">
+                    Invite
+                </button>
+            </div>
+            <!-- List Item 2 -->
+            <div
+                class="flex items-center gap-4 bg-white/60 dark:bg-gray-900/60 backdrop-blur-sm p-3 rounded-xl border border-white/50 dark:border-gray-800 shadow-sm">
+                <div class="relative shrink-0">
+                    <div class="size-14 rounded-full border-2 border-brand-orange/30 p-0.5">
+                        <div class="w-full h-full rounded-full bg-center bg-cover"
+                            data-alt="Young man in a denim jacket"
+                            style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuBK5wMIm-XsossS9NkBR-1wTSo8VL87gL6hcZmznjuwqTYdordyaQeCY7nc9T5wYLbYvUheIiKm2zUnSaho7frP_pJ7NL2qr3_UlTIYV-QWUNQoOeHcUQ3Mu5pg8oK-_FetrV000LK26hT8mHrKmMO0K96EoYfwKgDL1Nhz8PK7G0BZqpxTnWS_UAYMLDfK-nNokHBw1pZABBgmVEIW_M8p3ziiczv2kqe7-w89QhNA6nBZ2FqOfBpQpZn46eHyaJUXYhMKPM7mLyI')">
+                        </div>
+                    </div>
+                </div>
+                <div class="flex-1 min-w-0">
+                    <p class="text-[#181112] dark:text-white font-bold text-base truncate">marcus.vibes</p>
+                    <p class="text-gray-500 text-sm font-medium">Recently active</p>
+                </div>
+                <button
+                    class="invite-gradient text-white px-6 py-2 rounded-full font-bold text-sm shadow-md shadow-primary/20 hover:scale-105 active:scale-95 transition-transform">
+                    Invite
+                </button>
+            </div>
+            <!-- List Item 3 -->
+            <div
+                class="flex items-center gap-4 bg-white/60 dark:bg-gray-900/60 backdrop-blur-sm p-3 rounded-xl border border-white/50 dark:border-gray-800 shadow-sm opacity-60">
+                <div class="relative shrink-0">
+                    <div class="size-14 rounded-full border-2 border-brand-orange/30 p-0.5">
+                        <div class="w-full h-full rounded-full bg-center bg-cover" data-alt="Woman with a warm smile"
+                            style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuA9wyS5PGFbRMxTQabvm4DOw0pABZ0y22a-3vuInQLZsQ2VGpErBUoIsSKm6Wadei-CCYnR_SU_L7E6F35vMJnj6rwH7vB-9XbUMn5a0TacjGnXl1hCX-ueL4qV1jWqgOGSB6WMdSuPhaiCvuD2JFiXiGbXZyi_5LFD9xMFUSehFYc2QQc10WieehSiacJMkpE_LjbuyHW8tyiHHKc2h5M0Me8PD8PfLH83D7qBlu8jB82b5uCsD_q2VgRXqRp6mHdCNA4zuBxCPOw')">
+                        </div>
+                    </div>
+                </div>
+                <div class="flex-1 min-w-0">
+                    <p class="text-[#181112] dark:text-white font-bold text-base truncate">jenny_vlogs</p>
+                    <p class="text-gray-500 text-sm font-medium">Invited</p>
+                </div>
+                <button
+                    class="bg-gray-100 dark:bg-gray-800 text-gray-400 px-6 py-2 rounded-full font-bold text-sm cursor-default"
+                    disabled="">
+                    Pending
+                </button>
+            </div>
+            <!-- List Item 4 -->
+            <div
+                class="flex items-center gap-4 bg-white/60 dark:bg-gray-900/60 backdrop-blur-sm p-3 rounded-xl border border-white/50 dark:border-gray-800 shadow-sm">
+                <div class="relative shrink-0">
+                    <div class="size-14 rounded-full border-2 border-brand-orange/30 p-0.5">
+                        <div class="w-full h-full rounded-full bg-center bg-cover" data-alt="Man with beard in portrait"
+                            style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuALVHQEiLH_ouQ5iS5iBx2xguerBfoePOvfBQTebbZaULUxMEMZ8h5dZdA3prrA3Nj3HDptVxluHgk9G9Tb8FV6bS3RRZ-UXs0pQi9re9zkeymBu4CHjdTuyRUPC2yoPK0BbB08WmQcZV7oes7-Des2KC2KSXGvBvRgzcfEnhNvrowBqQdup5UhRiSoXhyODGj3KZEcuwufsIdYtvpJnZR7dd1ABciOCgXbpOslO6M1qHzIGyWDf5O8eYZFNNrCfZL9HBysToxV0ao')">
+                        </div>
+                    </div>
+                </div>
+                <div class="flex-1 min-w-0">
+                    <p class="text-[#181112] dark:text-white font-bold text-base truncate">alex_prime</p>
+                    <p class="text-gray-500 text-sm font-medium">Top creator</p>
+                </div>
+                <button
+                    class="invite-gradient text-white px-6 py-2 rounded-full font-bold text-sm shadow-md shadow-primary/20 hover:scale-105 active:scale-95 transition-transform">
+                    Invite
+                </button>
+            </div>
+        </div>
+        <!-- Section Header for No Results / Search State -->
+        <div class="hidden flex flex-col items-center justify-center py-20 px-10 text-center">
+            <div class="size-24 rounded-full bg-brand-orange/10 flex items-center justify-center mb-6">
+                <span class="material-symbols-outlined text-5xl text-brand-orange">person_add</span>
+            </div>
+            <h4 class="header-font text-xl font-bold text-[#181112] dark:text-white mb-2">No users found</h4>
+            <p class="text-gray-500">Try searching for a different username or invite from your contacts list.</p>
+        </div>
+    </main>
+    <!-- Bottom Navigation Mock (iOS style) -->
+    <div
+        class="fixed bottom-0 left-0 right-0 bg-white/90 dark:bg-background-dark/90 backdrop-blur-lg border-t border-gray-100 dark:border-gray-800 pb-8 pt-3">
+        <div class="max-w-md mx-auto flex justify-around items-center px-4">
+            <div class="flex flex-col items-center gap-1 text-primary">
+                <span class="material-symbols-outlined fill-1">group</span>
+                <span class="text-[10px] font-bold">Groups</span>
+            </div>
+            <div class="flex flex-col items-center gap-1 text-gray-400">
+                <span class="material-symbols-outlined">explore</span>
+                <span class="text-[10px] font-bold">Discover</span>
+            </div>
+            <div class="flex flex-col items-center gap-1">
+                <div
+                    class="size-12 invite-gradient rounded-full flex items-center justify-center text-white shadow-lg -mt-8 border-4 border-white dark:border-background-dark">
+                    <span class="material-symbols-outlined text-3xl font-bold">add</span>
+                </div>
+            </div>
+            <div class="flex flex-col items-center gap-1 text-gray-400">
+                <span class="material-symbols-outlined">notifications</span>
+                <span class="text-[10px] font-bold">Alerts</span>
+            </div>
+            <div class="flex flex-col items-center gap-1 text-gray-400">
+                <span class="material-symbols-outlined">person</span>
+                <span class="text-[10px] font-bold">Profile</span>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

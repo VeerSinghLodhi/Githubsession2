@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html class="light" lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <meta name="_csrf" th:content="${_csrf.token}" />
+    <meta name="_csrf_header" th:content="${_csrf.headerName}" />
+    <title>HotOrNot Premium Group Invite</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Epilogue:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap"
+        rel="stylesheet" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap"
+        rel="stylesheet" />
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#e6193c",
+                        "brand-orange": "#FF7A00",
+                        "background-light": "#ffffff",
+                        "background-dark": "#1a1a1a",
+                    },
+                    fontFamily: {
+                        "display": ["Epilogue", "sans-serif"],
+                        "body": ["Plus Jakarta Sans", "sans-serif"]
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0.5rem",
+                        "lg": "1rem",
+                        "xl": "1.5rem",
+                        "full": "9999px"
+                    },
+                },
+            },
+        }
+    </script>
+    <style>
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+        }
+
+        .header-font {
+            font-family: 'Epilogue', sans-serif;
+        }
+
+        .bg-orb {
+            filter: blur(80px);
+            z-index: -1;
+        }
+
+        .glass-search {
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+        }
+
+        .invite-gradient {
+            background: linear-gradient(135deg, #e6193c 0%, #FF7A00 100%);
+        }
+    </style>
+    <style>
+        body {
+            min-height: max(884px, 100dvh);
+        }
+    </style>
+</head>
+
+<body class="bg-background-light dark:bg-background-dark min-h-screen relative overflow-x-hidden">
+    <!-- Subtle Background Orbs -->
+    <div class="fixed top-[-10%] left-[-10%] w-[50%] h-[50%] bg-primary/10 rounded-full bg-orb"></div>
+    <div class="fixed bottom-[-10%] right-[-10%] w-[50%] h-[50%] bg-brand-orange/10 rounded-full bg-orb"></div>
+    
+    <!-- Hidden data containers for JavaScript -->
+    <div id="currentUserData" th:attr="data-id=${currentUser.userId}, data-username=${currentUser.username}" style="display:none">
+    </div>
+
+    <div id="allUsersData" style="display:none">
+        <div th:each="u : ${users}"
+             class="user-data"
+             th:attr="data-id=${u.userId},
+                      data-username=${u.username}">
+        </div>
+    </div>
+
+    <div id="groupMembersData" style="display:none">
+        <div th:each="entry : ${groupMembersMap}"
+             class="group-members"
+             th:attr="data-group-id=${entry.key},
+                      data-members=${#strings.arrayJoin(entry.value, ',')}">
+        </div>
+    </div>
+
+    <!-- Sticky Header -->
+    <header
+        class="sticky top-0 z-50 bg-white/80 dark:bg-background-dark/80 backdrop-blur-md border-b border-gray-100 dark:border-gray-800">
+        <div class="flex items-center px-4 h-16 max-w-md mx-auto justify-between">
+            <div class="flex items-center gap-4">
+                <button class="text-primary hover:bg-primary/5 p-2 rounded-full transition-colors">
+                    <span class="material-symbols-outlined text-3xl font-bold">chevron_left</span>
+                </button>
+                <h1 class="header-font text-[#181112] dark:text-white text-xl font-extrabold tracking-tight">Manage
+                    Invites</h1>
+            </div>
+            <div class="size-10 flex items-center justify-center">
+                <span class="material-symbols-outlined text-gray-400">more_horiz</span>
+            </div>
+        </div>
+    </header>
+    
+    <main class="max-w-md mx-auto pb-24">
+        <!-- Group Selection -->
+        <div class="px-4 py-6">
+            <label class="flex flex-col gap-2">
+                <p class="text-gray-500 dark:text-gray-400 text-xs font-bold uppercase tracking-widest ml-1">Select Your Group</p>
+                <div class="relative">
+                    <select id="groupSelect"
+                        class="appearance-none w-full bg-white dark:bg-gray-900 border-2 border-brand-orange/30 focus:border-brand-orange focus:ring-0 rounded-xl h-14 px-4 text-[#181112] dark:text-white font-semibold transition-all">
+                        <option value="" selected disabled>
+                            -- Select your group --
+                        </option>
+                        <option th:each="g : ${groups}"
+                                th:value="${g.groupId}"
+                                th:text="${g.groupName}">
+                        </option>
+                    </select>
+                    <div
+                        class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-4 text-brand-orange">
+                        <span class="material-symbols-outlined">unfold_more</span>
+                    </div>
+                </div>
+            </label>
+        </div>
+        
+        <!-- Glassmorphism Search Bar -->
+        <div class="px-4 py-2 sticky top-16 z-40">
+            <div
+                class="glass-search flex items-center border border-white/50 dark:border-gray-700 shadow-sm rounded-xl overflow-hidden px-4 h-14 group transition-all focus-within:ring-2 focus-within:ring-brand-orange/50">
+                <span class="material-symbols-outlined text-brand-orange mr-3">search</span>
+                <input id="userSearchInput"
+                    class="bg-transparent border-none focus:ring-0 w-full text-base font-medium placeholder:text-gray-400 dark:text-white"
+                    placeholder="Search users to invite" 
+                    type="text"
+                    disabled />
+            </div>
+        </div>
+        
+        <!-- Section Header -->
+        <div class="px-4 pt-8 pb-4 flex items-center justify-between">
+            <h3 class="header-font text-lg font-bold text-[#181112] dark:text-white">Search Results</h3>
+        </div>
+        
+        <!-- User Results List (Dynamic) -->
+        <div id="userSearchResults" class="flex flex-col gap-3 px-4">
+            <!-- Results will be populated here by JavaScript -->
+        </div>
+
+        <!-- Empty State / No Results -->
+        <div id="emptyState" class="flex flex-col items-center justify-center py-20 px-10 text-center">
+            <div class="size-24 rounded-full bg-brand-orange/10 flex items-center justify-center mb-6">
+                <span class="material-symbols-outlined text-5xl text-brand-orange">person_search</span>
+            </div>
+            <h4 class="header-font text-xl font-bold text-[#181112] dark:text-white mb-2">Search for users</h4>
+            <p class="text-gray-500">Select a group and search for users to invite them to your circle.</p>
+        </div>
+    </main>
+    
+   
+
+    <script>
+        // CSRF - Read from meta tags
+        const csrfToken = document.querySelector('meta[name="_csrf"]')?.getAttribute('content') || '';
+        const csrfParam = '_csrf';
+
+        // Build groupId -> memberIds map
+        const groupMembers = {};
+
+        document.querySelectorAll('.group-members').forEach(el => {
+            const groupId = el.dataset.groupId;
+            const members = el.dataset.members
+                ? el.dataset.members.split(',').map(String)
+                : [];
+            groupMembers[groupId] = members;
+        });
+
+        const groupSelect = document.getElementById('groupSelect');
+        const searchInput = document.getElementById('userSearchInput');
+        const resultsDiv = document.getElementById('userSearchResults');
+        const emptyState = document.getElementById('emptyState');
+
+        let selectedGroupId = null;
+
+        const currentUserEl = document.getElementById('currentUserData');
+        const currentUser = {
+            userId: currentUserEl.dataset.id,
+            username: currentUserEl.dataset.username
+        };
+
+        const allUsers = Array.from(
+            document.querySelectorAll('.user-data')
+        ).map(el => ({
+            userId: el.dataset.id,
+            username: el.dataset.username
+        }));
+
+        groupSelect.addEventListener('change', function () {
+            selectedGroupId = this.value;
+            searchInput.disabled = false;
+            searchInput.value = '';
+            resultsDiv.innerHTML = '';
+            emptyState.style.display = 'flex';
+        });
+
+        searchInput.addEventListener('input', function () {
+            const query = this.value.toLowerCase().trim();
+            resultsDiv.innerHTML = '';
+
+            if (!query || !selectedGroupId) {
+                emptyState.style.display = 'flex';
+                return;
+            }
+
+            const existingMembers = groupMembers[selectedGroupId] || [];
+
+            const filteredUsers = allUsers.filter(u =>
+                u.username &&
+                u.username.toLowerCase().includes(query) &&
+                u.userId !== currentUser.userId &&
+                !existingMembers.includes(String(u.userId))
+            );
+
+            if (filteredUsers.length === 0) {
+                emptyState.innerHTML = `
+                    <div class="size-24 rounded-full bg-brand-orange/10 flex items-center justify-center mb-6">
+                        <span class="material-symbols-outlined text-5xl text-brand-orange">person_add</span>
+                    </div>
+                    <h4 class="header-font text-xl font-bold text-[#181112] dark:text-white mb-2">No users found</h4>
+                    <p class="text-gray-500">Try searching for a different username or invite from your contacts list.</p>
+                `;
+                emptyState.style.display = 'flex';
+                return;
+            }
+
+            emptyState.style.display = 'none';
+
+            filteredUsers.forEach(user => {
+                const userCard = document.createElement('div');
+                userCard.className = 'flex items-center gap-4 bg-white/60 dark:bg-gray-900/60 backdrop-blur-sm p-3 rounded-xl border border-white/50 dark:border-gray-800 shadow-sm';
+
+                userCard.innerHTML = `
+                    <div class="relative shrink-0">
+                        <div class="size-14 rounded-full border-2 border-brand-orange/30 p-0.5">
+                            <div class="w-full h-full rounded-full bg-gradient-to-br from-primary/20 to-brand-orange/20 flex items-center justify-center">
+                                <span class="material-symbols-outlined text-primary text-2xl">person</span>
+                            </div>
+                        </div>
+                        <div class="absolute bottom-0 right-0 size-4 bg-green-500 border-2 border-white rounded-full"></div>
+                    </div>
+                    <div class="flex-1 min-w-0">
+                        <p class="text-[#181112] dark:text-white font-bold text-base truncate">${user.username}</p>
+                        <p class="text-gray-500 text-sm font-medium">Available to invite</p>
+                    </div>
+                    <form method="post" action="/user/groups/${selectedGroupId}">
+                        <input type="hidden" name="${csrfParam}" value="${csrfToken}">
+                        <input type="hidden" name="userId" value="${user.userId}">
+                        <button type="submit" class="invite-gradient text-white px-6 py-2 rounded-full font-bold text-sm shadow-md shadow-primary/20 hover:scale-105 active:scale-95 transition-transform">
+                            Invite
+                        </button>
+                    </form>
+                `;
+                resultsDiv.appendChild(userCard);
+            });
+        });
+    </script>
+</body>
+
+</html>
