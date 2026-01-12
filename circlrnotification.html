@@ -1,0 +1,388 @@
+<!DOCTYPE html>
+<html class="light" lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>HotOrNot Notifications</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Epilogue:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap"
+        rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap"
+        rel="stylesheet" />
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#c3223d",
+                        "primary-dark": "#8F1D2B",
+                        "background-light": "#ffffff",
+                        "background-dark": "#22252a",
+                        "charcoal": "#323841",
+                    },
+                    fontFamily: {
+                        "display": ["Epilogue", "sans-serif"],
+                        "body": ["'Plus Jakarta Sans'", "sans-serif"]
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0.5rem",
+                        "lg": "1rem",
+                        "xl": "1.5rem",
+                        "full": "9999px"
+                    },
+                },
+            },
+        }
+    </script>
+    <style>
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+        }
+
+        .font-display {
+            font-family: 'Epilogue', sans-serif;
+        }
+
+        .bg-glass {
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(12px);
+        }
+
+        .gradient-orb {
+            position: fixed;
+            width: 300px;
+            height: 300px;
+            border-radius: 50%;
+            filter: blur(80px);
+            z-index: -1;
+            opacity: 0.15;
+        }
+
+        .orb-1 {
+            top: -50px;
+            right: -50px;
+            background: #c3223d;
+        }
+
+        .orb-2 {
+            bottom: 100px;
+            left: -100px;
+            background: #8F1D2B;
+        }
+
+        body {
+            min-height: max(884px, 100dvh);
+        }
+
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+    </style>
+</head>
+
+<body
+    class="bg-background-light dark:bg-background-dark min-h-screen text-charcoal dark:text-white selection:bg-primary/20">
+    <!-- Background Orbs -->
+    <div class="gradient-orb orb-1"></div>
+    <div class="gradient-orb orb-2"></div>
+
+    <div
+        class="relative mx-auto max-w-[430px] min-h-screen flex flex-col shadow-2xl bg-white/40 dark:bg-background-dark/40">
+        <!-- Sticky TopAppBar -->
+        <header class="sticky top-0 z-50 bg-glass border-b border-gray-100 dark:border-gray-800">
+            <div class="flex items-center justify-between px-6 py-4">
+                <button
+                    class="flex items-center justify-center size-10 rounded-full bg-primary/5 text-primary hover:bg-primary/10 transition-colors">
+                    <span class="material-symbols-outlined text-[22px]">arrow_back_ios_new</span>
+                </button>
+                <h1 class="font-display text-xl font-bold tracking-tight text-gray-900 dark:text-white">Notifications
+                </h1>
+                <div id="totalBadge"
+                    class="flex items-center px-3 py-1 bg-primary text-white text-[11px] font-bold rounded-full tracking-wider uppercase">
+                    0 Total
+                </div>
+            </div>
+        </header>
+
+        <main id="notificationContainer" class="flex-1 px-4 py-6 space-y-4">
+            <!-- Notifications will be dynamically inserted here -->
+        </main>
+
+        <!-- Empty State Footer Message -->
+        <footer id="emptyState" class="py-12 px-6 text-center hidden">
+            <div class="inline-flex items-center gap-2 px-4 py-2 bg-gray-50 dark:bg-gray-800/50 rounded-full">
+                <span class="material-symbols-outlined text-[18px] text-gray-400">check_circle</span>
+                <span class="text-xs font-medium text-gray-500 dark:text-gray-400">No notifications yet ✨</span>
+            </div>
+        </footer>
+
+        <!-- Bottom Tab Bar -->
+        <nav
+            class="sticky bottom-0 bg-glass border-t border-gray-100 dark:border-gray-800 px-8 py-3 flex justify-between items-center">
+            <button class="text-gray-400">
+                <span class="material-symbols-outlined text-[28px]">home</span>
+            </button>
+            <button class="text-gray-400">
+                <span class="material-symbols-outlined text-[28px]">search</span>
+            </button>
+            <button class="relative text-primary">
+                <span class="material-symbols-outlined text-[28px]"
+                    style="font-variation-settings: 'FILL' 1">notifications</span>
+                <span class="absolute top-0 right-0 size-2 bg-primary rounded-full ring-2 ring-white"></span>
+            </button>
+            <button class="text-gray-400">
+                <span class="material-symbols-outlined text-[28px]">account_circle</span>
+            </button>
+        </nav>
+    </div>
+
+    <script>
+        // Sample notification data (replace with actual API call)
+        const notifications = [
+            {
+                id: 1,
+                type: 'GROUP_INVITE',
+                message: '<span class="font-bold">Sarah</span> invited you to join <span class="text-primary italic">"Summer Vibes"</span> Circle',
+                createdAt: new Date(Date.now() - 2 * 60 * 1000),
+                readStatus: false,
+                userName: 'Sarah',
+                userImage: 'https://lh3.googleusercontent.com/aida-public/AB6AXuDtVucnwJ631GCc3wrygwRy6og1yUn3uJL8xbInr2neFRC1nO-Vf5-Bn8YF3_rbBt6BrbtzOtvyWCQ0HqcOBTWxbmYXbBhT6IAB20ao9-OaQwFgF9Rsjr3gj_339hQFaYNBaX_9Awj0IijOzHOAKLNaaQVvEgRjTV5IdVc-7j-wjRK-hZ6rujhjMmMfdDWfmLvSlUWOKHarCbT17l8YfHJCKbM2UStgXflp_Svblt6dqsa32LjyHAf1hccLEarFbq2pymvwhurgYTI'
+            },
+            {
+                id: 2,
+                type: 'INTERACTION',
+                message: '<span class="font-bold">Marco</span> liked your photo and left a comment: "This is pure fire!"',
+                createdAt: new Date(Date.now() - 15 * 60 * 1000),
+                readStatus: false,
+                userName: 'Marco',
+                userImage: 'https://lh3.googleusercontent.com/aida-public/AB6AXuCI96FF_y8tAolyKgDkqyZTtvx7NqHE9xab9pfftxmQ7cqUPlbNB-KwriJTaqAASxdbOB-eUPgFQy-dMa_MtO1T0JIcktBUgaGOn7BboDYWiN2fuzWlZIvVYdfO4LDZ3_cNNr_gw04rzFefrJWu7_U1HfFQR4GCYcBiNancZPq1GqkcmJ8biUCfEhBovTi8YudX0XwP6m3bZnXfGXe51m-VtR09BvJxOo1w7H0gW-2AxVLjCCDeD-HU_f65BGPwmIxfkgWslHv2qjk'
+            },
+            {
+                id: 3,
+                type: 'FOLLOW',
+                message: 'Alex followed you',
+                createdAt: new Date(Date.now() - 60 * 60 * 1000),
+                readStatus: true,
+                userName: 'Alex',
+                userImage: 'https://lh3.googleusercontent.com/aida-public/AB6AXuDrBuNoGQnNNyuBHhY0Xfw8tgYbW8witjeEkzlVhVEeIzDRpNcg8X4jFxs-9jQT1jmIEtURmcJOc08n0osuwO90GcGK9zhQvQUxVBXNcPAxME728sYbf6nt9aMnAeCNT3nr065u6W63l7Hy_VGeqhteAhCdS25L67kgg7nUfo25Ad7au5lpRWJU9oz6DetcLd3qJqbkodTeREz_V1bxguwvZZv5-ozTGEJ7YBvh43XLVJcX1Gmxz-6nX4uk0FgWE0hGRgnsHIeqxHg'
+            },
+            {
+                id: 4,
+                type: 'SYSTEM',
+                message: 'Your "HotOrNot Plus" subscription has been successfully renewed. Enjoy ad-free browsing and unlimited skips!',
+                createdAt: new Date(Date.now() - 3 * 60 * 60 * 1000),
+                readStatus: true
+            }
+        ];
+
+        function formatTime(date) {
+            const now = new Date();
+            const diff = Math.floor((now - date) / 1000);
+
+            if (diff < 60) return `${diff}s ago`;
+            if (diff < 3600) return `${Math.floor(diff / 60)}m ago`;
+            if (diff < 86400) return `${Math.floor(diff / 3600)}h ago`;
+
+            const day = String(date.getDate()).padStart(2, '0');
+            const month = date.toLocaleString('en', { month: 'short' });
+            const hours = String(date.getHours()).padStart(2, '0');
+            const minutes = String(date.getMinutes()).padStart(2, '0');
+            return `${day} ${month}, ${hours}:${minutes}`;
+        }
+
+        function handleGroupInvite(notificationId, action) {
+            console.log(`${action} group invite for notification ${notificationId}`);
+            // In production, make API call here
+            alert(`Group invite ${action}ed!`);
+
+            // Remove notification from UI
+            const card = document.querySelector(`[data-notification-id="${notificationId}"]`);
+            if (card) card.remove();
+            updateTotalBadge();
+            checkEmptyState();
+        }
+
+        function handleReply(notificationId, reply) {
+            console.log(`Reply to notification ${notificationId}: ${reply}`);
+            // In production, make API call here
+            alert(`Reply sent: ${reply}`);
+
+            // Mark as read and remove reply UI
+            const card = document.querySelector(`[data-notification-id="${notificationId}"]`);
+            if (card) {
+                const replySection = card.querySelector('.reply-section');
+                if (replySection) replySection.remove();
+            }
+        }
+
+        function createGroupInviteCard(notification) {
+            return `
+                <div class="group relative bg-white dark:bg-gray-900 rounded-xl border border-primary/40 shadow-sm overflow-hidden p-4" data-notification-id="${notification.id}">
+                    <div class="flex gap-4">
+                        <div class="relative flex-shrink-0">
+                            <div class="size-14 rounded-full bg-center bg-cover border-2 border-white shadow-md" style="background-image: url('${notification.userImage}')"></div>
+                            <div class="absolute -bottom-1 -right-1 size-6 bg-primary rounded-full flex items-center justify-center text-white border-2 border-white">
+                                <span class="material-symbols-outlined text-[14px]">groups</span>
+                            </div>
+                        </div>
+                        <div class="flex-1">
+                            <div class="flex justify-between items-start mb-1">
+                                <p class="text-xs font-bold text-primary uppercase tracking-widest">Group Invite</p>
+                                <span class="text-[11px] text-gray-400 font-medium">${formatTime(notification.createdAt)}</span>
+                            </div>
+                            <p class="text-[15px] leading-snug font-medium text-gray-800 dark:text-gray-200">${notification.message}</p>
+                        </div>
+                    </div>
+                    ${!notification.readStatus ? `
+                        <div class="flex gap-3 mt-4">
+                            <button onclick="handleGroupInvite(${notification.id}, 'accept')" class="flex-1 h-11 bg-gradient-to-r from-[#A12331] to-[#8F1D2B] text-white rounded-full font-bold text-sm shadow-md active:scale-95 transition-transform">
+                                ✅ Accept
+                            </button>
+                            <button onclick="handleGroupInvite(${notification.id}, 'reject')" class="flex-1 h-11 border-2 border-charcoal/20 dark:border-gray-700 text-charcoal dark:text-gray-300 rounded-full font-bold text-sm hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors">
+                                ❌ Reject
+                            </button>
+                        </div>
+                    ` : ''}
+                </div>
+            `;
+        }
+
+        function createInteractionCard(notification) {
+            const needsReply = !notification.readStatus &&
+                notification.type !== 'GROUP_INVITE' &&
+                notification.type !== 'GROUP_INVITE_ACCEPTED' &&
+                notification.type !== 'GROUP_INVITE_REJECTED';
+
+            return `
+                <div class="bg-white dark:bg-gray-900 rounded-xl border border-gray-100 dark:border-gray-800 shadow-sm p-4" data-notification-id="${notification.id}">
+                    <div class="flex gap-4 mb-${needsReply ? '4' : '0'}">
+                        <div class="size-14 rounded-full bg-center bg-cover shadow-sm" style="background-image: url('${notification.userImage}')"></div>
+                        <div class="flex-1">
+                            <div class="flex justify-between items-start mb-1">
+                                <p class="text-xs font-bold text-gray-400 uppercase tracking-widest">New Interaction</p>
+                                <span class="text-[11px] text-gray-400 font-medium">${formatTime(notification.createdAt)}</span>
+                            </div>
+                            <p class="text-[15px] leading-snug font-medium text-gray-800 dark:text-gray-200">${notification.message}</p>
+                        </div>
+                    </div>
+                    ${needsReply ? `
+                        <div class="reply-section">
+                            <div class="flex gap-2 overflow-x-auto pb-2 -mx-1 px-1 no-scrollbar">
+                                <button onclick="handleReply(${notification.id}, 'Excellent 🔥')" class="shrink-0 px-4 h-9 bg-yellow-50 dark:bg-yellow-900/20 text-charcoal dark:text-yellow-200 rounded-full text-sm font-medium border border-yellow-100 dark:border-yellow-900/30">
+                                    Excellent 🔥
+                                </button>
+                                <button onclick="handleReply(${notification.id}, 'Good 👍')" class="shrink-0 px-4 h-9 bg-green-50 dark:bg-green-900/20 text-charcoal dark:text-green-200 rounded-full text-sm font-medium border border-green-100 dark:border-green-900/30">
+                                    Good 👍
+                                </button>
+                                <button onclick="handleReply(${notification.id}, 'Impressive 👏')" class="shrink-0 px-4 h-9 bg-blue-50 dark:bg-blue-900/20 text-charcoal dark:text-blue-200 rounded-full text-sm font-medium border border-blue-100 dark:border-blue-900/30">
+                                    Impressive 👏
+                                </button>
+                            </div>
+                            <div class="mt-4 flex gap-2">
+                                <div class="relative flex-1">
+                                    <input id="customReply${notification.id}" class="w-full h-10 px-4 bg-gray-50 dark:bg-gray-800 border-none rounded-full text-sm focus:ring-2 focus:ring-primary/20 placeholder:text-gray-400" placeholder="Write a custom reply..." type="text"/>
+                                </div>
+                                <button onclick="handleReply(${notification.id}, document.getElementById('customReply${notification.id}').value)" class="size-10 flex items-center justify-center bg-primary text-white rounded-full shadow-lg shadow-primary/20 active:scale-90 transition-transform">
+                                    <span class="material-symbols-outlined text-[20px]">send</span>
+                                </button>
+                            </div>
+                        </div>
+                    ` : ''}
+                </div>
+            `;
+        }
+
+        function createFollowCard(notification) {
+            return `
+                <div class="flex items-center gap-4 bg-white dark:bg-gray-900 px-4 py-3 rounded-xl border border-gray-100 dark:border-gray-800 shadow-sm" data-notification-id="${notification.id}">
+                    <div class="bg-center bg-no-repeat aspect-square bg-cover rounded-full h-12 w-12 border border-gray-100" style='background-image: url("${notification.userImage}");'></div>
+                    <div class="flex flex-col flex-1 justify-center">
+                        <p class="text-gray-900 dark:text-white text-sm font-semibold leading-tight line-clamp-1">${notification.message}</p>
+                        <p class="text-gray-400 text-xs font-normal mt-0.5">${formatTime(notification.createdAt)}</p>
+                    </div>
+                    <button class="size-9 flex items-center justify-center text-primary/40">
+                        <span class="material-symbols-outlined">person_add</span>
+                    </button>
+                </div>
+            `;
+        }
+
+        function createSystemCard(notification) {
+            return `
+                <div class="bg-primary/5 dark:bg-primary/10 rounded-xl p-4 border-l-4 border-primary" data-notification-id="${notification.id}">
+                    <div class="flex gap-4">
+                        <div class="size-10 bg-primary/10 rounded-lg flex items-center justify-center text-primary">
+                            <span class="material-symbols-outlined">stars</span>
+                        </div>
+                        <div class="flex-1">
+                            <h4 class="font-display font-bold text-sm text-primary">Premium Status Active</h4>
+                            <p class="text-xs text-gray-600 dark:text-gray-300 mt-1 leading-relaxed">${notification.message}</p>
+                            <p class="text-[10px] text-gray-400 font-bold mt-2 uppercase tracking-tighter">System • ${formatTime(notification.createdAt)}</p>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function renderNotifications() {
+            const container = document.getElementById('notificationContainer');
+
+            if (notifications.length === 0) {
+                checkEmptyState();
+                return;
+            }
+
+            let html = '';
+            notifications.forEach(notification => {
+                switch (notification.type) {
+                    case 'GROUP_INVITE':
+                        html += createGroupInviteCard(notification);
+                        break;
+                    case 'INTERACTION':
+                        html += createInteractionCard(notification);
+                        break;
+                    case 'FOLLOW':
+                        html += createFollowCard(notification);
+                        break;
+                    case 'SYSTEM':
+                        html += createSystemCard(notification);
+                        break;
+                    default:
+                        html += createInteractionCard(notification);
+                }
+            });
+
+            container.innerHTML = html;
+            updateTotalBadge();
+        }
+
+        function updateTotalBadge() {
+            const badge = document.getElementById('totalBadge');
+            const count = document.querySelectorAll('[data-notification-id]').length;
+            badge.textContent = `${count} Total`;
+        }
+
+        function checkEmptyState() {
+            const container = document.getElementById('notificationContainer');
+            const emptyState = document.getElementById('emptyState');
+            const hasNotifications = container.children.length > 0;
+
+            emptyState.classList.toggle('hidden', hasNotifications);
+        }
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            renderNotifications();
+        });
+    </script>
+</body>
+
+</html>
