@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>HON Contact Admin Selection</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&amp;display=swap"
+        rel="stylesheet" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+        rel="stylesheet" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+        rel="stylesheet" />
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#f44425",
+                        "background-light": "#f8f7f7",
+                        "background-dark": "#1f1d20",
+                    },
+                    fontFamily: {
+                        "display": ["Plus Jakarta Sans", "sans-serif"]
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0.5rem",
+                        "lg": "1rem",
+                        "xl": "1.5rem",
+                        "full": "9999px"
+                    },
+                },
+            },
+        }
+    </script>
+    <style>
+        .sunset-orb {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(120px);
+            z-index: -1;
+            opacity: 0.15;
+        }
+
+        .issue-card:hover {
+            box-shadow: 0 12px 32px -4px rgba(244, 68, 37, 0.15);
+            transform: translateY(-4px);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+    </style>
+</head>
+
+<body class="bg-background-light dark:bg-background-dark font-display min-h-screen relative overflow-x-hidden">
+    <!-- Background Decoration -->
+    <div class="sunset-orb bg-[#f44425] w-[600px] h-[600px] -top-40 -left-40"></div>
+    <div class="sunset-orb bg-orange-400 w-[500px] h-[500px] top-1/2 -right-40"></div>
+    <div class="layout-container flex h-full grow flex-col">
+        <!-- Top Navigation -->
+        <header
+            class="flex items-center justify-between whitespace-nowrap border-b border-solid border-primary/10 px-6 md:px-20 py-4 bg-white/70 dark:bg-background-dark/70 backdrop-blur-md sticky top-0 z-50">
+            <div class="flex items-center gap-4 text-[#181211] dark:text-white">
+                <div class="size-8 bg-primary rounded-lg flex items-center justify-center text-white">
+                    <span class="material-symbols-outlined text-[20px]">support_agent</span>
+                </div>
+                <h2 class="text-lg font-extrabold leading-tight tracking-[-0.015em]">HON Support</h2>
+            </div>
+            <div class="flex flex-1 justify-end gap-4 items-center">
+                <a class="hidden md:block text-[#181211] dark:text-white/80 text-sm font-medium hover:text-primary transition-colors"
+                    href="#">Help Center</a>
+                <button
+                    class="flex min-w-[84px] cursor-pointer items-center justify-center rounded-xl h-10 px-5 bg-primary text-white text-sm font-bold tracking-[0.015em] hover:brightness-110 transition-all">
+                    <span class="truncate">Back to Login</span>
+                </button>
+                <button
+                    class="flex size-10 cursor-pointer items-center justify-center rounded-xl bg-primary/10 text-primary hover:bg-primary hover:text-white transition-all">
+                    <span class="material-symbols-outlined">headset_mic</span>
+                </button>
+            </div>
+        </header>
+        <main class="flex-1 flex flex-col items-center">
+            <div class="max-w-[1000px] w-full px-6 py-12">
+                <!-- Page Heading -->
+                <div class="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-12">
+                    <div class="flex flex-col gap-3">
+                        <h1 class="text-[#181211] dark:text-white text-5xl font-black leading-tight tracking-tight">
+                            Contact <span class="text-primary">Admin</span>
+                        </h1>
+                        <p class="text-gray-600 dark:text-gray-400 text-lg font-medium max-w-xl">
+                            Select the issue you're facing to get the right help from our technical support team.
+                        </p>
+                    </div>
+                    <button
+                        class="flex items-center gap-2 min-w-[140px] cursor-pointer justify-center rounded-xl h-12 px-6 bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 text-[#181211] dark:text-white text-sm font-bold shadow-sm hover:bg-zinc-50 transition-colors">
+                        <span class="material-symbols-outlined text-sm">history</span>
+                        <span>View History</span>
+                    </button>
+                </div>
+                <!-- Issue Selection Grid -->
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <!-- Card 1 -->
+                    <div
+                        class="issue-card bg-white dark:bg-zinc-900 p-8 rounded-xl border border-zinc-100 dark:border-zinc-800 flex flex-col gap-6 group">
+                        <div
+                            class="size-14 rounded-full bg-orange-50 dark:bg-primary/10 flex items-center justify-center text-primary transition-transform group-hover:scale-110">
+                            <span class="material-symbols-outlined text-[32px]">login</span>
+                        </div>
+                        <div class="flex flex-col gap-2">
+                            <h3 class="text-[#181211] dark:text-white text-xl font-bold">Unable to Login</h3>
+                            <p class="text-gray-500 dark:text-gray-400 text-sm leading-relaxed">Having trouble accessing
+                                your dashboard or workspace.</p>
+                        </div>
+                        <button
+                            class="mt-auto flex w-full items-center justify-center h-11 rounded-lg bg-zinc-50 dark:bg-zinc-800 text-zinc-900 dark:text-white text-sm font-bold group-hover:bg-primary group-hover:text-white transition-all">
+                            Select Issue
+                        </button>
+                    </div>
+                    <!-- Card 2 -->
+                    <div
+                        class="issue-card bg-white dark:bg-zinc-900 p-8 rounded-xl border border-zinc-100 dark:border-zinc-800 flex flex-col gap-6 group">
+                        <div
+                            class="size-14 rounded-full bg-orange-50 dark:bg-primary/10 flex items-center justify-center text-primary transition-transform group-hover:scale-110">
+                            <span class="material-symbols-outlined text-[32px]">lock_reset</span>
+                        </div>
+                        <div class="flex flex-col gap-2">
+                            <h3 class="text-[#181211] dark:text-white text-xl font-bold">Password Reset</h3>
+                            <p class="text-gray-500 dark:text-gray-400 text-sm leading-relaxed">Forgot your password or
+                                your reset link has expired.</p>
+                        </div>
+                        <button
+                            class="mt-auto flex w-full items-center justify-center h-11 rounded-lg bg-zinc-50 dark:bg-zinc-800 text-zinc-900 dark:text-white text-sm font-bold group-hover:bg-primary group-hover:text-white transition-all">
+                            Select Issue
+                        </button>
+                    </div>
+                    <!-- Card 3 -->
+                    <div
+                        class="issue-card bg-white dark:bg-zinc-900 p-8 rounded-xl border border-zinc-100 dark:border-zinc-800 flex flex-col gap-6 group">
+                        <div
+                            class="size-14 rounded-full bg-orange-50 dark:bg-primary/10 flex items-center justify-center text-primary transition-transform group-hover:scale-110">
+                            <span class="material-symbols-outlined text-[32px]">mark_email_unread</span>
+                        </div>
+                        <div class="flex flex-col gap-2">
+                            <h3 class="text-[#181211] dark:text-white text-xl font-bold">Email Not Verified</h3>
+                            <p class="text-gray-500 dark:text-gray-400 text-sm leading-relaxed">Didn't receive the
+                                verification email or link failed.</p>
+                        </div>
+                        <button
+                            class="mt-auto flex w-full items-center justify-center h-11 rounded-lg bg-zinc-50 dark:bg-zinc-800 text-zinc-900 dark:text-white text-sm font-bold group-hover:bg-primary group-hover:text-white transition-all">
+                            Select Issue
+                        </button>
+                    </div>
+                    <!-- Card 4 -->
+                    <div
+                        class="issue-card bg-white dark:bg-zinc-900 p-8 rounded-xl border border-zinc-100 dark:border-zinc-800 flex flex-col gap-6 group">
+                        <div
+                            class="size-14 rounded-full bg-orange-50 dark:bg-primary/10 flex items-center justify-center text-primary transition-transform group-hover:scale-110">
+                            <span class="material-symbols-outlined text-[32px]">block</span>
+                        </div>
+                        <div class="flex flex-col gap-2">
+                            <h3 class="text-[#181211] dark:text-white text-xl font-bold">Account Blocked</h3>
+                            <p class="text-gray-500 dark:text-gray-400 text-sm leading-relaxed">Your account has been
+                                restricted for security reasons.</p>
+                        </div>
+                        <button
+                            class="mt-auto flex w-full items-center justify-center h-11 rounded-lg bg-zinc-50 dark:bg-zinc-800 text-zinc-900 dark:text-white text-sm font-bold group-hover:bg-primary group-hover:text-white transition-all">
+                            Select Issue
+                        </button>
+                    </div>
+                    <!-- Card 5 -->
+                    <div
+                        class="issue-card bg-white dark:bg-zinc-900 p-8 rounded-xl border border-zinc-100 dark:border-zinc-800 flex flex-col gap-6 group">
+                        <div
+                            class="size-14 rounded-full bg-orange-50 dark:bg-primary/10 flex items-center justify-center text-primary transition-transform group-hover:scale-110">
+                            <span class="material-symbols-outlined text-[32px]">vibration</span>
+                        </div>
+                        <div class="flex flex-col gap-2">
+                            <h3 class="text-[#181211] dark:text-white text-xl font-bold">OTP Not Received</h3>
+                            <p class="text-gray-500 dark:text-gray-400 text-sm leading-relaxed">Delays in receiving 2FA
+                                codes on your mobile device.</p>
+                        </div>
+                        <button
+                            class="mt-auto flex w-full items-center justify-center h-11 rounded-lg bg-zinc-50 dark:bg-zinc-800 text-zinc-900 dark:text-white text-sm font-bold group-hover:bg-primary group-hover:text-white transition-all">
+                            Select Issue
+                        </button>
+                    </div>
+                    <!-- Card 6 -->
+                    <div
+                        class="issue-card bg-white dark:bg-zinc-900 p-8 rounded-xl border border-zinc-100 dark:border-zinc-800 flex flex-col gap-6 group">
+                        <div
+                            class="size-14 rounded-full bg-orange-50 dark:bg-primary/10 flex items-center justify-center text-primary transition-transform group-hover:scale-110">
+                            <span class="material-symbols-outlined text-[32px]">more_horiz</span>
+                        </div>
+                        <div class="flex flex-col gap-2">
+                            <h3 class="text-[#181211] dark:text-white text-xl font-bold">Other Issues</h3>
+                            <p class="text-gray-500 dark:text-gray-400 text-sm leading-relaxed">Any other technical
+                                difficulties not listed here.</p>
+                        </div>
+                        <button
+                            class="mt-auto flex w-full items-center justify-center h-11 rounded-lg bg-zinc-50 dark:bg-zinc-800 text-zinc-900 dark:text-white text-sm font-bold group-hover:bg-primary group-hover:text-white transition-all">
+                            Select Issue
+                        </button>
+                    </div>
+                </div>
+                <!-- Help CTA -->
+                <div class="mt-16 p-1 bg-gradient-to-r from-primary/30 to-orange-400/30 rounded-2xl">
+                    <div
+                        class="flex flex-col md:flex-row items-center justify-between gap-6 bg-white dark:bg-zinc-900 p-8 rounded-[calc(1rem-1px)]">
+                        <div class="flex flex-col gap-1">
+                            <h4 class="text-[#181211] dark:text-white text-xl font-bold">Need urgent help?</h4>
+                            <p class="text-gray-600 dark:text-gray-400">Our emergency support team is available 24/7 for
+                                critical account failures.</p>
+                        </div>
+                        <button
+                            class="flex items-center gap-3 min-w-[160px] cursor-pointer justify-center rounded-xl h-12 px-8 bg-primary text-white text-sm font-bold hover:brightness-110 shadow-lg shadow-primary/20 transition-all">
+                            <span class="material-symbols-outlined">call</span>
+                            <span>Call Support</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </main>
+        <!-- Footer -->
+        <footer class="mt-12 px-6 py-12 text-center border-t border-primary/5">
+            <div class="flex flex-wrap items-center justify-center gap-8 md:gap-16 mb-8">
+                <a class="text-gray-500 hover:text-primary text-sm font-medium transition-colors" href="#">Privacy
+                    Policy</a>
+                <a class="text-gray-500 hover:text-primary text-sm font-medium transition-colors" href="#">Terms of
+                    Service</a>
+                <a class="text-gray-500 hover:text-primary text-sm font-medium transition-colors" href="#">Security
+                    Status</a>
+            </div>
+            <div class="flex justify-center gap-6 mb-8">
+                <a class="text-gray-400 hover:text-primary transition-colors" href="#"><span
+                        class="material-symbols-outlined">public</span></a>
+                <a class="text-gray-400 hover:text-primary transition-colors" href="#"><span
+                        class="material-symbols-outlined">share</span></a>
+                <a class="text-gray-400 hover:text-primary transition-colors" href="#"><span
+                        class="material-symbols-outlined">info</span></a>
+            </div>
+            <p class="text-gray-400 text-xs font-semibold tracking-widest uppercase">© 2024 HON APPLICATION. EMPOWERING
+                SUPPORT.</p>
+        </footer>
+    </div>
+</body>
+
+</html>

@@ -1,0 +1,596 @@
+<!DOCTYPE html>
+<html class="light" lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>HON Contact Admin Selection</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap"
+        rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap"
+        rel="stylesheet" />
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#f44425",
+                        "background-light": "#f8f7f7",
+                        "background-dark": "#1f1d20",
+                    },
+                    fontFamily: {
+                        "display": ["Plus Jakarta Sans", "sans-serif"]
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0.5rem",
+                        "lg": "1rem",
+                        "xl": "1.5rem",
+                        "full": "9999px"
+                    },
+                },
+            },
+        }
+    </script>
+    <style>
+        .sunset-orb {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(120px);
+            z-index: -1;
+            opacity: 0.15;
+        }
+
+        .issue-card:hover {
+            box-shadow: 0 12px 32px -4px rgba(244, 68, 37, 0.15);
+            transform: translateY(-4px);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        /* Smooth scrolling */
+        html {
+            scroll-behavior: smooth;
+        }
+
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.6);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+            padding: 1rem;
+        }
+
+        .modal-overlay.show {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: 1.5rem;
+            padding: 2.5rem;
+            max-width: 600px;
+            width: 100%;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            animation: modalSlide 0.4s ease-out;
+            position: relative;
+        }
+
+        @keyframes modalSlide {
+            from {
+                transform: translateY(-50px);
+                opacity: 0;
+            }
+
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        .modal-close {
+            position: absolute;
+            top: 1.5rem;
+            right: 1.5rem;
+            background: none;
+            border: none;
+            font-size: 2rem;
+            color: #999;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            z-index: 10;
+        }
+
+        .modal-close:hover {
+            color: #f44425;
+            background: rgba(244, 68, 37, 0.1);
+            transform: rotate(90deg);
+        }
+
+        .success-popup {
+            position: fixed;
+            top: 30px;
+            right: 30px;
+            background: linear-gradient(135deg, #22c55e, #16a34a);
+            color: white;
+            padding: 1rem 1.5rem;
+            border-radius: 14px;
+            font-weight: 700;
+            z-index: 10000;
+            box-shadow: 0 12px 32px rgba(34, 197, 94, 0.4);
+            animation: slideIn 0.4s ease-out;
+            display: none;
+        }
+
+        .success-popup.show {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateX(400px);
+                opacity: 0;
+            }
+
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        /* Responsive Styles */
+        @media (max-width: 768px) {
+            .sunset-orb {
+                filter: blur(80px);
+            }
+
+            .modal-content {
+                padding: 1.5rem;
+                margin: 0.5rem;
+            }
+
+            .modal-close {
+                top: 1rem;
+                right: 1rem;
+                width: 36px;
+                height: 36px;
+                font-size: 1.75rem;
+            }
+
+            .success-popup {
+                left: 1rem;
+                right: 1rem;
+                top: auto;
+                bottom: 20px;
+                padding: 0.875rem 1.25rem;
+            }
+
+            @keyframes slideIn {
+                from {
+                    transform: translateY(100px);
+                    opacity: 0;
+                }
+
+                to {
+                    transform: translateY(0);
+                    opacity: 1;
+                }
+            }
+        }
+
+        @media (max-width: 640px) {
+            .modal-content {
+                padding: 1.25rem;
+                border-radius: 1.25rem;
+                max-height: 95vh;
+            }
+
+            .modal-overlay {
+                padding: 0.5rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .sunset-orb {
+                filter: blur(60px);
+                opacity: 0.1;
+            }
+        }
+    </style>
+</head>
+
+<body class="bg-background-light dark:bg-background-dark font-display min-h-screen relative overflow-x-hidden">
+    <!-- Background Decoration -->
+    <div class="sunset-orb bg-[#f44425] w-[600px] h-[600px] -top-40 -left-40"></div>
+    <div class="sunset-orb bg-orange-400 w-[500px] h-[500px] top-1/2 -right-40"></div>
+
+    <div class="layout-container flex h-full grow flex-col">
+        <!-- Top Navigation -->
+        <header
+            class="flex items-center justify-between whitespace-nowrap border-b border-solid border-primary/10 px-4 sm:px-6 md:px-20 py-3 md:py-4 bg-white/70 dark:bg-background-dark/70 backdrop-blur-md sticky top-0 z-50">
+            <div class="flex items-center gap-2 sm:gap-4 text-[#181211] dark:text-white">
+                <div class="size-7 sm:size-8 bg-primary rounded-lg flex items-center justify-center text-white">
+                    <span class="material-symbols-outlined text-[18px] sm:text-[20px]">support_agent</span>
+                </div>
+                <h2 class="text-base sm:text-lg font-extrabold leading-tight tracking-[-0.015em]">HON Support</h2>
+            </div>
+            <div class="flex flex-1 justify-end gap-2 sm:gap-4 items-center">
+                <a class="hidden lg:block text-[#181211] dark:text-white/80 text-sm font-medium hover:text-primary transition-colors"
+                    href="#">Help Center</a>
+                <a th:href="@{/login}"
+                    class="hidden sm:flex min-w-[84px] cursor-pointer items-center justify-center rounded-xl h-9 md:h-10 px-4 md:px-5 bg-primary text-white text-xs md:text-sm font-bold tracking-[0.015em] hover:brightness-110 transition-all">
+                    <span class="truncate">Back to Login</span>
+                </a>
+                <a th:href="@{/login}"
+                    class="flex sm:hidden size-9 cursor-pointer items-center justify-center rounded-xl bg-primary text-white hover:brightness-110 transition-all">
+                    <span class="material-symbols-outlined text-[20px]">arrow_back</span>
+                </a>
+                <button
+                    class="hidden sm:flex size-9 md:size-10 cursor-pointer items-center justify-center rounded-xl bg-primary/10 text-primary hover:bg-primary hover:text-white transition-all">
+                    <span class="material-symbols-outlined">headset_mic</span>
+                </button>
+            </div>
+        </header>
+
+        <main class="flex-1 flex flex-col items-center">
+            <div class="max-w-[1000px] w-full px-4 sm:px-6 py-8 sm:py-12">
+                <!-- Page Heading -->
+                <div class="flex flex-col md:flex-row md:items-end justify-between gap-4 sm:gap-6 mb-8 sm:mb-12">
+                    <div class="flex flex-col gap-2 sm:gap-3">
+                        <h1
+                            class="text-[#181211] dark:text-white text-3xl sm:text-4xl md:text-5xl font-black leading-tight tracking-tight">
+                            Contact <span class="text-primary">Admin</span>
+                        </h1>
+                        <p class="text-gray-600 dark:text-gray-400 text-base sm:text-lg font-medium max-w-xl">
+                            Select the issue you're facing to get the right help from our technical support team.
+                        </p>
+                    </div>
+                    <button
+                        class="flex items-center gap-2 min-w-[140px] w-full sm:w-auto cursor-pointer justify-center rounded-xl h-11 sm:h-12 px-6 bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 text-[#181211] dark:text-white text-sm font-bold shadow-sm hover:bg-zinc-50 transition-colors">
+                        <span class="material-symbols-outlined text-sm">history</span>
+                        <span>View History</span>
+                    </button>
+                </div>
+
+                <!-- Issue Selection Grid -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
+                    <!-- Card 1: Unable to Login -->
+                    <div class="issue-card bg-white dark:bg-zinc-900 p-6 sm:p-8 rounded-xl border border-zinc-100 dark:border-zinc-800 flex flex-col gap-4 sm:gap-6 group cursor-pointer"
+                        onclick="openModal('Unable to login', 'login')">
+                        <div
+                            class="size-12 sm:size-14 rounded-full bg-orange-50 dark:bg-primary/10 flex items-center justify-center text-primary transition-transform group-hover:scale-110">
+                            <span class="material-symbols-outlined text-[28px] sm:text-[32px]">login</span>
+                        </div>
+                        <div class="flex flex-col gap-2">
+                            <h3 class="text-[#181211] dark:text-white text-lg sm:text-xl font-bold">Unable to Login</h3>
+                            <p class="text-gray-500 dark:text-gray-400 text-sm leading-relaxed">Having trouble accessing
+                                your dashboard or workspace.</p>
+                        </div>
+                        <button
+                            class="mt-auto flex w-full items-center justify-center h-10 sm:h-11 rounded-lg bg-zinc-50 dark:bg-zinc-800 text-zinc-900 dark:text-white text-sm font-bold group-hover:bg-primary group-hover:text-white transition-all">
+                            Select Issue
+                        </button>
+                    </div>
+
+                    <!-- Card 2: Password Reset -->
+                    <div class="issue-card bg-white dark:bg-zinc-900 p-6 sm:p-8 rounded-xl border border-zinc-100 dark:border-zinc-800 flex flex-col gap-4 sm:gap-6 group cursor-pointer"
+                        onclick="openModal('Forgot password / reset issue', 'lock_reset')">
+                        <div
+                            class="size-12 sm:size-14 rounded-full bg-orange-50 dark:bg-primary/10 flex items-center justify-center text-primary transition-transform group-hover:scale-110">
+                            <span class="material-symbols-outlined text-[28px] sm:text-[32px]">lock_reset</span>
+                        </div>
+                        <div class="flex flex-col gap-2">
+                            <h3 class="text-[#181211] dark:text-white text-lg sm:text-xl font-bold">Password Reset</h3>
+                            <p class="text-gray-500 dark:text-gray-400 text-sm leading-relaxed">Forgot your password or
+                                your reset link has expired.</p>
+                        </div>
+                        <button
+                            class="mt-auto flex w-full items-center justify-center h-10 sm:h-11 rounded-lg bg-zinc-50 dark:bg-zinc-800 text-zinc-900 dark:text-white text-sm font-bold group-hover:bg-primary group-hover:text-white transition-all">
+                            Select Issue
+                        </button>
+                    </div>
+
+                    <!-- Card 3: Email Not Verified -->
+                    <div class="issue-card bg-white dark:bg-zinc-900 p-6 sm:p-8 rounded-xl border border-zinc-100 dark:border-zinc-800 flex flex-col gap-4 sm:gap-6 group cursor-pointer"
+                        onclick="openModal('Email not verified', 'mark_email_unread')">
+                        <div
+                            class="size-12 sm:size-14 rounded-full bg-orange-50 dark:bg-primary/10 flex items-center justify-center text-primary transition-transform group-hover:scale-110">
+                            <span class="material-symbols-outlined text-[28px] sm:text-[32px]">mark_email_unread</span>
+                        </div>
+                        <div class="flex flex-col gap-2">
+                            <h3 class="text-[#181211] dark:text-white text-lg sm:text-xl font-bold">Email Not Verified
+                            </h3>
+                            <p class="text-gray-500 dark:text-gray-400 text-sm leading-relaxed">Didn't receive the
+                                verification email or link failed.</p>
+                        </div>
+                        <button
+                            class="mt-auto flex w-full items-center justify-center h-10 sm:h-11 rounded-lg bg-zinc-50 dark:bg-zinc-800 text-zinc-900 dark:text-white text-sm font-bold group-hover:bg-primary group-hover:text-white transition-all">
+                            Select Issue
+                        </button>
+                    </div>
+
+                    <!-- Card 4: Account Blocked -->
+                    <div class="issue-card bg-white dark:bg-zinc-900 p-6 sm:p-8 rounded-xl border border-zinc-100 dark:border-zinc-800 flex flex-col gap-4 sm:gap-6 group cursor-pointer"
+                        onclick="openModal('Account blocked / suspended', 'block')">
+                        <div
+                            class="size-12 sm:size-14 rounded-full bg-orange-50 dark:bg-primary/10 flex items-center justify-center text-primary transition-transform group-hover:scale-110">
+                            <span class="material-symbols-outlined text-[28px] sm:text-[32px]">block</span>
+                        </div>
+                        <div class="flex flex-col gap-2">
+                            <h3 class="text-[#181211] dark:text-white text-lg sm:text-xl font-bold">Account Blocked</h3>
+                            <p class="text-gray-500 dark:text-gray-400 text-sm leading-relaxed">Your account has been
+                                restricted for security reasons.</p>
+                        </div>
+                        <button
+                            class="mt-auto flex w-full items-center justify-center h-10 sm:h-11 rounded-lg bg-zinc-50 dark:bg-zinc-800 text-zinc-900 dark:text-white text-sm font-bold group-hover:bg-primary group-hover:text-white transition-all">
+                            Select Issue
+                        </button>
+                    </div>
+
+                    <!-- Card 5: OTP Not Received -->
+                    <div class="issue-card bg-white dark:bg-zinc-900 p-6 sm:p-8 rounded-xl border border-zinc-100 dark:border-zinc-800 flex flex-col gap-4 sm:gap-6 group cursor-pointer"
+                        onclick="openModal('OTP not received', 'vibration')">
+                        <div
+                            class="size-12 sm:size-14 rounded-full bg-orange-50 dark:bg-primary/10 flex items-center justify-center text-primary transition-transform group-hover:scale-110">
+                            <span class="material-symbols-outlined text-[28px] sm:text-[32px]">vibration</span>
+                        </div>
+                        <div class="flex flex-col gap-2">
+                            <h3 class="text-[#181211] dark:text-white text-lg sm:text-xl font-bold">OTP Not Received
+                            </h3>
+                            <p class="text-gray-500 dark:text-gray-400 text-sm leading-relaxed">Delays in receiving 2FA
+                                codes on your mobile device.</p>
+                        </div>
+                        <button
+                            class="mt-auto flex w-full items-center justify-center h-10 sm:h-11 rounded-lg bg-zinc-50 dark:bg-zinc-800 text-zinc-900 dark:text-white text-sm font-bold group-hover:bg-primary group-hover:text-white transition-all">
+                            Select Issue
+                        </button>
+                    </div>
+
+                    <!-- Card 6: Other Issues -->
+                    <div class="issue-card bg-white dark:bg-zinc-900 p-6 sm:p-8 rounded-xl border border-zinc-100 dark:border-zinc-800 flex flex-col gap-4 sm:gap-6 group cursor-pointer"
+                        onclick="openModal('Other issue', 'more_horiz')">
+                        <div
+                            class="size-12 sm:size-14 rounded-full bg-orange-50 dark:bg-primary/10 flex items-center justify-center text-primary transition-transform group-hover:scale-110">
+                            <span class="material-symbols-outlined text-[28px] sm:text-[32px]">more_horiz</span>
+                        </div>
+                        <div class="flex flex-col gap-2">
+                            <h3 class="text-[#181211] dark:text-white text-lg sm:text-xl font-bold">Other Issues</h3>
+                            <p class="text-gray-500 dark:text-gray-400 text-sm leading-relaxed">Any other technical
+                                difficulties not listed here.</p>
+                        </div>
+                        <button
+                            class="mt-auto flex w-full items-center justify-center h-10 sm:h-11 rounded-lg bg-zinc-50 dark:bg-zinc-800 text-zinc-900 dark:text-white text-sm font-bold group-hover:bg-primary group-hover:text-white transition-all">
+                            Select Issue
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Help CTA -->
+                <div class="mt-12 sm:mt-16 p-1 bg-gradient-to-r from-primary/30 to-orange-400/30 rounded-2xl">
+                    <div
+                        class="flex flex-col md:flex-row items-center justify-between gap-4 sm:gap-6 bg-white dark:bg-zinc-900 p-6 sm:p-8 rounded-[calc(1rem-1px)]">
+                        <div class="flex flex-col gap-1 text-center md:text-left">
+                            <h4 class="text-[#181211] dark:text-white text-lg sm:text-xl font-bold">Need urgent help?
+                            </h4>
+                            <p class="text-gray-600 dark:text-gray-400 text-sm sm:text-base">Our emergency support team
+                                is available 24/7 for critical account failures.</p>
+                        </div>
+                        <button
+                            class="flex items-center gap-3 min-w-[160px] w-full md:w-auto cursor-pointer justify-center rounded-xl h-11 sm:h-12 px-8 bg-primary text-white text-sm font-bold hover:brightness-110 shadow-lg shadow-primary/20 transition-all">
+                            <span class="material-symbols-outlined">call</span>
+                            <span>Call Support</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <!-- Footer -->
+        <footer class="mt-8 sm:mt-12 px-4 sm:px-6 py-8 sm:py-12 text-center border-t border-primary/5">
+            <div class="flex flex-wrap items-center justify-center gap-6 sm:gap-8 md:gap-16 mb-6 sm:mb-8">
+                <a class="text-gray-500 hover:text-primary text-xs sm:text-sm font-medium transition-colors"
+                    href="#">Privacy Policy</a>
+                <a class="text-gray-500 hover:text-primary text-xs sm:text-sm font-medium transition-colors"
+                    href="#">Terms of Service</a>
+                <a class="text-gray-500 hover:text-primary text-xs sm:text-sm font-medium transition-colors"
+                    href="#">Security Status</a>
+            </div>
+            <div class="flex justify-center gap-4 sm:gap-6 mb-6 sm:mb-8">
+                <a class="text-gray-400 hover:text-primary transition-colors" href="#"><span
+                        class="material-symbols-outlined text-xl sm:text-2xl">public</span></a>
+                <a class="text-gray-400 hover:text-primary transition-colors" href="#"><span
+                        class="material-symbols-outlined text-xl sm:text-2xl">share</span></a>
+                <a class="text-gray-400 hover:text-primary transition-colors" href="#"><span
+                        class="material-symbols-outlined text-xl sm:text-2xl">info</span></a>
+            </div>
+            <p class="text-gray-400 text-[10px] sm:text-xs font-semibold tracking-widest uppercase px-4">© 2024 HON
+                APPLICATION. EMPOWERING SUPPORT.</p>
+        </footer>
+    </div>
+
+    <!-- Contact Form Modal -->
+    <div class="modal-overlay" id="contactModal">
+        <div class="modal-content">
+            <button class="modal-close" onclick="closeModal()">&times;</button>
+
+            <div class="mb-6">
+                <div class="flex items-center gap-4 mb-3">
+                    <div
+                        class="size-12 rounded-xl bg-orange-50 dark:bg-primary/10 flex items-center justify-center text-primary">
+                        <span class="material-symbols-outlined text-[28px]" id="modalIcon">login</span>
+                    </div>
+                    <h2 class="text-2xl font-bold text-[#181211]" id="modalTitle">Unable to login</h2>
+                </div>
+                <p class="text-gray-600 text-sm">Fill out the form below and we'll get back to you soon</p>
+            </div>
+
+            <form th:action="@{/contact-admin}" method="post" onsubmit="return handleSubmit(event)">
+                <input type="hidden" name="issueType" id="issueType">
+
+                <div class="mb-4">
+                    <label for="name" class="block text-sm font-semibold text-[#181211] mb-2">Full Name</label>
+                    <input type="text" id="name" name="name" placeholder="Enter your full name" required
+                        class="w-full px-4 py-3 border-2 border-zinc-200 rounded-xl focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none transition-all">
+                </div>
+
+                <div class="mb-4">
+                    <label for="email" class="block text-sm font-semibold text-[#181211] mb-2">Email Address</label>
+                    <input type="email" id="email" name="email" placeholder="Enter your email" required
+                        class="w-full px-4 py-3 border-2 border-zinc-200 rounded-xl focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none transition-all">
+                </div>
+
+                <div class="mb-4">
+                    <label for="username" class="block text-sm font-semibold text-[#181211] mb-2">Username</label>
+                    <input type="text" id="username" autocomplete="off" name="username" onkeyup="checkValidUsername();"
+                        placeholder="Enter your HON username" required
+                        class="w-full px-4 py-3 border-2 border-zinc-200 rounded-xl focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none transition-all">
+                    <p id="checkUserName" class="text-red-500 text-sm mt-1"></p>
+                    <p id="userNameLengthError" class="text-red-500 text-sm mt-1"></p>
+                </div>
+
+                <div class="mb-6">
+                    <label for="message" class="block text-sm font-semibold text-[#181211] mb-2">Describe Your
+                        Issue</label>
+                    <textarea id="message" name="message" placeholder="Please provide details about your issue..."
+                        required
+                        class="w-full px-4 py-3 border-2 border-zinc-200 rounded-xl focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none transition-all min-h-[120px] resize-y"></textarea>
+                </div>
+
+                <button type="submit" id="form-submit-btn"
+                    class="w-full flex items-center justify-center gap-2 h-12 rounded-xl bg-primary text-white text-sm font-bold hover:brightness-110 shadow-lg shadow-primary/20 transition-all">
+                    <span class="material-symbols-outlined">send</span>
+                    <span>Send Message</span>
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Success Popup -->
+    <div th:if="${success}" class="success-popup show" id="successPopup">
+        <span class="material-symbols-outlined text-2xl">check_circle</span>
+        <span>Message sent successfully! We'll contact you soon.</span>
+    </div>
+
+    <script th:if="${success}">
+        setTimeout(() => {
+            document.getElementById('successPopup').classList.remove('show');
+        }, 4000);
+    </script>
+
+    <script>
+        let checkFormSubmit = true;
+
+        document.addEventListener("DOMContentLoaded", () => {
+            const usernameInput = document.getElementById("username");
+            const usernameMsg = document.getElementById("checkUserName");
+            let usernameTimer = null;
+
+            usernameInput.addEventListener("input", function () {
+                clearTimeout(usernameTimer);
+                const username = this.value.trim();
+
+                usernameTimer = setTimeout(() => {
+                    if (username.length === 0) {
+                        usernameMsg.textContent = "";
+                        usernameInput.classList.remove("border-red-500");
+                        return;
+                    }
+
+                    fetch(`/check-username?username=${encodeURIComponent(username)}`)
+                        .then(response => response.json())
+                        .then(data => {
+                            if (!data.exists) {
+                                usernameMsg.textContent = "This username does not exist!";
+                                usernameInput.classList.add("border-red-500");
+                                checkFormSubmit = false;
+                            } else {
+                                usernameMsg.textContent = "";
+                                usernameInput.classList.remove("border-red-500");
+                                checkFormSubmit = true;
+                            }
+                        })
+                        .catch(err => {
+                            console.error("Error checking username:", err);
+                        });
+                }, 500);
+            });
+        });
+
+        document.getElementById("username").addEventListener("input", function (e) {
+            this.value = this.value.replace(/\s/g, "");
+        });
+
+        function checkValidUsername() {
+            const username = document.getElementById('username');
+            const usernameError = document.getElementById('userNameLengthError');
+
+            if (username.value.length > 3 && username.value.length < 20) {
+                usernameError.textContent = "";
+                username.classList.remove("border-red-500");
+                username.classList.add("border-green-500");
+                checkFormSubmit = true;
+            } else {
+                usernameError.textContent = "Username length must be between 3 and 20.";
+                checkFormSubmit = false;
+                username.classList.add("border-red-500");
+                username.classList.remove("border-green-500");
+            }
+        }
+
+        function openModal(issueType, icon) {
+            document.getElementById('contactModal').classList.add('show');
+            document.getElementById('modalTitle').textContent = issueType;
+            document.getElementById('modalIcon').textContent = icon;
+            document.getElementById('issueType').value = issueType;
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeModal() {
+            document.getElementById('contactModal').classList.remove('show');
+            document.body.style.overflow = 'auto';
+        }
+
+        document.getElementById('contactModal').addEventListener('click', function (e) {
+            if (e.target === this) {
+                closeModal();
+            }
+        });
+
+        function handleSubmit(event) {
+            event.preventDefault();
+
+            if (!checkFormSubmit) {
+                event.preventDefault();
+                return false;
+            }
+
+            document.getElementById('form-submit-btn').disabled = true;
+            document.getElementById('form-submit-btn').innerHTML = '<span class="material-symbols-outlined animate-spin">progress_activity</span><span>Sending...</span>';
+
+            event.target.submit();
+            return true;
+        }
+    </script>
+</body>
+
+</html>
