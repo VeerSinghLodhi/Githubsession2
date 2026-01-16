@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Contact Us - Health Saathi</title>
+    <link href="https://fonts.googleapis.com" rel="preconnect" />
+    <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect" />
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap"
+        rel="stylesheet" />
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#0058ba",
+                        "primary-dark": "#155a96",
+                        "primary-light": "#e3f2fd",
+                        "text-main": "#1e293b",
+                        "text-secondary": "#64748b",
+                        "border-light": "#e2e8f0",
+                        "surface": "#ffffff",
+                        "background": "#f8fafc",
+                    },
+                    fontFamily: {
+                        "display": ["Poppins", "sans-serif"]
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0.75rem",
+                        "xl": "1rem",
+                        "2xl": "1.25rem",
+                        "3xl": "1.5rem"
+                    },
+                    boxShadow: {
+                        'soft': '0 4px 20px -4px rgba(30, 115, 190, 0.1)',
+                        'glow': '0 8px 30px rgba(30, 115, 190, 0.2)',
+                        'card': '0 2px 12px rgba(0, 0, 0, 0.06)',
+                        'hover': '0 8px 25px rgba(30, 115, 190, 0.15)',
+                    }
+                },
+            },
+        }
+    </script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            height: 100%;
+            overflow-y: auto;
+        }
+
+        body {
+            min-height: 100vh;
+            height: auto;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            overflow-y: auto;
+            padding-top: env(safe-area-inset-top);
+        }
+
+        .animate-fade-in {
+            animation: fadeIn 0.3s ease-in;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .active\:scale-95:active {
+            transform: scale(0.95);
+        }
+    </style>
+</head>
+
+<body class="bg-background font-display text-text-main relative">
+    <div
+        class="absolute -top-[10%] -right-[10%] w-[70%] h-[40%] bg-blue-100/60 rounded-full blur-3xl pointer-events-none">
+    </div>
+    <div class="absolute top-[20%] -left-[10%] w-[50%] h-[30%] bg-blue-50/60 rounded-full blur-3xl pointer-events-none">
+    </div>
+
+    <!-- Header -->
+    <header class="bg-surface/80 backdrop-blur-xl border-b border-border-light sticky top-0 z-40 px-4 py-4">
+        <div class="max-w-7xl mx-auto flex items-center justify-between">
+            <button onclick="goBack()" class="p-2 hover:bg-gray-100 rounded-xl transition-colors active:scale-95">
+                <span class="material-symbols-outlined text-text-secondary">arrow_back</span>
+            </button>
+            <div class="text-center">
+                <h1 class="text-base font-bold text-text-main">Contact Us</h1>
+                <p class="text-[10px] text-text-secondary">We're here to help</p>
+            </div>
+            <div class="w-10"></div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="relative z-10 max-w-7xl mx-auto px-4 py-6 pb-8">
+
+        <!-- Hero Section -->
+        <div class="bg-surface rounded-3xl shadow-card p-6 border border-border-light mb-6 animate-fade-in">
+            <div class="flex flex-col items-center text-center">
+                <div
+                    class="w-24 h-24 bg-gradient-to-br from-primary to-primary-dark rounded-2xl flex items-center justify-center text-white shadow-glow mb-4">
+                    <span class="material-symbols-outlined text-[48px]">support_agent</span>
+                </div>
+                <h2 class="text-lg font-bold text-text-main mb-2">Get in Touch</h2>
+                <p class="text-sm text-text-secondary">We'd love to hear from you. Choose your preferred way to contact
+                    us.</p>
+            </div>
+        </div>
+
+        <!-- Contact Methods -->
+        <h3 class="text-base font-bold text-text-main mb-4">Contact Methods</h3>
+
+        <!-- Email -->
+        <a href="mailto:support@healthsaathi.com"
+            class="block bg-surface rounded-2xl shadow-card p-5 border border-border-light hover:shadow-hover transition-all active:scale-95 mb-3 animate-fade-in">
+            <div class="flex items-center gap-4">
+                <div class="w-14 h-14 bg-blue-50 rounded-xl flex items-center justify-center flex-shrink-0">
+                    <span class="material-symbols-outlined text-primary text-[28px]">mail</span>
+                </div>
+                <div class="flex-1">
+                    <h4 class="font-bold text-text-main mb-1">Email Us</h4>
+                    <p class="text-sm text-text-secondary">support@healthsaathi.com</p>
+                    <p class="text-xs text-text-secondary mt-1">We'll respond within 24 hours</p>
+                </div>
+                <span class="material-symbols-outlined text-text-secondary">arrow_forward_ios</span>
+            </div>
+        </a>
+
+        <!-- Phone -->
+        <a href="tel:+911234567890"
+            class="block bg-surface rounded-2xl shadow-card p-5 border border-border-light hover:shadow-hover transition-all active:scale-95 mb-3 animate-fade-in">
+            <div class="flex items-center gap-4">
+                <div class="w-14 h-14 bg-green-50 rounded-xl flex items-center justify-center flex-shrink-0">
+                    <span class="material-symbols-outlined text-green-600 text-[28px]">call</span>
+                </div>
+                <div class="flex-1">
+                    <h4 class="font-bold text-text-main mb-1">Call Us</h4>
+                    <p class="text-sm text-text-secondary">+91 123 456 7890</p>
+                    <p class="text-xs text-text-secondary mt-1">Mon-Fri: 9 AM - 6 PM IST</p>
+                </div>
+                <span class="material-symbols-outlined text-text-secondary">arrow_forward_ios</span>
+            </div>
+        </a>
+
+        <!-- WhatsApp -->
+        <a href="https://wa.me/911234567890"
+            class="block bg-surface rounded-2xl shadow-card p-5 border border-border-light hover:shadow-hover transition-all active:scale-95 mb-3 animate-fade-in">
+            <div class="flex items-center gap-4">
+                <div class="w-14 h-14 bg-green-50 rounded-xl flex items-center justify-center flex-shrink-0">
+                    <span class="material-symbols-outlined text-green-600 text-[28px]">chat</span>
+                </div>
+                <div class="flex-1">
+                    <h4 class="font-bold text-text-main mb-1">WhatsApp</h4>
+                    <p class="text-sm text-text-secondary">+91 123 456 7890</p>
+                    <p class="text-xs text-text-secondary mt-1">Quick support via WhatsApp</p>
+                </div>
+                <span class="material-symbols-outlined text-text-secondary">arrow_forward_ios</span>
+            </div>
+        </a>
+
+        <!-- Contact Form -->
+        <div class="mt-8 mb-6">
+            <h3 class="text-base font-bold text-text-main mb-4">Send us a Message</h3>
+            <div class="bg-surface rounded-2xl shadow-card p-5 border border-border-light animate-fade-in">
+                <form id="contactForm" onsubmit="submitForm(event)">
+                    <div class="mb-4">
+                        <label class="block text-sm font-semibold text-text-main mb-2">Your Name</label>
+                        <input type="text" required
+                            class="w-full px-4 py-3 rounded-xl border-2 border-border-light focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none transition-all"
+                            placeholder="Enter your name" />
+                    </div>
+
+                    <div class="mb-4">
+                        <label class="block text-sm font-semibold text-text-main mb-2">Email Address</label>
+                        <input type="email" required
+                            class="w-full px-4 py-3 rounded-xl border-2 border-border-light focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none transition-all"
+                            placeholder="your.email@example.com" />
+                    </div>
+
+                    <div class="mb-4">
+                        <label class="block text-sm font-semibold text-text-main mb-2">Phone Number</label>
+                        <input type="tel"
+                            class="w-full px-4 py-3 rounded-xl border-2 border-border-light focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none transition-all"
+                            placeholder="+91 1234567890" />
+                    </div>
+
+                    <div class="mb-4">
+                        <label class="block text-sm font-semibold text-text-main mb-2">Subject</label>
+                        <select required
+                            class="w-full px-4 py-3 rounded-xl border-2 border-border-light focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none transition-all">
+                            <option value="">Select a subject</option>
+                            <option value="general">General Inquiry</option>
+                            <option value="technical">Technical Support</option>
+                            <option value="feedback">Feedback</option>
+                            <option value="bug">Report a Bug</option>
+                            <option value="other">Other</option>
+                        </select>
+                    </div>
+
+                    <div class="mb-5">
+                        <label class="block text-sm font-semibold text-text-main mb-2">Message</label>
+                        <textarea required rows="5"
+                            class="w-full px-4 py-3 rounded-xl border-2 border-border-light focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none transition-all resize-none"
+                            placeholder="How can we help you?"></textarea>
+                    </div>
+
+                    <button type="submit"
+                        class="w-full py-4 bg-gradient-to-r from-primary to-primary-dark text-white font-bold rounded-xl shadow-glow hover:shadow-hover transition-all active:scale-95">
+                        <span class="flex items-center justify-center gap-2">
+                            <span class="material-symbols-outlined">send</span>
+                            Send Message
+                        </span>
+                    </button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Office Location -->
+        <div class="bg-surface rounded-2xl shadow-card p-5 border border-border-light mb-6 animate-fade-in">
+            <div class="flex items-start gap-4">
+                <div class="w-12 h-12 bg-orange-50 rounded-xl flex items-center justify-center flex-shrink-0">
+                    <span class="material-symbols-outlined text-orange-600 text-[24px]">location_on</span>
+                </div>
+                <div>
+                    <h4 class="font-bold text-text-main mb-2">Our Office</h4>
+                    <p class="text-sm text-text-secondary leading-relaxed">
+                        123 Health Street<br />
+                        Medical District<br />
+                        Mumbai, Maharashtra 400001<br />
+                        India
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Social Media -->
+        <div class="bg-surface rounded-2xl shadow-card p-5 border border-border-light animate-fade-in">
+            <h4 class="font-bold text-text-main mb-4 text-center">Follow Us</h4>
+            <div class="grid grid-cols-4 gap-3">
+                <a href="#"
+                    class="flex flex-col items-center gap-2 p-3 rounded-xl hover:bg-gray-50 transition-colors active:scale-95">
+                    <div class="w-12 h-12 bg-blue-500 rounded-xl flex items-center justify-center">
+                        <span class="material-symbols-outlined text-white text-[24px]">share</span>
+                    </div>
+                    <span class="text-xs text-text-secondary">Facebook</span>
+                </a>
+                <a href="#"
+                    class="flex flex-col items-center gap-2 p-3 rounded-xl hover:bg-gray-50 transition-colors active:scale-95">
+                    <div class="w-12 h-12 bg-sky-400 rounded-xl flex items-center justify-center">
+                        <span class="material-symbols-outlined text-white text-[24px]">share</span>
+                    </div>
+                    <span class="text-xs text-text-secondary">Twitter</span>
+                </a>
+                <a href="#"
+                    class="flex flex-col items-center gap-2 p-3 rounded-xl hover:bg-gray-50 transition-colors active:scale-95">
+                    <div
+                        class="w-12 h-12 bg-gradient-to-br from-purple-500 to-pink-500 rounded-xl flex items-center justify-center">
+                        <span class="material-symbols-outlined text-white text-[24px]">share</span>
+                    </div>
+                    <span class="text-xs text-text-secondary">Instagram</span>
+                </a>
+                <a href="#"
+                    class="flex flex-col items-center gap-2 p-3 rounded-xl hover:bg-gray-50 transition-colors active:scale-95">
+                    <div class="w-12 h-12 bg-blue-700 rounded-xl flex items-center justify-center">
+                        <span class="material-symbols-outlined text-white text-[24px]">share</span>
+                    </div>
+                    <span class="text-xs text-text-secondary">LinkedIn</span>
+                </a>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- Success Toast -->
+    <div id="successToast"
+        class="fixed top-20 left-1/2 -translate-x-1/2 bg-green-600 text-white px-6 py-3 rounded-xl shadow-glow z-50 transform -translate-y-32 opacity-0 transition-all duration-300">
+        <div class="flex items-center gap-2">
+            <span class="material-symbols-outlined">check_circle</span>
+            <span class="font-semibold">Message sent successfully!</span>
+        </div>
+    </div>
+
+    <script>
+        function goBack() {
+            window.history.back();
+        }
+
+        function submitForm(event) {
+            event.preventDefault();
+
+            // Show success toast
+            const toast = document.getElementById('successToast');
+            toast.style.transform = 'translateX(-50%) translateY(0)';
+            toast.style.opacity = '1';
+
+            // Reset form
+            document.getElementById('contactForm').reset();
+
+            // Hide toast after 3 seconds
+            setTimeout(() => {
+                toast.style.transform = 'translateX(-50%) translateY(-8rem)';
+                toast.style.opacity = '0';
+            }, 3000);
+        }
+    </script>
+
+</body>
+
+</html>

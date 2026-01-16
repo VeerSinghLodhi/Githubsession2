@@ -7,8 +7,10 @@
     <title>प्रोफाइल - हेल्थ साथी</title>
     <link href="https://fonts.googleapis.com" rel="preconnect" />
     <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect" />
-    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Devanagari:wght@400;500;600;700&display=swap" rel="stylesheet" />
-    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Devanagari:wght@400;500;600;700&display=swap"
+        rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap"
+        rel="stylesheet" />
     <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
     <script>
         tailwind.config = {
@@ -83,6 +85,7 @@
                 opacity: 0;
                 transform: translateY(15px);
             }
+
             to {
                 opacity: 1;
                 transform: translateY(0);
@@ -98,6 +101,7 @@
                 opacity: 0;
                 transform: translateX(-20px);
             }
+
             to {
                 opacity: 1;
                 transform: translateX(0);
@@ -142,8 +146,11 @@
 
 <body class="bg-background font-display text-text-main relative pb-safe">
     <!-- Background Gradients -->
-    <div class="absolute -top-[10%] -right-[10%] w-[70%] h-[40%] bg-blue-100/60 rounded-full blur-3xl pointer-events-none"></div>
-    <div class="absolute top-[20%] -left-[10%] w-[50%] h-[30%] bg-blue-50/60 rounded-full blur-3xl pointer-events-none"></div>
+    <div
+        class="absolute -top-[10%] -right-[10%] w-[70%] h-[40%] bg-blue-100/60 rounded-full blur-3xl pointer-events-none">
+    </div>
+    <div class="absolute top-[20%] -left-[10%] w-[50%] h-[30%] bg-blue-50/60 rounded-full blur-3xl pointer-events-none">
+    </div>
 
     <!-- Header -->
     <header class="bg-surface/80 backdrop-blur-xl border-b border-border-light sticky top-0 z-40 px-4 py-4">
@@ -166,9 +173,11 @@
     <!-- Main Content -->
     <main class="relative z-10 max-w-7xl mx-auto px-4 py-6 pb-24">
         <!-- Profile Header Card -->
-        <div class="bg-gradient-to-br from-primary to-primary-dark rounded-3xl shadow-glow p-6 mb-6 text-white animate-fade-in">
+        <div
+            class="bg-gradient-to-br from-primary to-primary-dark rounded-3xl shadow-glow p-6 mb-6 text-white animate-fade-in">
             <div class="flex items-center gap-4 mb-4">
-                <div class="w-20 h-20 bg-white/20 rounded-2xl flex items-center justify-center backdrop-blur-sm text-4xl font-bold border-2 border-white/30">
+                <div
+                    class="w-20 h-20 bg-white/20 rounded-2xl flex items-center justify-center backdrop-blur-sm text-4xl font-bold border-2 border-white/30">
                     <span th:text="${user.fullName != null ? user.fullName.substring(0,1).toUpperCase() : 'U'}">R</span>
                 </div>
                 <div class="flex-1">
@@ -190,28 +199,32 @@
                 </div>
                 <div class="bg-white/10 rounded-xl p-3 backdrop-blur-sm border border-white/20">
                     <p class="text-xs opacity-80 mb-1">सदस्य बने</p>
-                    <p class="font-semibold text-base" th:text="${#temporals.format(user.createdOn, 'dd MMM yyyy')}">15 जन 2025</p>
+                    <p class="font-semibold text-base" th:text="${#temporals.format(user.createdOn, 'dd MMM yyyy')}">15
+                        जन 2025</p>
                 </div>
             </div>
         </div>
 
         <!-- Quick Stats -->
         <div class="grid grid-cols-3 gap-3 mb-6">
-            <div class="bg-surface rounded-2xl shadow-card border border-border-light p-4 text-center animate-fade-in" style="animation-delay: 0.1s;">
+            <div class="bg-surface rounded-2xl shadow-card border border-border-light p-4 text-center animate-fade-in"
+                style="animation-delay: 0.1s;">
                 <div class="w-10 h-10 bg-blue-50 rounded-xl flex items-center justify-center mx-auto mb-2">
                     <span class="material-symbols-outlined text-primary text-[20px]">groups</span>
                 </div>
                 <p class="text-2xl font-bold text-text-main">12</p>
                 <p class="text-xs text-text-secondary">मरीज</p>
             </div>
-            <div class="bg-surface rounded-2xl shadow-card border border-border-light p-4 text-center animate-fade-in" style="animation-delay: 0.2s;">
+            <div class="bg-surface rounded-2xl shadow-card border border-border-light p-4 text-center animate-fade-in"
+                style="animation-delay: 0.2s;">
                 <div class="w-10 h-10 bg-green-50 rounded-xl flex items-center justify-center mx-auto mb-2">
                     <span class="material-symbols-outlined text-green-600 text-[20px]">description</span>
                 </div>
                 <p class="text-2xl font-bold text-text-main">28</p>
                 <p class="text-xs text-text-secondary">रिपोर्ट्स</p>
             </div>
-            <div class="bg-surface rounded-2xl shadow-card border border-border-light p-4 text-center animate-fade-in" style="animation-delay: 0.3s;">
+            <div class="bg-surface rounded-2xl shadow-card border border-border-light p-4 text-center animate-fade-in"
+                style="animation-delay: 0.3s;">
                 <div class="w-10 h-10 bg-orange-50 rounded-xl flex items-center justify-center mx-auto mb-2">
                     <span class="material-symbols-outlined text-orange-600 text-[20px]">bookmark</span>
                 </div>
@@ -224,7 +237,8 @@
         <div class="space-y-3 mb-6">
             <h3 class="text-lg font-bold text-text-main mb-4 px-1">खाता प्रबंधन</h3>
 
-            <button onclick="editProfile()" class="w-full flex items-center gap-4 p-4 bg-surface rounded-2xl shadow-card border border-border-light hover:shadow-hover transition-all active:scale-98">
+            <button onclick="editProfile()"
+                class="w-full flex items-center gap-4 p-4 bg-surface rounded-2xl shadow-card border border-border-light hover:shadow-hover transition-all active:scale-98">
                 <div class="w-12 h-12 bg-blue-50 rounded-xl flex items-center justify-center">
                     <span class="material-symbols-outlined text-primary text-[24px]">edit</span>
                 </div>
@@ -235,7 +249,8 @@
                 <span class="material-symbols-outlined text-text-secondary">arrow_forward_ios</span>
             </button>
 
-            <button onclick="viewPatients()" class="w-full flex items-center gap-4 p-4 bg-surface rounded-2xl shadow-card border border-border-light hover:shadow-hover transition-all active:scale-98">
+            <button onclick="viewPatients()"
+                class="w-full flex items-center gap-4 p-4 bg-surface rounded-2xl shadow-card border border-border-light hover:shadow-hover transition-all active:scale-98">
                 <div class="w-12 h-12 bg-purple-50 rounded-xl flex items-center justify-center">
                     <span class="material-symbols-outlined text-purple-600 text-[24px]">groups</span>
                 </div>
@@ -246,7 +261,8 @@
                 <span class="material-symbols-outlined text-text-secondary">arrow_forward_ios</span>
             </button>
 
-            <button onclick="viewSaved()" class="w-full flex items-center gap-4 p-4 bg-surface rounded-2xl shadow-card border border-border-light hover:shadow-hover transition-all active:scale-98">
+            <button onclick="viewSaved()"
+                class="w-full flex items-center gap-4 p-4 bg-surface rounded-2xl shadow-card border border-border-light hover:shadow-hover transition-all active:scale-98">
                 <div class="w-12 h-12 bg-orange-50 rounded-xl flex items-center justify-center">
                     <span class="material-symbols-outlined text-orange-600 text-[24px]">bookmark</span>
                 </div>
@@ -257,7 +273,8 @@
                 <span class="material-symbols-outlined text-text-secondary">arrow_forward_ios</span>
             </button>
 
-            <button onclick="changePassword()" class="w-full flex items-center gap-4 p-4 bg-surface rounded-2xl shadow-card border border-border-light hover:shadow-hover transition-all active:scale-98">
+            <button onclick="changePassword()"
+                class="w-full flex items-center gap-4 p-4 bg-surface rounded-2xl shadow-card border border-border-light hover:shadow-hover transition-all active:scale-98">
                 <div class="w-12 h-12 bg-yellow-50 rounded-xl flex items-center justify-center">
                     <span class="material-symbols-outlined text-yellow-600 text-[24px]">lock</span>
                 </div>
@@ -273,7 +290,8 @@
         <div class="space-y-3 mb-6">
             <h3 class="text-lg font-bold text-text-main mb-4 px-1">सहायता और समर्थन</h3>
 
-            <button onclick="openHelp()" class="w-full flex items-center gap-4 p-4 bg-surface rounded-2xl shadow-card border border-border-light hover:shadow-hover transition-all active:scale-98">
+            <button onclick="openHelp()"
+                class="w-full flex items-center gap-4 p-4 bg-surface rounded-2xl shadow-card border border-border-light hover:shadow-hover transition-all active:scale-98">
                 <div class="w-12 h-12 bg-green-50 rounded-xl flex items-center justify-center">
                     <span class="material-symbols-outlined text-green-600 text-[24px]">help</span>
                 </div>
@@ -284,7 +302,8 @@
                 <span class="material-symbols-outlined text-text-secondary">arrow_forward_ios</span>
             </button>
 
-            <button onclick="contactSupport()" class="w-full flex items-center gap-4 p-4 bg-surface rounded-2xl shadow-card border border-border-light hover:shadow-hover transition-all active:scale-98">
+            <button onclick="contactSupport()"
+                class="w-full flex items-center gap-4 p-4 bg-surface rounded-2xl shadow-card border border-border-light hover:shadow-hover transition-all active:scale-98">
                 <div class="w-12 h-12 bg-blue-50 rounded-xl flex items-center justify-center">
                     <span class="material-symbols-outlined text-blue-600 text-[24px]">support_agent</span>
                 </div>
@@ -295,7 +314,8 @@
                 <span class="material-symbols-outlined text-text-secondary">arrow_forward_ios</span>
             </button>
 
-            <button onclick="aboutApp()" class="w-full flex items-center gap-4 p-4 bg-surface rounded-2xl shadow-card border border-border-light hover:shadow-hover transition-all active:scale-98">
+            <button onclick="aboutApp()"
+                class="w-full flex items-center gap-4 p-4 bg-surface rounded-2xl shadow-card border border-border-light hover:shadow-hover transition-all active:scale-98">
                 <div class="w-12 h-12 bg-purple-50 rounded-xl flex items-center justify-center">
                     <span class="material-symbols-outlined text-purple-600 text-[24px]">info</span>
                 </div>
@@ -308,39 +328,48 @@
         </div>
 
         <!-- Logout Button -->
-        <button onclick="confirmLogout()" class="w-full flex items-center justify-center gap-3 p-4 bg-red-50 rounded-2xl border border-red-200 text-red-600 font-bold hover:bg-red-100 transition-all active:scale-98 ripple">
+        <button onclick="confirmLogout()"
+            class="w-full flex items-center justify-center gap-3 p-4 bg-red-50 rounded-2xl border border-red-200 text-red-600 font-bold hover:bg-red-100 transition-all active:scale-98 ripple">
             <span class="material-symbols-outlined text-[24px]">logout</span>
             लॉगआउट करें
         </button>
     </main>
 
     <!-- Bottom Navigation -->
-    <nav class="fixed bottom-0 left-0 right-0 bg-surface/90 backdrop-blur-xl border-t border-border-light z-50 bottom-nav">
+    <nav
+        class="fixed bottom-0 left-0 right-0 bg-surface/90 backdrop-blur-xl border-t border-border-light z-50 bottom-nav">
         <div class="max-w-7xl mx-auto px-4 py-3">
             <div class="flex items-center justify-around">
-                <a href="/user/dashboard" class="flex flex-col items-center gap-1 px-3 py-2 text-text-secondary hover:text-primary active:scale-95 transition-all">
+                <a href="/user/dashboard"
+                    class="flex flex-col items-center gap-1 px-3 py-2 text-text-secondary hover:text-primary active:scale-95 transition-all">
                     <span class="material-symbols-outlined text-[24px]">home</span>
                     <span class="text-[10px] font-medium">होम</span>
                 </a>
 
-                <a href="/user/appointments" class="flex flex-col items-center gap-1 px-3 py-2 text-text-secondary hover:text-primary active:scale-95 transition-all">
+                <a href="/user/appointments"
+                    class="flex flex-col items-center gap-1 px-3 py-2 text-text-secondary hover:text-primary active:scale-95 transition-all">
                     <span class="material-symbols-outlined text-[24px]">calendar_month</span>
                     <span class="text-[10px] font-medium">अपॉइंटमेंट</span>
                 </a>
 
                 <button class="flex flex-col items-center gap-1 px-3 py-2 -mt-4" onclick="toggleAddMenu()">
-                    <div class="w-14 h-14 bg-primary rounded-2xl shadow-glow flex items-center justify-center active:scale-95 transition-all" id="addButton">
-                        <span class="material-symbols-outlined text-white text-[28px] transition-transform duration-300" id="addIcon">add</span>
+                    <div class="w-14 h-14 bg-primary rounded-2xl shadow-glow flex items-center justify-center active:scale-95 transition-all"
+                        id="addButton">
+                        <span class="material-symbols-outlined text-white text-[28px] transition-transform duration-300"
+                            id="addIcon">add</span>
                     </div>
                 </button>
 
-                <a href="/user/reports" class="flex flex-col items-center gap-1 px-3 py-2 text-text-secondary hover:text-primary active:scale-95 transition-all">
+                <a href="/user/reports"
+                    class="flex flex-col items-center gap-1 px-3 py-2 text-text-secondary hover:text-primary active:scale-95 transition-all">
                     <span class="material-symbols-outlined text-[24px]">description</span>
                     <span class="text-[10px] font-medium">रिपोर्ट्स</span>
                 </a>
 
-                <a href="/user/profile" class="flex flex-col items-center gap-1 px-3 py-2 text-primary active:scale-95 transition-all">
-                    <span class="material-symbols-outlined text-[24px]" style="font-variation-settings: 'FILL' 1">person</span>
+                <a href="/user/profile"
+                    class="flex flex-col items-center gap-1 px-3 py-2 text-primary active:scale-95 transition-all">
+                    <span class="material-symbols-outlined text-[24px]"
+                        style="font-variation-settings: 'FILL' 1">person</span>
                     <span class="text-[10px] font-semibold">प्रोफाइल</span>
                 </a>
             </div>
@@ -348,15 +377,20 @@
     </nav>
 
     <!-- Add Menu Popup -->
-    <div id="addMenuOverlay" class="fixed inset-0 bg-black/50 backdrop-blur-sm z-40 hidden opacity-0 transition-opacity duration-300" onclick="toggleAddMenu()"></div>
+    <div id="addMenuOverlay"
+        class="fixed inset-0 bg-black/50 backdrop-blur-sm z-40 hidden opacity-0 transition-opacity duration-300"
+        onclick="toggleAddMenu()"></div>
 
-    <div id="addMenu" class="fixed bottom-0 left-0 right-0 bg-surface rounded-t-3xl shadow-glow z-50 transform translate-y-full transition-transform duration-300 ease-out">
+    <div id="addMenu"
+        class="fixed bottom-0 left-0 right-0 bg-surface rounded-t-3xl shadow-glow z-50 transform translate-y-full transition-transform duration-300 ease-out">
         <div class="max-w-7xl mx-auto px-6 py-6 pb-safe">
             <div class="w-12 h-1.5 bg-gray-300 rounded-full mx-auto mb-6"></div>
             <h3 class="text-lg font-bold text-text-main mb-4 text-center">नया जोड़ें</h3>
             <div class="space-y-3 mb-4">
-                <button onclick="addReport()" class="w-full flex items-center gap-4 p-4 bg-gradient-to-r from-blue-50 to-primary-light rounded-2xl border border-primary/20 hover:shadow-hover transition-all active:scale-98">
-                    <div class="w-12 h-12 bg-primary rounded-xl flex items-center justify-center flex-shrink-0 shadow-soft">
+                <button onclick="addReport()"
+                    class="w-full flex items-center gap-4 p-4 bg-gradient-to-r from-blue-50 to-primary-light rounded-2xl border border-primary/20 hover:shadow-hover transition-all active:scale-98">
+                    <div
+                        class="w-12 h-12 bg-primary rounded-xl flex items-center justify-center flex-shrink-0 shadow-soft">
                         <span class="material-symbols-outlined text-white text-[24px]">description</span>
                     </div>
                     <div class="text-left flex-1">
@@ -366,8 +400,10 @@
                     <span class="material-symbols-outlined text-primary">arrow_forward</span>
                 </button>
 
-                <button onclick="addPrescription()" class="w-full flex items-center gap-4 p-4 bg-gradient-to-r from-green-50 to-green-100 rounded-2xl border border-green-200 hover:shadow-hover transition-all active:scale-98">
-                    <div class="w-12 h-12 bg-green-600 rounded-xl flex items-center justify-center flex-shrink-0 shadow-soft">
+                <button onclick="addPrescription()"
+                    class="w-full flex items-center gap-4 p-4 bg-gradient-to-r from-green-50 to-green-100 rounded-2xl border border-green-200 hover:shadow-hover transition-all active:scale-98">
+                    <div
+                        class="w-12 h-12 bg-green-600 rounded-xl flex items-center justify-center flex-shrink-0 shadow-soft">
                         <span class="material-symbols-outlined text-white text-[24px]">prescription</span>
                     </div>
                     <div class="text-left flex-1">
@@ -377,8 +413,10 @@
                     <span class="material-symbols-outlined text-green-600">arrow_forward</span>
                 </button>
 
-                <button onclick="viewMyPatients()" class="w-full flex items-center gap-4 p-4 bg-gradient-to-r from-purple-50 to-purple-100 rounded-2xl border border-purple-200 hover:shadow-hover transition-all active:scale-98">
-                    <div class="w-12 h-12 bg-purple-600 rounded-xl flex items-center justify-center flex-shrink-0 shadow-soft">
+                <button onclick="viewMyPatients()"
+                    class="w-full flex items-center gap-4 p-4 bg-gradient-to-r from-purple-50 to-purple-100 rounded-2xl border border-purple-200 hover:shadow-hover transition-all active:scale-98">
+                    <div
+                        class="w-12 h-12 bg-purple-600 rounded-xl flex items-center justify-center flex-shrink-0 shadow-soft">
                         <span class="material-symbols-outlined text-white text-[24px]">groups</span>
                     </div>
                     <div class="text-left flex-1">
@@ -388,21 +426,26 @@
                     <span class="material-symbols-outlined text-purple-600">arrow_forward</span>
                 </button>
             </div>
-            <button onclick="toggleAddMenu()" class="w-full py-3 text-text-secondary font-semibold rounded-xl hover:bg-gray-100 transition-all">
+            <button onclick="toggleAddMenu()"
+                class="w-full py-3 text-text-secondary font-semibold rounded-xl hover:bg-gray-100 transition-all">
                 रद्द करें
             </button>
         </div>
     </div>
 
     <!-- Settings Menu -->
-    <div id="settingsOverlay" class="fixed inset-0 bg-black/50 backdrop-blur-sm z-40 hidden opacity-0 transition-opacity duration-300" onclick="toggleSettingsMenu()"></div>
+    <div id="settingsOverlay"
+        class="fixed inset-0 bg-black/50 backdrop-blur-sm z-40 hidden opacity-0 transition-opacity duration-300"
+        onclick="toggleSettingsMenu()"></div>
 
-    <div id="settingsMenu" class="fixed bottom-0 left-0 right-0 bg-surface rounded-t-3xl shadow-glow z-50 transform translate-y-full transition-transform duration-300 ease-out">
+    <div id="settingsMenu"
+        class="fixed bottom-0 left-0 right-0 bg-surface rounded-t-3xl shadow-glow z-50 transform translate-y-full transition-transform duration-300 ease-out">
         <div class="max-w-7xl mx-auto px-6 py-6 pb-safe">
             <div class="w-12 h-1.5 bg-gray-300 rounded-full mx-auto mb-6"></div>
             <h3 class="text-lg font-bold text-text-main mb-4 text-center">सेटिंग्स</h3>
             <div class="space-y-3 mb-4">
-                <button class="w-full flex items-center justify-between p-4 bg-surface rounded-2xl border border-border-light hover:shadow-card transition-all">
+                <button
+                    class="w-full flex items-center justify-between p-4 bg-surface rounded-2xl border border-border-light hover:shadow-card transition-all">
                     <div class="flex items-center gap-3">
                         <div class="w-10 h-10 bg-blue-50 rounded-xl flex items-center justify-center">
                             <span class="material-symbols-outlined text-primary text-[20px]">notifications</span>
@@ -411,11 +454,14 @@
                     </div>
                     <label class="relative inline-flex items-center cursor-pointer">
                         <input type="checkbox" class="sr-only peer" checked onchange="toggleNotifications(this)">
-                        <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
+                        <div
+                            class="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary">
+                        </div>
                     </label>
                 </button>
 
-                <button onclick="changeLanguage()" class="w-full flex items-center justify-between p-4 bg-surface rounded-2xl border border-border-light hover:shadow-card transition-all">
+                <button onclick="changeLanguage()"
+                    class="w-full flex items-center justify-between p-4 bg-surface rounded-2xl border border-border-light hover:shadow-card transition-all">
                     <div class="flex items-center gap-3">
                         <div class="w-10 h-10 bg-green-50 rounded-xl flex items-center justify-center">
                             <span class="material-symbols-outlined text-green-600 text-[20px]">language</span>
@@ -428,7 +474,8 @@
                     <span class="material-symbols-outlined text-text-secondary">arrow_forward_ios</span>
                 </button>
 
-                <button onclick="privacySettings()" class="w-full flex items-center justify-between p-4 bg-surface rounded-2xl border border-border-light hover:shadow-card transition-all">
+                <button onclick="privacySettings()"
+                    class="w-full flex items-center justify-between p-4 bg-surface rounded-2xl border border-border-light hover:shadow-card transition-all">
                     <div class="flex items-center gap-3">
                         <div class="w-10 h-10 bg-orange-50 rounded-xl flex items-center justify-center">
                             <span class="material-symbols-outlined text-orange-600 text-[20px]">privacy_tip</span>
@@ -438,7 +485,8 @@
                     <span class="material-symbols-outlined text-text-secondary">arrow_forward_ios</span>
                 </button>
 
-                <button onclick="termsAndConditions()" class="w-full flex items-center justify-between p-4 bg-surface rounded-2xl border border-border-light hover:shadow-card transition-all">
+                <button onclick="termsAndConditions()"
+                    class="w-full flex items-center justify-between p-4 bg-surface rounded-2xl border border-border-light hover:shadow-card transition-all">
                     <div class="flex items-center gap-3">
                         <div class="w-10 h-10 bg-yellow-50 rounded-xl flex items-center justify-center">
                             <span class="material-symbols-outlined text-yellow-600 text-[20px]">description</span>
@@ -448,16 +496,20 @@
                     <span class="material-symbols-outlined text-text-secondary">arrow_forward_ios</span>
                 </button>
             </div>
-            <button onclick="toggleSettingsMenu()" class="w-full py-3 text-text-secondary font-semibold rounded-xl hover:bg-gray-100 transition-all">
+            <button onclick="toggleSettingsMenu()"
+                class="w-full py-3 text-text-secondary font-semibold rounded-xl hover:bg-gray-100 transition-all">
                 बंद करें
             </button>
         </div>
     </div>
 
     <!-- Logout Confirmation Modal -->
-    <div id="logoutOverlay" class="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 hidden opacity-0 transition-opacity duration-300" onclick="closeLogout()"></div>
+    <div id="logoutOverlay"
+        class="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 hidden opacity-0 transition-opacity duration-300"
+        onclick="closeLogout()"></div>
 
-    <div id="logoutModal" class="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-surface rounded-3xl shadow-glow z-50 w-[90%] max-w-sm p-6 transform scale-95 opacity-0 transition-all duration-300">
+    <div id="logoutModal"
+        class="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-surface rounded-3xl shadow-glow z-50 w-[90%] max-w-sm p-6 transform scale-95 opacity-0 transition-all duration-300">
         <div class="text-center mb-6">
             <div class="w-16 h-16 bg-red-50 rounded-2xl flex items-center justify-center mx-auto mb-4">
                 <span class="material-symbols-outlined text-red-600 text-[32px]">logout</span>
@@ -466,10 +518,12 @@
             <p class="text-sm text-text-secondary">क्या आप वाकई लॉगआउट करना चाहते हैं?</p>
         </div>
         <div class="flex gap-3">
-            <button onclick="closeLogout()" class="flex-1 py-3 bg-gray-100 text-text-main font-semibold rounded-xl hover:bg-gray-200 transition-all active:scale-95">
+            <button onclick="closeLogout()"
+                class="flex-1 py-3 bg-gray-100 text-text-main font-semibold rounded-xl hover:bg-gray-200 transition-all active:scale-95">
                 रद्द करें
             </button>
-            <button type="button" onclick="performLogout()" class="flex-1 py-3 bg-red-600 text-white font-semibold rounded-xl hover:bg-red-700 transition-all active:scale-95">
+            <button type="button" onclick="performLogout()"
+                class="flex-1 py-3 bg-red-600 text-white font-semibold rounded-xl hover:bg-red-700 transition-all active:scale-95">
                 लॉगआउट
             </button>
         </div>
@@ -635,7 +689,7 @@
         }
 
         // Close modals on escape key
-        document.addEventListener('keydown', function(event) {
+        document.addEventListener('keydown', function (event) {
             if (event.key === 'Escape') {
                 const addMenu = document.getElementById('addMenu');
                 const settingsMenu = document.getElementById('settingsMenu');
@@ -659,9 +713,9 @@
             const settingsMenu = document.getElementById('settingsMenu');
             const logoutOverlay = document.getElementById('logoutOverlay');
 
-            const isAnyModalOpen = !addMenu.classList.contains('translate-y-full') || 
-                                   !settingsMenu.classList.contains('translate-y-full') || 
-                                   !logoutOverlay.classList.contains('hidden');
+            const isAnyModalOpen = !addMenu.classList.contains('translate-y-full') ||
+                !settingsMenu.classList.contains('translate-y-full') ||
+                !logoutOverlay.classList.contains('hidden');
 
             if (isAnyModalOpen) {
                 document.body.style.overflow = 'hidden';

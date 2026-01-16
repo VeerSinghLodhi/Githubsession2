@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Terms & Conditions - Health Saathi</title>
+    <link href="https://fonts.googleapis.com" rel="preconnect" />
+    <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect" />
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap"
+        rel="stylesheet" />
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#0058ba",
+                        "primary-dark": "#155a96",
+                        "primary-light": "#e3f2fd",
+                        "text-main": "#1e293b",
+                        "text-secondary": "#64748b",
+                        "border-light": "#e2e8f0",
+                        "surface": "#ffffff",
+                        "background": "#f8fafc",
+                    },
+                    fontFamily: {
+                        "display": ["Poppins", "sans-serif"]
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0.75rem",
+                        "xl": "1rem",
+                        "2xl": "1.25rem",
+                        "3xl": "1.5rem"
+                    },
+                    boxShadow: {
+                        'soft': '0 4px 20px -4px rgba(30, 115, 190, 0.1)',
+                        'glow': '0 8px 30px rgba(30, 115, 190, 0.2)',
+                        'card': '0 2px 12px rgba(0, 0, 0, 0.06)',
+                        'hover': '0 8px 25px rgba(30, 115, 190, 0.15)',
+                    }
+                },
+            },
+        }
+    </script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            height: 100%;
+            overflow-y: auto;
+        }
+
+        body {
+            min-height: 100vh;
+            height: auto;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            overflow-y: auto;
+            padding-top: env(safe-area-inset-top);
+        }
+
+        .animate-fade-in {
+            animation: fadeIn 0.3s ease-in;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .active\:scale-95:active {
+            transform: scale(0.95);
+        }
+    </style>
+</head>
+
+<body class="bg-background font-display text-text-main relative">
+    <div
+        class="absolute -top-[10%] -right-[10%] w-[70%] h-[40%] bg-blue-100/60 rounded-full blur-3xl pointer-events-none">
+    </div>
+    <div class="absolute top-[20%] -left-[10%] w-[50%] h-[30%] bg-blue-50/60 rounded-full blur-3xl pointer-events-none">
+    </div>
+
+    <!-- Header -->
+    <header class="bg-surface/80 backdrop-blur-xl border-b border-border-light sticky top-0 z-40 px-4 py-4">
+        <div class="max-w-7xl mx-auto flex items-center justify-between">
+            <button onclick="goBack()" class="p-2 hover:bg-gray-100 rounded-xl transition-colors active:scale-95">
+                <span class="material-symbols-outlined text-text-secondary">arrow_back</span>
+            </button>
+            <div class="text-center">
+                <h1 class="text-base font-bold text-text-main">Terms & Conditions</h1>
+                <p class="text-[10px] text-text-secondary">Last updated: Jan 15, 2025</p>
+            </div>
+            <div class="w-10"></div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="relative z-10 max-w-7xl mx-auto px-4 py-6 pb-8">
+
+        <!-- Hero Section -->
+        <div class="bg-surface rounded-3xl shadow-card p-6 border border-border-light mb-6 animate-fade-in">
+            <div class="flex flex-col items-center text-center">
+                <div
+                    class="w-20 h-20 bg-gradient-to-br from-yellow-500 to-yellow-600 rounded-2xl flex items-center justify-center text-white shadow-glow mb-4">
+                    <span class="material-symbols-outlined text-[40px]">description</span>
+                </div>
+                <h2 class="text-lg font-bold text-text-main mb-2">Terms of Service</h2>
+                <p class="text-sm text-text-secondary">Please read these terms carefully before using Health Saathi</p>
+            </div>
+        </div>
+
+        <!-- Acceptance -->
+        <div class="bg-surface rounded-2xl shadow-card p-5 border border-border-light mb-4 animate-fade-in">
+            <h3 class="text-base font-bold text-text-main mb-3">Acceptance of Terms</h3>
+            <p class="text-sm text-text-secondary leading-relaxed">
+                By accessing and using the Health Saathi application, you accept and agree to be bound by the terms and
+                provision of this agreement. If you do not agree to abide by the above, please do not use this service.
+            </p>
+        </div>
+
+        <!-- Use License -->
+        <div class="bg-surface rounded-2xl shadow-card p-5 border border-border-light mb-4 animate-fade-in">
+            <div class="flex items-center gap-3 mb-3">
+                <div class="w-10 h-10 bg-blue-50 rounded-xl flex items-center justify-center">
+                    <span class="material-symbols-outlined text-primary text-[20px]">license</span>
+                </div>
+                <h3 class="text-base font-bold text-text-main">Use License</h3>
+            </div>
+            <p class="text-sm text-text-secondary leading-relaxed mb-3">
+                Permission is granted to temporarily use Health Saathi for personal, non-commercial use only. This is
+                the grant of a license, not a transfer of title, and under this license you may not:
+            </p>
+            <ul class="space-y-2">
+                <li class="flex items-start gap-2">
+                    <span class="material-symbols-outlined text-red-500 text-[16px] mt-0.5">close</span>
+                    <p class="text-sm text-text-secondary leading-relaxed flex-1">Modify or copy the application
+                        materials</p>
+                </li>
+                <li class="flex items-start gap-2">
+                    <span class="material-symbols-outlined text-red-500 text-[16px] mt-0.5">close</span>
+                    <p class="text-sm text-text-secondary leading-relaxed flex-1">Use the materials for commercial
+                        purposes</p>
+                </li>
+                <li class="flex items-start gap-2">
+                    <span class="material-symbols-outlined text-red-500 text-[16px] mt-0.5">close</span>
+                    <p class="text-sm text-text-secondary leading-relaxed flex-1">Attempt to reverse engineer any
+                        software in the app</p>
+                </li>
+                <li class="flex items-start gap-2">
+                    <span class="material-symbols-outlined text-red-500 text-[16px] mt-0.5">close</span>
+                    <p class="text-sm text-text-secondary leading-relaxed flex-1">Remove any copyright or proprietary
+                        notations</p>
+                </li>
+            </ul>
+        </div>
+
+        <!-- Medical Disclaimer -->
+        <div
+            class="bg-gradient-to-r from-red-50 to-orange-50 rounded-2xl shadow-card p-5 border-2 border-red-200 mb-4 animate-fade-in">
+            <div class="flex items-start gap-3 mb-3">
+                <div class="w-10 h-10 bg-red-100 rounded-xl flex items-center justify-center flex-shrink-0">
+                    <span class="material-symbols-outlined text-red-600 text-[20px]">warning</span>
+                </div>
+                <div>
+                    <h3 class="text-base font-bold text-text-main mb-2">Medical Disclaimer</h3>
+                    <p class="text-sm text-text-secondary leading-relaxed">
+                        Health Saathi is not a substitute for professional medical advice, diagnosis, or treatment.
+                        Always seek the advice of your physician or other qualified health provider with any questions
+                        you may have regarding a medical condition. Never disregard professional medical advice or delay
+                        in seeking it because of something you have read on this app.
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <!-- User Responsibilities -->
+        <div class="bg-surface rounded-2xl shadow-card p-5 border border-border-light mb-4 animate-fade-in">
+            <div class="flex items-center gap-3 mb-3">
+                <div class="w-10 h-10 bg-green-50 rounded-xl flex items-center justify-center">
+                    <span class="material-symbols-outlined text-green-600 text-[20px]">task_alt</span>
+                </div>
+                <h3 class="text-base font-bold text-text-main">User Responsibilities</h3>
+            </div>
+            <p class="text-sm text-text-secondary leading-relaxed mb-3">As a user of Health Saathi, you agree to:</p>
+            <ul class="space-y-2">
+                <li class="flex items-start gap-2">
+                    <span class="material-symbols-outlined text-green-600 text-[16px] mt-0.5">check_circle</span>
+                    <p class="text-sm text-text-secondary leading-relaxed flex-1">Provide accurate and truthful
+                        information</p>
+                </li>
+                <li class="flex items-start gap-2">
+                    <span class="material-symbols-outlined text-green-600 text-[16px] mt-0.5">check_circle</span>
+                    <p class="text-sm text-text-secondary leading-relaxed flex-1">Maintain the security of your account
+                        credentials</p>
+                </li>
+                <li class="flex items-start gap-2">
+                    <span class="material-symbols-outlined text-green-600 text-[16px] mt-0.5">check_circle</span>
+                    <p class="text-sm text-text-secondary leading-relaxed flex-1">Use the app only for lawful purposes
+                    </p>
+                </li>
+                <li class="flex items-start gap-2">
+                    <span class="material-symbols-outlined text-green-600 text-[16px] mt-0.5">check_circle</span>
+                    <p class="text-sm text-text-secondary leading-relaxed flex-1">Not share your account with others</p>
+                </li>
+                <li class="flex items-start gap-2">
+                    <span class="material-symbols-outlined text-green-600 text-[16px] mt-0.5">check_circle</span>
+                    <p class="text-sm text-text-secondary leading-relaxed flex-1">Notify us immediately of any
+                        unauthorized use</p>
+                </li>
+            </ul>
+        </div>
+
+        <!-- Prohibited Activities -->
+        <div class="bg-surface rounded-2xl shadow-card p-5 border border-border-light mb-4 animate-fade-in">
+            <div class="flex items-center gap-3 mb-3">
+                <div class="w-10 h-10 bg-red-50 rounded-xl flex items-center justify-center">
+                    <span class="material-symbols-outlined text-red-600 text-[20px]">block</span>
+                </div>
+                <h3 class="text-base font-bold text-text-main">Prohibited Activities</h3>
+            </div>
+            <p class="text-sm text-text-secondary leading-relaxed mb-3">You may not:</p>
+            <ul class="space-y-2">
+                <li class="flex items-start gap-2">
+                    <span class="material-symbols-outlined text-red-600 text-[16px] mt-0.5">cancel</span>
+                    <p class="text-sm text-text-secondary leading-relaxed flex-1">Systematically retrieve data to create
+                        a database</p>
+                </li>
+                <li class="flex items-start gap-2">
+                    <span class="material-symbols-outlined text-red-600 text-[16px] mt-0.5">cancel</span>
+                    <p class="text-sm text-text-secondary leading-relaxed flex-1">Circumvent, disable, or interfere with
+                        security features</p>
+                </li>
+                <li class="flex items-start gap-2">
+                    <span class="material-symbols-outlined text-red-600 text-[16px] mt-0.5">cancel</span>
+                    <p class="text-sm text-text-secondary leading-relaxed flex-1">Engage in unauthorized framing or
+                        linking</p>
+                </li>
+                <li class="flex items-start gap-2">
+                    <span class="material-symbols-outlined text-red-600 text-[16px] mt-0.5">cancel</span>
+                    <p class="text-sm text-text-secondary leading-relaxed flex-1">Upload viruses or malicious code</p>
+                </li>
+                <li class="flex items-start gap-2">
+                    <span class="material-symbols-outlined text-red-600 text-[16px] mt-0.5">cancel</span>
+                    <p class="text-sm text-text-secondary leading-relaxed flex-1">Harass or harm another person</p>
+                </li>
+            </ul>
+        </div>
+
+        <!-- Intellectual Property -->
+        <div class="bg-surface rounded-2xl shadow-card p-5 border border-border-light mb-4 animate-fade-in">
+            <div class="flex items-center gap-3 mb-3">
+                <div class="w-10 h-10 bg-purple-50 rounded-xl flex items-center justify-center">
+                    <span class="material-symbols-outlined text-purple-600 text-[20px]">copyright</span>
+                </div>
+                <h3 class="text-base font-bold text-text-main">Intellectual Property Rights</h3>
+            </div>
+            <p class="text-sm text-text-secondary leading-relaxed">
+                The app and its entire contents, features, and functionality (including but not limited to all
+                information, software, text, displays, images, video, and audio) are owned by Health Saathi, its
+                licensors, or other providers of such material and are protected by copyright, trademark, patent, trade
+                secret, and other intellectual property laws.
+            </p>
+        </div>
+
+        <!-- Termination -->
+        <div class="bg-surface rounded-2xl shadow-card p-5 border border-border-light mb-4 animate-fade-in">
+            <div class="flex items-center gap-3 mb-3">
+                <div class="w-10 h-10 bg-orange-50 rounded-xl flex items-center justify-center">
+                    <span class="material-symbols-outlined text-orange-600 text-[20px]">logout</span>
+                </div>
+                <h3 class="text-base font-bold text-text-main">Termination</h3>
+            </div>
+            <p class="text-sm text-text-secondary leading-relaxed">
+                We may terminate or suspend your account and access to the app immediately, without prior notice or
+                liability, for any reason, including without limitation if you breach the Terms. Upon termination, your
+                right to use the app will immediately cease. You may delete your account at any time from the app
+                settings.
+            </p>
+        </div>
+
+        <!-- Limitation of Liability -->
+        <div class="bg-surface rounded-2xl shadow-card p-5 border border-border-light mb-4 animate-fade-in">
+            <div class="flex items-center gap-3 mb-3">
+                <div class="w-10 h-10 bg-yellow-50 rounded-xl flex items-center justify-center">
+                    <span class="material-symbols-outlined text-yellow-600 text-[20px]">gavel</span>
+                </div>
+                <h3 class="text-base font-bold text-text-main">Limitation of Liability</h3>
+            </div>
+            <p class="text-sm text-text-secondary leading-relaxed">
+                In no event shall Health Saathi, nor its directors, employees, partners, agents, suppliers, or
+                affiliates, be liable for any indirect, incidental, special, consequential or punitive damages,
+                including without limitation, loss of profits, data, use, goodwill, or other intangible losses,
+                resulting from your access to or use of or inability to access or use the app.
+            </p>
+        </div>
+
+        <!-- Changes to Terms -->
+        <div class="bg-surface rounded-2xl shadow-card p-5 border border-border-light mb-4 animate-fade-in">
+            <div class="flex items-center gap-3 mb-3">
+                <div class="w-10 h-10 bg-cyan-50 rounded-xl flex items-center justify-center">
+                    <span class="material-symbols-outlined text-cyan-600 text-[20px]">update</span>
+                </div>
+                <h3 class="text-base font-bold text-text-main">Changes to Terms</h3>
+            </div>
+            <p class="text-sm text-text-secondary leading-relaxed">
+                We reserve the right to modify or replace these Terms at any time. If a revision is material, we will
+                provide at least 30 days' notice prior to any new terms taking effect. What constitutes a material
+                change will be determined at our sole discretion. By continuing to access or use our app after those
+                revisions become effective, you agree to be bound by the revised terms.
+            </p>
+        </div>
+
+        <!-- Contact Us -->
+        <div
+            class="bg-gradient-to-r from-primary to-primary-dark rounded-2xl shadow-glow p-6 text-white text-center animate-fade-in">
+            <span class="material-symbols-outlined text-[40px] mb-3 inline-block">contact_support</span>
+            <h3 class="font-bold text-lg mb-2">Questions About These Terms?</h3>
+            <p class="text-sm mb-4 opacity-90">If you have any questions about these Terms & Conditions, please contact
+                us</p>
+            <div class="space-y-2 text-sm">
+                <p class="opacity-90">Email: legal@healthsaathi.com</p>
+                <p class="opacity-90">Phone: +91 123 456 7890</p>
+            </div>
+        </div>
+
+    </main>
+
+    <script>
+        function goBack() {
+            window.history.back();
+        }
+    </script>
+
+</body>
+
+</html>

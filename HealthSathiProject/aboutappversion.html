@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>About - Health Saathi</title>
+    <link href="https://fonts.googleapis.com" rel="preconnect" />
+    <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect" />
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap"
+        rel="stylesheet" />
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#0058ba",
+                        "primary-dark": "#155a96",
+                        "primary-light": "#e3f2fd",
+                        "text-main": "#1e293b",
+                        "text-secondary": "#64748b",
+                        "border-light": "#e2e8f0",
+                        "surface": "#ffffff",
+                        "background": "#f8fafc",
+                    },
+                    fontFamily: {
+                        "display": ["Poppins", "sans-serif"]
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0.75rem",
+                        "xl": "1rem",
+                        "2xl": "1.25rem",
+                        "3xl": "1.5rem"
+                    },
+                    boxShadow: {
+                        'soft': '0 4px 20px -4px rgba(30, 115, 190, 0.1)',
+                        'glow': '0 8px 30px rgba(30, 115, 190, 0.2)',
+                        'card': '0 2px 12px rgba(0, 0, 0, 0.06)',
+                        'hover': '0 8px 25px rgba(30, 115, 190, 0.15)',
+                    }
+                },
+            },
+        }
+    </script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            height: 100%;
+            overflow-y: auto;
+        }
+
+        body {
+            min-height: 100vh;
+            height: auto;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            overflow-y: auto;
+            padding-top: env(safe-area-inset-top);
+        }
+
+        .animate-fade-in {
+            animation: fadeIn 0.3s ease-in;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .active\:scale-95:active {
+            transform: scale(0.95);
+        }
+    </style>
+</head>
+
+<body class="bg-background font-display text-text-main relative">
+    <div
+        class="absolute -top-[10%] -right-[10%] w-[70%] h-[40%] bg-blue-100/60 rounded-full blur-3xl pointer-events-none">
+    </div>
+    <div class="absolute top-[20%] -left-[10%] w-[50%] h-[30%] bg-blue-50/60 rounded-full blur-3xl pointer-events-none">
+    </div>
+
+    <!-- Header -->
+    <header class="bg-surface/80 backdrop-blur-xl border-b border-border-light sticky top-0 z-40 px-4 py-4">
+        <div class="max-w-7xl mx-auto flex items-center justify-between">
+            <button onclick="goBack()" class="p-2 hover:bg-gray-100 rounded-xl transition-colors active:scale-95">
+                <span class="material-symbols-outlined text-text-secondary">arrow_back</span>
+            </button>
+            <div class="text-center">
+                <h1 class="text-base font-bold text-text-main">About the App</h1>
+                <p class="text-[10px] text-text-secondary">Health Saathi</p>
+            </div>
+            <div class="w-10"></div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="relative z-10 max-w-7xl mx-auto px-4 py-6 pb-8">
+
+        <!-- App Logo & Version -->
+        <div class="bg-surface rounded-3xl shadow-card p-6 border border-border-light mb-6 animate-fade-in">
+            <div class="flex flex-col items-center text-center">
+                <div
+                    class="w-24 h-24 bg-gradient-to-br from-primary to-primary-dark rounded-2xl flex items-center justify-center text-white shadow-glow mb-4">
+                    <span class="material-symbols-outlined text-[48px]">health_and_safety</span>
+                </div>
+                <h2 class="text-2xl font-bold text-text-main mb-1">Health Saathi</h2>
+                <p class="text-sm text-text-secondary mb-1">Your Personal Health Companion</p>
+                <div class="inline-block px-4 py-1.5 bg-primary-light rounded-full mt-2">
+                    <p class="text-xs font-semibold text-primary">Version 1.0.0</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- About Description -->
+        <div class="bg-surface rounded-2xl shadow-card p-5 border border-border-light mb-6 animate-fade-in">
+            <h3 class="text-base font-bold text-text-main mb-3">About Health Saathi</h3>
+            <p class="text-sm text-text-secondary leading-relaxed mb-3">
+                Health Saathi is your comprehensive health management companion designed to help you take control of
+                your wellness journey. Our app provides personalized health insights, tracks your medical records, and
+                connects you with healthcare professionals.
+            </p>
+            <p class="text-sm text-text-secondary leading-relaxed">
+                We believe that managing your health should be simple, accessible, and empowering. With Health Saathi,
+                you can store all your health information in one secure place and get AI-powered recommendations
+                tailored to your needs.
+            </p>
+        </div>
+
+        <!-- Key Features -->
+        <h3 class="text-base font-bold text-text-main mb-4">Key Features</h3>
+
+        <div class="space-y-3 mb-6">
+            <div class="bg-surface rounded-2xl shadow-card p-4 border border-border-light animate-fade-in">
+                <div class="flex items-start gap-4">
+                    <div class="w-12 h-12 bg-blue-50 rounded-xl flex items-center justify-center flex-shrink-0">
+                        <span class="material-symbols-outlined text-primary text-[24px]">folder_open</span>
+                    </div>
+                    <div>
+                        <h4 class="font-bold text-text-main mb-1">Health Records</h4>
+                        <p class="text-sm text-text-secondary">Store and manage all your medical reports, prescriptions,
+                            and health documents in one secure place.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-surface rounded-2xl shadow-card p-4 border border-border-light animate-fade-in">
+                <div class="flex items-start gap-4">
+                    <div class="w-12 h-12 bg-green-50 rounded-xl flex items-center justify-center flex-shrink-0">
+                        <span class="material-symbols-outlined text-green-600 text-[24px]">psychology</span>
+                    </div>
+                    <div>
+                        <h4 class="font-bold text-text-main mb-1">AI-Powered Insights</h4>
+                        <p class="text-sm text-text-secondary">Get personalized health recommendations and insights
+                            based on your health data and symptoms.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-surface rounded-2xl shadow-card p-4 border border-border-light animate-fade-in">
+                <div class="flex items-start gap-4">
+                    <div class="w-12 h-12 bg-purple-50 rounded-xl flex items-center justify-center flex-shrink-0">
+                        <span class="material-symbols-outlined text-purple-600 text-[24px]">calendar_today</span>
+                    </div>
+                    <div>
+                        <h4 class="font-bold text-text-main mb-1">Appointment Management</h4>
+                        <p class="text-sm text-text-secondary">Schedule and track your doctor appointments with easy
+                            reminders and notifications.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-surface rounded-2xl shadow-card p-4 border border-border-light animate-fade-in">
+                <div class="flex items-start gap-4">
+                    <div class="w-12 h-12 bg-orange-50 rounded-xl flex items-center justify-center flex-shrink-0">
+                        <span class="material-symbols-outlined text-orange-600 text-[24px]">shield</span>
+                    </div>
+                    <div>
+                        <h4 class="font-bold text-text-main mb-1">Secure & Private</h4>
+                        <p class="text-sm text-text-secondary">Your health data is encrypted and protected with
+                            industry-standard security measures.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-surface rounded-2xl shadow-card p-4 border border-border-light animate-fade-in">
+                <div class="flex items-start gap-4">
+                    <div class="w-12 h-12 bg-yellow-50 rounded-xl flex items-center justify-center flex-shrink-0">
+                        <span class="material-symbols-outlined text-yellow-600 text-[24px]">translate</span>
+                    </div>
+                    <div>
+                        <h4 class="font-bold text-text-main mb-1">Multi-Language Support</h4>
+                        <p class="text-sm text-text-secondary">Use the app in your preferred language - English or
+                            Hindi.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Developer Info -->
+        <div
+            class="bg-gradient-to-r from-primary to-primary-dark rounded-2xl shadow-glow p-6 text-white mb-6 animate-fade-in">
+            <div class="flex items-center gap-4 mb-4">
+                <div class="w-16 h-16 bg-white/20 rounded-2xl flex items-center justify-center backdrop-blur-sm">
+                    <span class="material-symbols-outlined text-[32px]">person</span>
+                </div>
+                <div>
+                    <h3 class="font-bold text-lg mb-1">Developed By</h3>
+                    <p class="text-sm opacity-90">Health Saathi Team</p>
+                </div>
+            </div>
+            <p class="text-sm opacity-90 leading-relaxed">
+                A team of passionate developers and healthcare professionals dedicated to making health management
+                accessible to everyone.
+            </p>
+        </div>
+
+        <!-- Legal Links -->
+        <h3 class="text-base font-bold text-text-main mb-4">Legal & Privacy</h3>
+        <div class="space-y-3 mb-6">
+            <a href="/privacy-policy"
+                class="block bg-surface rounded-2xl shadow-card p-4 border border-border-light hover:shadow-hover transition-all active:scale-95">
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 bg-blue-50 rounded-xl flex items-center justify-center">
+                            <span class="material-symbols-outlined text-primary text-[20px]">privacy_tip</span>
+                        </div>
+                        <span class="font-semibold text-text-main">Privacy Policy</span>
+                    </div>
+                    <span class="material-symbols-outlined text-text-secondary">arrow_forward_ios</span>
+                </div>
+            </a>
+
+            <a href="/terms-conditions"
+                class="block bg-surface rounded-2xl shadow-card p-4 border border-border-light hover:shadow-hover transition-all active:scale-95">
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 bg-green-50 rounded-xl flex items-center justify-center">
+                            <span class="material-symbols-outlined text-green-600 text-[20px]">description</span>
+                        </div>
+                        <span class="font-semibold text-text-main">Terms & Conditions</span>
+                    </div>
+                    <span class="material-symbols-outlined text-text-secondary">arrow_forward_ios</span>
+                </div>
+            </a>
+
+            <a href="/licenses"
+                class="block bg-surface rounded-2xl shadow-card p-4 border border-border-light hover:shadow-hover transition-all active:scale-95">
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 bg-purple-50 rounded-xl flex items-center justify-center">
+                            <span class="material-symbols-outlined text-purple-600 text-[20px]">license</span>
+                        </div>
+                        <span class="font-semibold text-text-main">Open Source Licenses</span>
+                    </div>
+                    <span class="material-symbols-outlined text-text-secondary">arrow_forward_ios</span>
+                </div>
+            </a>
+        </div>
+
+        <!-- App Info -->
+        <div class="bg-surface rounded-2xl shadow-card p-5 border border-border-light animate-fade-in">
+            <div class="space-y-3">
+                <div class="flex items-center justify-between py-2">
+                    <span class="text-sm font-semibold text-text-main">Version</span>
+                    <span class="text-sm text-text-secondary">1.0.0</span>
+                </div>
+                <div class="flex items-center justify-between py-2 border-t border-border-light">
+                    <span class="text-sm font-semibold text-text-main">Release Date</span>
+                    <span class="text-sm text-text-secondary">January 2025</span>
+                </div>
+                <div class="flex items-center justify-between py-2 border-t border-border-light">
+                    <span class="text-sm font-semibold text-text-main">Size</span>
+                    <span class="text-sm text-text-secondary">12.5 MB</span>
+                </div>
+                <div class="flex items-center justify-between py-2 border-t border-border-light">
+                    <span class="text-sm font-semibold text-text-main">Last Updated</span>
+                    <span class="text-sm text-text-secondary">15 Jan 2025</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Copyright -->
+        <div class="mt-8 text-center">
+            <p class="text-xs text-text-secondary">
+                © 2025 Health Saathi. All rights reserved.
+            </p>
+            <p class="text-xs text-text-secondary mt-1">
+                Made with <span class="text-red-500">♥</span> in India
+            </p>
+        </div>
+
+    </main>
+
+    <script>
+        function goBack() {
+            window.history.back();
+        }
+    </script>
+
+</body>
+
+</html>

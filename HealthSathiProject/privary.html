@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Privacy Policy - Health Saathi</title>
+    <link href="https://fonts.googleapis.com" rel="preconnect" />
+    <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect" />
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap"
+        rel="stylesheet" />
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#0058ba",
+                        "primary-dark": "#155a96",
+                        "primary-light": "#e3f2fd",
+                        "text-main": "#1e293b",
+                        "text-secondary": "#64748b",
+                        "border-light": "#e2e8f0",
+                        "surface": "#ffffff",
+                        "background": "#f8fafc",
+                    },
+                    fontFamily: {
+                        "display": ["Poppins", "sans-serif"]
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0.75rem",
+                        "xl": "1rem",
+                        "2xl": "1.25rem",
+                        "3xl": "1.5rem"
+                    },
+                    boxShadow: {
+                        'soft': '0 4px 20px -4px rgba(30, 115, 190, 0.1)',
+                        'glow': '0 8px 30px rgba(30, 115, 190, 0.2)',
+                        'card': '0 2px 12px rgba(0, 0, 0, 0.06)',
+                        'hover': '0 8px 25px rgba(30, 115, 190, 0.15)',
+                    }
+                },
+            },
+        }
+    </script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            height: 100%;
+            overflow-y: auto;
+        }
+
+        body {
+            min-height: 100vh;
+            height: auto;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            overflow-y: auto;
+            padding-top: env(safe-area-inset-top);
+        }
+
+        .animate-fade-in {
+            animation: fadeIn 0.3s ease-in;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .active\:scale-95:active {
+            transform: scale(0.95);
+        }
+    </style>
+</head>
+
+<body class="bg-background font-display text-text-main relative">
+    <div
+        class="absolute -top-[10%] -right-[10%] w-[70%] h-[40%] bg-blue-100/60 rounded-full blur-3xl pointer-events-none">
+    </div>
+    <div class="absolute top-[20%] -left-[10%] w-[50%] h-[30%] bg-blue-50/60 rounded-full blur-3xl pointer-events-none">
+    </div>
+
+    <!-- Header -->
+    <header class="bg-surface/80 backdrop-blur-xl border-b border-border-light sticky top-0 z-40 px-4 py-4">
+        <div class="max-w-7xl mx-auto flex items-center justify-between">
+            <button onclick="goBack()" class="p-2 hover:bg-gray-100 rounded-xl transition-colors active:scale-95">
+                <span class="material-symbols-outlined text-text-secondary">arrow_back</span>
+            </button>
+            <div class="text-center">
+                <h1 class="text-base font-bold text-text-main">Privacy Policy</h1>
+                <p class="text-[10px] text-text-secondary">Last updated: Jan 15, 2025</p>
+            </div>
+            <div class="w-10"></div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="relative z-10 max-w-7xl mx-auto px-4 py-6 pb-8">
+
+        <!-- Hero Section -->
+        <div class="bg-surface rounded-3xl shadow-card p-6 border border-border-light mb-6 animate-fade-in">
+            <div class="flex flex-col items-center text-center">
+                <div
+                    class="w-20 h-20 bg-gradient-to-br from-orange-500 to-orange-600 rounded-2xl flex items-center justify-center text-white shadow-glow mb-4">
+                    <span class="material-symbols-outlined text-[40px]">privacy_tip</span>
+                </div>
+                <h2 class="text-lg font-bold text-text-main mb-2">Your Privacy Matters</h2>
+                <p class="text-sm text-text-secondary">We are committed to protecting your personal information and your
+                    right to privacy.</p>
+            </div>
+        </div>
+
+        <!-- Introduction -->
+        <div class="bg-surface rounded-2xl shadow-card p-5 border border-border-light mb-4 animate-fade-in">
+            <h3 class="text-base font-bold text-text-main mb-3">Introduction</h3>
+            <p class="text-sm text-text-secondary leading-relaxed">
+                Welcome to Health Saathi. This Privacy Policy explains how we collect, use, disclose, and safeguard your
+                information when you use our mobile application and services. Please read this privacy policy carefully.
+                If you do not agree with the terms of this privacy policy, please do not access the application.
+            </p>
+        </div>
+
+        <!-- Information We Collect -->
+        <div class="bg-surface rounded-2xl shadow-card p-5 border border-border-light mb-4 animate-fade-in">
+            <div class="flex items-center gap-3 mb-3">
+                <div class="w-10 h-10 bg-blue-50 rounded-xl flex items-center justify-center">
+                    <span class="material-symbols-outlined text-primary text-[20px]">database</span>
+                </div>
+                <h3 class="text-base font-bold text-text-main">Information We Collect</h3>
+            </div>
+            <div class="space-y-3">
+                <div>
+                    <h4 class="font-semibold text-text-main text-sm mb-2">Personal Information</h4>
+                    <p class="text-sm text-text-secondary leading-relaxed">
+                        We collect information that you provide directly to us, including your name, email address,
+                        phone number, date of birth, gender, and health-related information such as medical records,
+                        prescriptions, and test reports.
+                    </p>
+                </div>
+                <div>
+                    <h4 class="font-semibold text-text-main text-sm mb-2">Health Data</h4>
+                    <p class="text-sm text-text-secondary leading-relaxed">
+                        When you use our health tracking features, we collect health-related data including symptoms,
+                        medications, appointments, and any other health information you choose to share.
+                    </p>
+                </div>
+                <div>
+                    <h4 class="font-semibold text-text-main text-sm mb-2">Usage Information</h4>
+                    <p class="text-sm text-text-secondary leading-relaxed">
+                        We automatically collect information about your device, including IP address, device type,
+                        operating system, app usage patterns, and crash reports to improve our services.
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <!-- How We Use Your Information -->
+        <div class="bg-surface rounded-2xl shadow-card p-5 border border-border-light mb-4 animate-fade-in">
+            <div class="flex items-center gap-3 mb-3">
+                <div class="w-10 h-10 bg-green-50 rounded-xl flex items-center justify-center">
+                    <span class="material-symbols-outlined text-green-600 text-[20px]">verified_user</span>
+                </div>
+                <h3 class="text-base font-bold text-text-main">How We Use Your Information</h3>
+            </div>
+            <ul class="space-y-2">
+                <li class="flex items-start gap-2">
+                    <span class="material-symbols-outlined text-primary text-[16px] mt-0.5">check_circle</span>
+                    <p class="text-sm text-text-secondary leading-relaxed flex-1">To provide and maintain our health
+                        management services</p>
+                </li>
+                <li class="flex items-start gap-2">
+                    <span class="material-symbols-outlined text-primary text-[16px] mt-0.5">check_circle</span>
+                    <p class="text-sm text-text-secondary leading-relaxed flex-1">To personalize your experience and
+                        provide health recommendations</p>
+                </li>
+                <li class="flex items-start gap-2">
+                    <span class="material-symbols-outlined text-primary text-[16px] mt-0.5">check_circle</span>
+                    <p class="text-sm text-text-secondary leading-relaxed flex-1">To send you notifications about
+                        appointments and health reminders</p>
+                </li>
+                <li class="flex items-start gap-2">
+                    <span class="material-symbols-outlined text-primary text-[16px] mt-0.5">check_circle</span>
+                    <p class="text-sm text-text-secondary leading-relaxed flex-1">To improve and optimize our
+                        application and services</p>
+                </li>
+                <li class="flex items-start gap-2">
+                    <span class="material-symbols-outlined text-primary text-[16px] mt-0.5">check_circle</span>
+                    <p class="text-sm text-text-secondary leading-relaxed flex-1">To respond to your inquiries and
+                        provide customer support</p>
+                </li>
+                <li class="flex items-start gap-2">
+                    <span class="material-symbols-outlined text-primary text-[16px] mt-0.5">check_circle</span>
+                    <p class="text-sm text-text-secondary leading-relaxed flex-1">To comply with legal obligations and
+                        protect our rights</p>
+                </li>
+            </ul>
+        </div>
+
+        <!-- Data Security -->
+        <div class="bg-surface rounded-2xl shadow-card p-5 border border-border-light mb-4 animate-fade-in">
+            <div class="flex items-center gap-3 mb-3">
+                <div class="w-10 h-10 bg-purple-50 rounded-xl flex items-center justify-center">
+                    <span class="material-symbols-outlined text-purple-600 text-[20px]">lock</span>
+                </div>
+                <h3 class="text-base font-bold text-text-main">Data Security</h3>
+            </div>
+            <p class="text-sm text-text-secondary leading-relaxed mb-3">
+                We implement industry-standard security measures to protect your personal information, including:
+            </p>
+            <ul class="space-y-2">
+                <li class="flex items-start gap-2">
+                    <span class="material-symbols-outlined text-purple-600 text-[16px] mt-0.5">shield</span>
+                    <p class="text-sm text-text-secondary leading-relaxed flex-1">End-to-end encryption for sensitive
+                        health data</p>
+                </li>
+                <li class="flex items-start gap-2">
+                    <span class="material-symbols-outlined text-purple-600 text-[16px] mt-0.5">shield</span>
+                    <p class="text-sm text-text-secondary leading-relaxed flex-1">Secure data storage with regular
+                        backups</p>
+                </li>
+                <li class="flex items-start gap-2">
+                    <span class="material-symbols-outlined text-purple-600 text-[16px] mt-0.5">shield</span>
+                    <p class="text-sm text-text-secondary leading-relaxed flex-1">Regular security audits and updates
+                    </p>
+                </li>
+                <li class="flex items-start gap-2">
+                    <span class="material-symbols-outlined text-purple-600 text-[16px] mt-0.5">shield</span>
+                    <p class="text-sm text-text-secondary leading-relaxed flex-1">Access controls and authentication
+                        measures</p>
+                </li>
+            </ul>
+        </div>
+
+        <!-- Data Sharing -->
+        <div class="bg-surface rounded-2xl shadow-card p-5 border border-border-light mb-4 animate-fade-in">
+            <div class="flex items-center gap-3 mb-3">
+                <div class="w-10 h-10 bg-yellow-50 rounded-xl flex items-center justify-center">
+                    <span class="material-symbols-outlined text-yellow-600 text-[20px]">share</span>
+                </div>
+                <h3 class="text-base font-bold text-text-main">Information Sharing</h3>
+            </div>
+            <p class="text-sm text-text-secondary leading-relaxed mb-3">
+                We do not sell your personal information. We may share your information only in the following
+                circumstances:
+            </p>
+            <ul class="space-y-2">
+                <li class="flex items-start gap-2">
+                    <span class="material-symbols-outlined text-yellow-600 text-[16px] mt-0.5">group</span>
+                    <p class="text-sm text-text-secondary leading-relaxed flex-1">With healthcare providers you choose
+                        to share your data with</p>
+                </li>
+                <li class="flex items-start gap-2">
+                    <span class="material-symbols-outlined text-yellow-600 text-[16px] mt-0.5">group</span>
+                    <p class="text-sm text-text-secondary leading-relaxed flex-1">With service providers who assist in
+                        operating our app</p>
+                </li>
+                <li class="flex items-start gap-2">
+                    <span class="material-symbols-outlined text-yellow-600 text-[16px] mt-0.5">group</span>
+                    <p class="text-sm text-text-secondary leading-relaxed flex-1">When required by law or legal process
+                    </p>
+                </li>
+                <li class="flex items-start gap-2">
+                    <span class="material-symbols-outlined text-yellow-600 text-[16px] mt-0.5">group</span>
+                    <p class="text-sm text-text-secondary leading-relaxed flex-1">With your explicit consent</p>
+                </li>
+            </ul>
+        </div>
+
+        <!-- Your Rights -->
+        <div class="bg-surface rounded-2xl shadow-card p-5 border border-border-light mb-4 animate-fade-in">
+            <div class="flex items-center gap-3 mb-3">
+                <div class="w-10 h-10 bg-cyan-50 rounded-xl flex items-center justify-center">
+                    <span class="material-symbols-outlined text-cyan-600 text-[20px]">account_circle</span>
+                </div>
+                <h3 class="text-base font-bold text-text-main">Your Rights</h3>
+            </div>
+            <p class="text-sm text-text-secondary leading-relaxed mb-3">
+                You have the following rights regarding your personal information:
+            </p>
+            <ul class="space-y-2">
+                <li class="flex items-start gap-2">
+                    <span class="material-symbols-outlined text-cyan-600 text-[16px] mt-0.5">check</span>
+                    <p class="text-sm text-text-secondary leading-relaxed flex-1">Access and review your personal data
+                    </p>
+                </li>
+                <li class="flex items-start gap-2">
+                    <span class="material-symbols-outlined text-cyan-600 text-[16px] mt-0.5">check</span>
+                    <p class="text-sm text-text-secondary leading-relaxed flex-1">Request correction of inaccurate
+                        information</p>
+                </li>
+                <li class="flex items-start gap-2">
+                    <span class="material-symbols-outlined text-cyan-600 text-[16px] mt-0.5">check</span>
+                    <p class="text-sm text-text-secondary leading-relaxed flex-1">Request deletion of your data</p>
+                </li>
+                <li class="flex items-start gap-2">
+                    <span class="material-symbols-outlined text-cyan-600 text-[16px] mt-0.5">check</span>
+                    <p class="text-sm text-text-secondary leading-relaxed flex-1">Opt-out of marketing communications
+                    </p>
+                </li>
+                <li class="flex items-start gap-2">
+                    <span class="material-symbols-outlined text-cyan-600 text-[16px] mt-0.5">check</span>
+                    <p class="text-sm text-text-secondary leading-relaxed flex-1">Export your data in a portable format
+                    </p>
+                </li>
+            </ul>
+        </div>
+
+        <!-- Contact Us -->
+        <div
+            class="bg-gradient-to-r from-primary to-primary-dark rounded-2xl shadow-glow p-6 text-white text-center animate-fade-in">
+            <span class="material-symbols-outlined text-[40px] mb-3 inline-block">contact_support</span>
+            <h3 class="font-bold text-lg mb-2">Questions About Privacy?</h3>
+            <p class="text-sm mb-4 opacity-90">If you have any questions about this Privacy Policy, please contact us
+            </p>
+            <div class="space-y-2 text-sm">
+                <p class="opacity-90">Email: privacy@healthsaathi.com</p>
+                <p class="opacity-90">Phone: +91 123 456 7890</p>
+            </div>
+        </div>
+
+    </main>
+
+    <script>
+        function goBack() {
+            window.history.back();
+        }
+    </script>
+
+</body>
+
+</html>

@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Saved Suggestions - Health Saathi</title>
+    <link href="https://fonts.googleapis.com" rel="preconnect" />
+    <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect" />
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap"
+        rel="stylesheet" />
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#0058ba",
+                        "primary-dark": "#155a96",
+                        "primary-light": "#e3f2fd",
+                        "text-main": "#1e293b",
+                        "text-secondary": "#64748b",
+                        "border-light": "#e2e8f0",
+                        "surface": "#ffffff",
+                        "background": "#f8fafc",
+                    },
+                    fontFamily: {
+                        "display": ["Poppins", "sans-serif"]
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0.75rem",
+                        "xl": "1rem",
+                        "2xl": "1.25rem",
+                        "3xl": "1.5rem"
+                    },
+                    boxShadow: {
+                        'soft': '0 4px 20px -4px rgba(30, 115, 190, 0.1)',
+                        'glow': '0 8px 30px rgba(30, 115, 190, 0.2)',
+                        'card': '0 2px 12px rgba(0, 0, 0, 0.06)',
+                        'hover': '0 8px 25px rgba(30, 115, 190, 0.15)',
+                    }
+                },
+            },
+        }
+    </script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            height: 100%;
+            overflow-y: auto;
+        }
+
+        body {
+            min-height: 100vh;
+            height: auto;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            overflow-y: auto;
+            padding-top: env(safe-area-inset-top);
+        }
+
+        .animate-fade-in {
+            animation: fadeIn 0.3s ease-in;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .success-message {
+            animation: slideDown 0.3s ease-out;
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .suggestion-card {
+            transition: all 0.2s ease;
+        }
+
+        .suggestion-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(30, 115, 190, 0.15);
+        }
+
+        .suggestion-card:active {
+            transform: scale(0.98);
+        }
+    </style>
+</head>
+
+<body class="bg-background font-display text-text-main relative">
+    <div
+        class="absolute -top-[10%] -right-[10%] w-[70%] h-[40%] bg-blue-100/60 rounded-full blur-3xl pointer-events-none">
+    </div>
+    <div class="absolute top-[20%] -left-[10%] w-[50%] h-[30%] bg-blue-50/60 rounded-full blur-3xl pointer-events-none">
+    </div>
+
+    <!-- Header -->
+    <header class="bg-surface/80 backdrop-blur-xl border-b border-border-light sticky top-0 z-40 px-4 py-4">
+        <div class="max-w-7xl mx-auto flex items-center justify-between">
+            <button onclick="goBack()" class="p-2 hover:bg-gray-100 rounded-xl transition-colors active:scale-95">
+                <span class="material-symbols-outlined text-text-secondary">arrow_back</span>
+            </button>
+            <div class="text-center">
+                <h1 class="text-base font-bold text-text-main">Saved Suggestions</h1>
+                <p class="text-[10px] text-text-secondary" id="suggestionCount">0 saved items</p>
+            </div>
+            <button onclick="toggleSelectMode()" id="selectBtn"
+                class="p-2 hover:bg-gray-100 rounded-xl transition-colors active:scale-95">
+                <span class="material-symbols-outlined text-text-secondary">checklist</span>
+            </button>
+        </div>
+    </header>
+
+    <!-- Success Message -->
+    <div id="successMessage" class="hidden fixed top-20 left-1/2 -translate-x-1/2 z-50 w-[90%] max-w-md">
+        <div class="bg-green-500 text-white px-6 py-4 rounded-2xl shadow-glow flex items-center gap-3 success-message">
+            <span class="material-symbols-outlined text-[24px]">check_circle</span>
+            <div>
+                <p class="font-semibold">Success!</p>
+                <p class="text-sm opacity-90" id="successText">Item removed successfully</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Delete Confirmation Modal -->
+    <div id="deleteModal"
+        class="hidden fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+        <div class="bg-surface rounded-3xl shadow-glow p-6 max-w-sm w-full animate-fade-in">
+            <div class="flex flex-col items-center text-center">
+                <div class="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mb-4">
+                    <span class="material-symbols-outlined text-red-500 text-[32px]">delete</span>
+                </div>
+                <h2 class="text-lg font-bold text-text-main mb-2">Remove Suggestion?</h2>
+                <p class="text-sm text-text-secondary mb-6">
+                    Are you sure you want to remove this suggestion from your saved items?
+                </p>
+                <div class="flex gap-3 w-full">
+                    <button onclick="closeDeleteModal()"
+                        class="flex-1 py-3 bg-gray-100 text-text-main font-semibold rounded-xl hover:bg-gray-200 transition-all">
+                        Cancel
+                    </button>
+                    <button onclick="confirmDelete()"
+                        class="flex-1 py-3 bg-red-500 text-white font-semibold rounded-xl hover:bg-red-600 transition-all">
+                        Remove
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <main class="relative z-10 max-w-7xl mx-auto px-4 py-6 pb-8">
+
+        <!-- Empty State (shown when no suggestions) -->
+        <div id="emptyState" class="hidden animate-fade-in">
+            <div class="bg-surface rounded-3xl shadow-card p-8 border border-border-light text-center">
+                <div
+                    class="w-24 h-24 bg-gray-100 rounded-2xl flex items-center justify-center text-gray-400 mx-auto mb-4">
+                    <span class="material-symbols-outlined text-[48px]">bookmark_border</span>
+                </div>
+                <h2 class="text-lg font-bold text-text-main mb-2">No Saved Suggestions</h2>
+                <p class="text-sm text-text-secondary mb-6">
+                    You haven't saved any health suggestions yet. Start exploring to find helpful tips!
+                </p>
+                <button onclick="window.location.href='/suggestions'"
+                    class="px-6 py-3 bg-gradient-to-r from-primary to-primary-dark text-white font-semibold rounded-xl shadow-soft hover:shadow-glow transition-all active:scale-95 inline-flex items-center gap-2">
+                    <span class="material-symbols-outlined">explore</span>
+                    Explore Suggestions
+                </button>
+            </div>
+        </div>
+
+        <!-- Suggestions List -->
+        <div id="suggestionsList" class="space-y-4">
+
+            <!-- Sample Suggestion Card 1 (will be generated from backend) -->
+            <div class="suggestion-card bg-surface rounded-2xl shadow-card p-5 border border-border-light animate-fade-in"
+                th:each="saved : ${savedSuggestions}" th:data-id="${saved.id}">
+                <div class="flex items-start gap-4">
+                    <!-- Category Icon -->
+                    <div
+                        class="w-12 h-12 bg-gradient-to-br from-green-400 to-green-600 rounded-xl flex items-center justify-center flex-shrink-0">
+                        <span class="material-symbols-outlined text-white text-[24px]"
+                            th:text="${saved.suggestion.icon}">favorite</span>
+                    </div>
+
+                    <!-- Content -->
+                    <div class="flex-1 min-w-0">
+                        <div class="flex items-start justify-between gap-2 mb-2">
+                            <h3 class="font-bold text-text-main text-base" th:text="${saved.suggestion.title}">Stay
+                                Hydrated</h3>
+                            <button onclick="openDeleteModal(this)" th:data-id="${saved.id}"
+                                class="p-1 hover:bg-red-50 rounded-lg transition-colors flex-shrink-0">
+                                <span class="material-symbols-outlined text-red-500 text-[20px]">delete</span>
+                            </button>
+                        </div>
+
+                        <p class="text-sm text-text-secondary mb-3 line-clamp-2"
+                            th:text="${saved.suggestion.description}">
+                            Drink at least 8 glasses of water daily to maintain proper hydration levels and support
+                            overall health.
+                        </p>
+
+                        <!-- Tags -->
+                        <div class="flex flex-wrap gap-2 mb-3">
+                            <span class="px-3 py-1 bg-blue-50 text-primary text-xs font-semibold rounded-lg"
+                                th:text="${saved.suggestion.category}">Wellness</span>
+                            <span class="px-3 py-1 bg-green-50 text-green-600 text-xs font-semibold rounded-lg">
+                                <span class="material-symbols-outlined text-[14px] align-middle">schedule</span>
+                                Daily
+                            </span>
+                        </div>
+
+                        <!-- Footer -->
+                        <div class="flex items-center justify-between text-xs text-text-secondary">
+                            <span class="flex items-center gap-1">
+                                <span class="material-symbols-outlined text-[16px]">bookmark</span>
+                                Saved on <span th:text="${#temporals.format(saved.savedOn, 'dd MMM yyyy')}">15 Jan
+                                    2025</span>
+                            </span>
+                            <button onclick="viewDetails(this)" th:data-id="${saved.suggestion.id}"
+                                class="text-primary font-semibold hover:text-primary-dark transition-colors flex items-center gap-1">
+                                View Details
+                                <span class="material-symbols-outlined text-[16px]">arrow_forward</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- Load More Button (if pagination is needed) -->
+        <div id="loadMoreSection" class="hidden mt-6 text-center">
+            <button onclick="loadMore()"
+                class="px-6 py-3 bg-surface text-primary font-semibold rounded-xl border-2 border-primary hover:bg-primary hover:text-white transition-all active:scale-95 inline-flex items-center gap-2 shadow-card">
+                <span class="material-symbols-outlined">expand_more</span>
+                Load More
+            </button>
+        </div>
+
+        <!-- Info Card -->
+        <div class="mt-8 p-4 bg-blue-50/50 rounded-2xl border border-primary/10">
+            <div class="flex items-start gap-3">
+                <span class="material-symbols-outlined text-primary text-[20px] mt-0.5">lightbulb</span>
+                <div>
+                    <p class="text-sm font-semibold text-text-main mb-1">Tips</p>
+                    <ul class="text-xs text-text-secondary leading-relaxed space-y-1">
+                        <li>• Tap on any suggestion to view full details</li>
+                        <li>• Remove suggestions you no longer need</li>
+                        <li>• Organize your health journey effectively</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <script>
+        let deleteId = null;
+
+        function goBack() {
+            window.history.back();
+        }
+
+        function toggleSelectMode() {
+            // Toggle select mode functionality
+            alert('Select mode feature coming soon!');
+        }
+
+        function openDeleteModal(button) {
+            deleteId = button.getAttribute('data-id');
+            document.getElementById('deleteModal').classList.remove('hidden');
+        }
+
+        function closeDeleteModal() {
+            deleteId = null;
+            document.getElementById('deleteModal').classList.add('hidden');
+        }
+
+        function confirmDelete() {
+            if (!deleteId) return;
+
+            // Make API call to delete
+            fetch(`/user/saved-suggestions/delete/${deleteId}`, {
+                method: 'DELETE',
+            })
+                .then(response => {
+                    if (response.ok) {
+                        // Remove card from DOM
+                        const card = document.querySelector(`[data-id="${deleteId}"]`);
+                        if (card) {
+                            card.style.opacity = '0';
+                            card.style.transform = 'scale(0.9)';
+                            setTimeout(() => {
+                                card.remove();
+                                updateCount();
+                                checkEmptyState();
+                            }, 300);
+                        }
+
+                        showSuccess('Suggestion removed successfully');
+                        closeDeleteModal();
+                    } else {
+                        alert('Failed to remove suggestion');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('An error occurred');
+                });
+        }
+
+        function viewDetails(button) {
+            const suggestionId = button.getAttribute('data-id');
+            window.location.href = `/suggestions/${suggestionId}`;
+        }
+
+        function loadMore() {
+            // Implement pagination logic
+            alert('Loading more suggestions...');
+        }
+
+        function updateCount() {
+            const count = document.querySelectorAll('.suggestion-card').length;
+            document.getElementById('suggestionCount').textContent = `${count} saved item${count !== 1 ? 's' : ''}`;
+        }
+
+        function checkEmptyState() {
+            const count = document.querySelectorAll('.suggestion-card').length;
+            if (count === 0) {
+                document.getElementById('suggestionsList').classList.add('hidden');
+                document.getElementById('emptyState').classList.remove('hidden');
+                document.getElementById('selectBtn').style.display = 'none';
+            }
+        }
+
+        function showSuccess(message) {
+            const successMsg = document.getElementById('successMessage');
+            const successText = document.getElementById('successText');
+            successText.textContent = message;
+            successMsg.classList.remove('hidden');
+
+            setTimeout(() => {
+                successMsg.classList.add('hidden');
+            }, 3000);
+        }
+
+        // Initialize on page load
+        window.addEventListener('DOMContentLoaded', function () {
+            updateCount();
+            checkEmptyState();
+        });
+    </script>
+
+</body>
+
+</html>

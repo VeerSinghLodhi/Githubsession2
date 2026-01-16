@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Forgot Password - Health Saathi</title>
+    <link href="https://fonts.googleapis.com" rel="preconnect" />
+    <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect" />
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap"
+        rel="stylesheet" />
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#0058ba",
+                        "primary-dark": "#155a96",
+                        "primary-light": "#e3f2fd",
+                        "text-main": "#1e293b",
+                        "text-secondary": "#64748b",
+                        "border-light": "#e2e8f0",
+                        "surface": "#ffffff",
+                        "background": "#f8fafc",
+                    },
+                    fontFamily: {
+                        "display": ["Poppins", "sans-serif"]
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0.75rem",
+                        "xl": "1rem",
+                        "2xl": "1.25rem",
+                        "3xl": "1.5rem"
+                    },
+                    boxShadow: {
+                        'soft': '0 4px 20px -4px rgba(30, 115, 190, 0.1)',
+                        'glow': '0 8px 30px rgba(30, 115, 190, 0.2)',
+                        'card': '0 2px 12px rgba(0, 0, 0, 0.06)',
+                        'hover': '0 8px 25px rgba(30, 115, 190, 0.15)',
+                    }
+                },
+            },
+        }
+    </script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            height: 100%;
+            overflow-y: auto;
+        }
+
+        body {
+            min-height: 100vh;
+            height: auto;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            overflow-y: auto;
+            padding-top: env(safe-area-inset-top);
+        }
+
+        .animate-fade-in {
+            animation: fadeIn 0.3s ease-in;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        input:focus {
+            outline: none;
+        }
+
+        .success-message {
+            animation: slideDown 0.3s ease-out;
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .pulse-animation {
+            animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+        }
+
+        @keyframes pulse {
+
+            0%,
+            100% {
+                opacity: 1;
+            }
+
+            50% {
+                opacity: 0.5;
+            }
+        }
+    </style>
+</head>
+
+<body class="bg-background font-display text-text-main relative">
+    <div
+        class="absolute -top-[10%] -right-[10%] w-[70%] h-[40%] bg-blue-100/60 rounded-full blur-3xl pointer-events-none">
+    </div>
+    <div class="absolute top-[20%] -left-[10%] w-[50%] h-[30%] bg-blue-50/60 rounded-full blur-3xl pointer-events-none">
+    </div>
+
+    <!-- Header -->
+    <header class="bg-surface/80 backdrop-blur-xl border-b border-border-light sticky top-0 z-40 px-4 py-4">
+        <div class="max-w-7xl mx-auto flex items-center justify-between">
+            <button onclick="goBack()" class="p-2 hover:bg-gray-100 rounded-xl transition-colors active:scale-95">
+                <span class="material-symbols-outlined text-text-secondary">arrow_back</span>
+            </button>
+            <div class="text-center">
+                <h1 class="text-base font-bold text-text-main">Forgot Password</h1>
+                <p class="text-[10px] text-text-secondary">Step 1 of 3</p>
+            </div>
+            <div class="w-10"></div>
+        </div>
+    </header>
+
+    <!-- Error Message -->
+    <div id="errorMessage" class="hidden fixed top-20 left-1/2 -translate-x-1/2 z-50 w-[90%] max-w-md">
+        <div class="bg-red-500 text-white px-6 py-4 rounded-2xl shadow-glow flex items-center gap-3 success-message">
+            <span class="material-symbols-outlined text-[24px]">error</span>
+            <div>
+                <p class="font-semibold">Error!</p>
+                <p class="text-sm opacity-90" id="errorText">Something went wrong</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <main class="relative z-10 max-w-7xl mx-auto px-4 py-6 pb-8">
+
+        <!-- Progress Indicator -->
+        <div class="mb-6 animate-fade-in">
+            <div class="flex items-center justify-between max-w-md mx-auto">
+                <div class="flex flex-col items-center flex-1">
+                    <div
+                        class="w-10 h-10 bg-primary rounded-full flex items-center justify-center text-white font-bold shadow-glow mb-2">
+                        1
+                    </div>
+                    <p class="text-xs font-semibold text-primary">Verify</p>
+                </div>
+                <div class="h-0.5 bg-border-light flex-1 mx-2"></div>
+                <div class="flex flex-col items-center flex-1">
+                    <div
+                        class="w-10 h-10 bg-gray-200 rounded-full flex items-center justify-center text-text-secondary font-bold mb-2">
+                        2
+                    </div>
+                    <p class="text-xs text-text-secondary">OTP</p>
+                </div>
+                <div class="h-0.5 bg-border-light flex-1 mx-2"></div>
+                <div class="flex flex-col items-center flex-1">
+                    <div
+                        class="w-10 h-10 bg-gray-200 rounded-full flex items-center justify-center text-text-secondary font-bold mb-2">
+                        3
+                    </div>
+                    <p class="text-xs text-text-secondary">Reset</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Icon Section -->
+        <div class="bg-surface rounded-3xl shadow-card p-6 border border-border-light mb-6 animate-fade-in">
+            <div class="flex flex-col items-center">
+                <div
+                    class="w-24 h-24 bg-gradient-to-br from-primary to-primary-dark rounded-2xl flex items-center justify-center text-white shadow-glow mb-4">
+                    <span class="material-symbols-outlined text-[48px]">phone_android</span>
+                </div>
+                <h2 class="text-lg font-bold text-text-main mb-1">Verify Your Phone Number</h2>
+                <p class="text-sm text-text-secondary text-center">We'll send an OTP to your registered mobile number
+                </p>
+            </div>
+        </div>
+
+        <!-- Phone Number Display -->
+        <form th:action="@{/forgot-password/send-otp}" method="post" onsubmit="return validateForm(event)"
+            class="space-y-4">
+
+            <div class="bg-surface rounded-2xl shadow-card p-5 border border-border-light animate-fade-in">
+                <label class="flex items-center gap-2 text-sm font-semibold text-text-main mb-3">
+                    <span class="material-symbols-outlined text-primary text-[20px]">phone</span>
+                    Registered Mobile Number
+                </label>
+
+                <!-- Masked Phone Number Display -->
+                <div
+                    class="w-full px-4 py-4 rounded-xl border-2 border-primary/20 bg-primary-light/30 flex items-center justify-between">
+                    <div class="flex items-center gap-3">
+                        <span class="text-text-secondary font-semibold">+91</span>
+                        <span class="text-lg font-bold text-text-main tracking-wide" th:text="${maskedContact}">
+                            ******7890
+                        </span>
+                    </div>
+                    <span class="material-symbols-outlined text-green-500">verified</span>
+                </div>
+
+                <!-- Hidden input to send contact -->
+                <input type="hidden" name="contact" th:value="${contact}" />
+
+                <p class="text-xs text-text-secondary mt-3 ml-1 flex items-center gap-1">
+                    <span class="material-symbols-outlined text-[14px]">info</span>
+                    OTP will be sent to this number
+                </p>
+            </div>
+
+            <!-- Information Card -->
+            <div class="bg-blue-50/50 rounded-2xl shadow-card p-5 border border-primary/10 animate-fade-in">
+                <div class="flex items-start gap-3">
+                    <span class="material-symbols-outlined text-primary text-[20px] mt-0.5">security</span>
+                    <div>
+                        <p class="text-sm font-semibold text-text-main mb-2">Security Notice</p>
+                        <ul class="text-xs text-text-secondary leading-relaxed space-y-1">
+                            <li>• OTP will be valid for 5 minutes</li>
+                            <li>• Do not share OTP with anyone</li>
+                            <li>• You can request a new OTP if not received</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="flex gap-3 pt-4">
+                <button type="button" onclick="goBack()"
+                    class="flex-1 py-4 bg-gray-100 text-text-main font-bold rounded-xl hover:bg-gray-200 transition-all active:scale-95 flex items-center justify-center gap-2">
+                    <span class="material-symbols-outlined">close</span>
+                    Cancel
+                </button>
+                <button type="submit" id="sendOtpBtn"
+                    class="flex-1 py-4 bg-gradient-to-r from-primary to-primary-dark text-white font-bold rounded-xl shadow-soft hover:shadow-glow transition-all active:scale-95 flex items-center justify-center gap-2">
+                    <span class="material-symbols-outlined">send</span>
+                    Send OTP
+                </button>
+            </div>
+
+        </form>
+
+        <!-- Help Section -->
+        <div class="mt-8 text-center">
+            <p class="text-sm text-text-secondary mb-2">Having trouble?</p>
+            <a href="/contact-support"
+                class="text-primary hover:text-primary-dark font-semibold text-sm inline-flex items-center gap-1 transition-colors">
+                <span class="material-symbols-outlined text-[18px]">support_agent</span>
+                Contact Support
+            </a>
+        </div>
+
+    </main>
+
+    <script>
+        function goBack() {
+            window.history.back();
+        }
+
+        function validateForm(event) {
+            event.preventDefault();
+
+            const btn = document.getElementById('sendOtpBtn');
+            btn.disabled = true;
+            btn.innerHTML = '<span class="material-symbols-outlined pulse-animation">hourglass_empty</span> Sending...';
+
+            // Simulate sending OTP (replace with actual form submission)
+            setTimeout(() => {
+                event.target.submit();
+            }, 500);
+
+            return false;
+        }
+
+        function showError(message) {
+            const errorMsg = document.getElementById('errorMessage');
+            const errorText = document.getElementById('errorText');
+            errorText.textContent = message;
+            errorMsg.classList.remove('hidden');
+
+            setTimeout(() => {
+                errorMsg.classList.add('hidden');
+            }, 3000);
+        }
+    </script>
+
+</body>
+
+</html>

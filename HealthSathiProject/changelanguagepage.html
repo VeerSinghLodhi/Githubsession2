@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Language Settings - Health Saathi</title>
+    <link href="https://fonts.googleapis.com" rel="preconnect" />
+    <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect" />
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Devanagari:wght@400;500;600;700&display=swap"
+        rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap"
+        rel="stylesheet" />
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#0058ba",
+                        "primary-dark": "#155a96",
+                        "primary-light": "#e3f2fd",
+                        "text-main": "#1e293b",
+                        "text-secondary": "#64748b",
+                        "border-light": "#e2e8f0",
+                        "surface": "#ffffff",
+                        "background": "#f8fafc",
+                    },
+                    fontFamily: {
+                        "display": ["Poppins", "sans-serif"],
+                        "hindi": ["Noto Sans Devanagari", "sans-serif"]
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0.75rem",
+                        "xl": "1rem",
+                        "2xl": "1.25rem",
+                        "3xl": "1.5rem"
+                    },
+                    boxShadow: {
+                        'soft': '0 4px 20px -4px rgba(30, 115, 190, 0.1)',
+                        'glow': '0 8px 30px rgba(30, 115, 190, 0.2)',
+                        'card': '0 2px 12px rgba(0, 0, 0, 0.06)',
+                        'hover': '0 8px 25px rgba(30, 115, 190, 0.15)',
+                    }
+                },
+            },
+        }
+    </script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            height: 100%;
+            overflow-y: auto;
+        }
+
+        body {
+            min-height: 100vh;
+            height: auto;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            overflow-y: auto;
+            padding-top: env(safe-area-inset-top);
+        }
+
+        .animate-fade-in {
+            animation: fadeIn 0.3s ease-in;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .success-message {
+            animation: slideDown 0.3s ease-out;
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .language-option {
+            transition: all 0.2s ease;
+        }
+
+        .language-option.selected {
+            border-color: #0058ba;
+            background-color: #e3f2fd;
+        }
+
+        .language-option:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(30, 115, 190, 0.15);
+        }
+
+        .language-option:active {
+            transform: scale(0.98);
+        }
+
+        input[type="radio"]:checked+.language-card {
+            border-color: #0058ba;
+            background-color: #e3f2fd;
+        }
+    </style>
+</head>
+
+<body class="bg-background font-display text-text-main relative">
+    <div
+        class="absolute -top-[10%] -right-[10%] w-[70%] h-[40%] bg-blue-100/60 rounded-full blur-3xl pointer-events-none">
+    </div>
+    <div class="absolute top-[20%] -left-[10%] w-[50%] h-[30%] bg-blue-50/60 rounded-full blur-3xl pointer-events-none">
+    </div>
+
+    <!-- Header -->
+    <header class="bg-surface/80 backdrop-blur-xl border-b border-border-light sticky top-0 z-40 px-4 py-4">
+        <div class="max-w-7xl mx-auto flex items-center justify-between">
+            <button onclick="goBack()" class="p-2 hover:bg-gray-100 rounded-xl transition-colors active:scale-95">
+                <span class="material-symbols-outlined text-text-secondary">arrow_back</span>
+            </button>
+            <div class="text-center">
+                <h1 class="text-base font-bold text-text-main">Language Settings</h1>
+                <p class="text-[10px] text-text-secondary">Choose your preferred language</p>
+            </div>
+            <div class="w-10"></div>
+        </div>
+    </header>
+
+    <!-- Success Message -->
+    <div id="successMessage" class="hidden fixed top-20 left-1/2 -translate-x-1/2 z-50 w-[90%] max-w-md">
+        <div class="bg-green-500 text-white px-6 py-4 rounded-2xl shadow-glow flex items-center gap-3 success-message">
+            <span class="material-symbols-outlined text-[24px]">check_circle</span>
+            <div>
+                <p class="font-semibold">Success!</p>
+                <p class="text-sm opacity-90">Language updated successfully</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <main class="relative z-10 max-w-7xl mx-auto px-4 py-6 pb-8">
+
+        <!-- Icon Section -->
+        <div class="bg-surface rounded-3xl shadow-card p-6 border border-border-light mb-6 animate-fade-in">
+            <div class="flex flex-col items-center">
+                <div
+                    class="w-24 h-24 bg-gradient-to-br from-primary to-primary-dark rounded-2xl flex items-center justify-center text-white shadow-glow mb-4">
+                    <span class="material-symbols-outlined text-[48px]">language</span>
+                </div>
+                <h2 class="text-lg font-bold text-text-main mb-1">Select Language</h2>
+                <p class="text-sm text-text-secondary text-center">Choose the language you're most comfortable with</p>
+            </div>
+        </div>
+
+        <!-- Language Selection Form -->
+        <form th:action="@{/user/language/update}" method="post" onsubmit="return updateLanguage(event)"
+            class="space-y-4">
+
+            <!-- English Option -->
+            <label class="block cursor-pointer animate-fade-in">
+                <input type="radio" name="language" value="english" class="hidden" id="englishRadio"
+                    th:checked="${currentLanguage == 'english'}" />
+                <div
+                    class="language-card language-option bg-surface rounded-2xl shadow-card p-5 border-2 border-border-light">
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center gap-4">
+                            <div class="w-14 h-14 bg-blue-50 rounded-xl flex items-center justify-center">
+                                <span class="text-3xl">🇬🇧</span>
+                            </div>
+                            <div>
+                                <h3 class="text-base font-bold text-text-main">English</h3>
+                                <p class="text-xs text-text-secondary mt-0.5">International Language</p>
+                            </div>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <span
+                                class="checkmark hidden text-primary material-symbols-outlined text-[24px]">check_circle</span>
+                            <span class="material-symbols-outlined text-text-secondary">chevron_right</span>
+                        </div>
+                    </div>
+                </div>
+            </label>
+
+            <!-- Hindi Option -->
+            <label class="block cursor-pointer animate-fade-in">
+                <input type="radio" name="language" value="hindi" class="hidden" id="hindiRadio"
+                    th:checked="${currentLanguage == 'hindi'}" />
+                <div
+                    class="language-card language-option bg-surface rounded-2xl shadow-card p-5 border-2 border-border-light">
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center gap-4">
+                            <div class="w-14 h-14 bg-orange-50 rounded-xl flex items-center justify-center">
+                                <span class="text-3xl">🇮🇳</span>
+                            </div>
+                            <div>
+                                <h3 class="text-base font-bold text-text-main font-hindi">हिंदी (Hindi)</h3>
+                                <p class="text-xs text-text-secondary mt-0.5">भारतीय भाषा</p>
+                            </div>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <span
+                                class="checkmark hidden text-primary material-symbols-outlined text-[24px]">check_circle</span>
+                            <span class="material-symbols-outlined text-text-secondary">chevron_right</span>
+                        </div>
+                    </div>
+                </div>
+            </label>
+
+            <!-- Information Card -->
+            <div class="bg-blue-50/50 rounded-2xl shadow-card p-5 border border-primary/10 animate-fade-in">
+                <div class="flex items-start gap-3">
+                    <span class="material-symbols-outlined text-primary text-[20px] mt-0.5">info</span>
+                    <div>
+                        <p class="text-sm font-semibold text-text-main mb-2">Language Information</p>
+                        <ul class="text-xs text-text-secondary leading-relaxed space-y-1">
+                            <li>• App interface will change to selected language</li>
+                            <li>• All menus and labels will be translated</li>
+                            <li>• You can change language anytime from settings</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="flex gap-3 pt-4">
+                <button type="button" onclick="goBack()"
+                    class="flex-1 py-4 bg-gray-100 text-text-main font-bold rounded-xl hover:bg-gray-200 transition-all active:scale-95 flex items-center justify-center gap-2">
+                    <span class="material-symbols-outlined">close</span>
+                    Cancel
+                </button>
+                <button type="submit" id="saveBtn"
+                    class="flex-1 py-4 bg-gradient-to-r from-primary to-primary-dark text-white font-bold rounded-xl shadow-soft hover:shadow-glow transition-all active:scale-95 flex items-center justify-center gap-2">
+                    <span class="material-symbols-outlined">save</span>
+                    Save Changes
+                </button>
+            </div>
+
+        </form>
+
+        <!-- Current Language Display -->
+        <div class="mt-8 p-4 bg-gradient-to-r from-primary-light to-blue-50 rounded-2xl border border-primary/20">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 bg-primary rounded-xl flex items-center justify-center">
+                        <span class="material-symbols-outlined text-white text-[20px]">verified</span>
+                    </div>
+                    <div>
+                        <p class="text-xs text-text-secondary">Current Language</p>
+                        <p class="font-bold text-text-main" id="currentLanguageDisplay"
+                            th:text="${currentLanguage == 'hindi' ? 'हिंदी (Hindi)' : 'English'}">English</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <script>
+        function goBack() {
+            window.history.back();
+        }
+
+        // Handle radio button selection
+        const radioButtons = document.querySelectorAll('input[name="language"]');
+        const languageCards = document.querySelectorAll('.language-card');
+
+        radioButtons.forEach((radio, index) => {
+            radio.addEventListener('change', function () {
+                // Remove selected class from all cards
+                languageCards.forEach(card => {
+                    card.classList.remove('selected');
+                    const checkmark = card.querySelector('.checkmark');
+                    if (checkmark) checkmark.classList.add('hidden');
+                });
+
+                // Add selected class to chosen card
+                if (this.checked) {
+                    const parentCard = this.nextElementSibling;
+                    parentCard.classList.add('selected');
+                    const checkmark = parentCard.querySelector('.checkmark');
+                    if (checkmark) checkmark.classList.remove('hidden');
+                }
+            });
+        });
+
+        // Set initial selected state
+        window.addEventListener('DOMContentLoaded', function () {
+            const checkedRadio = document.querySelector('input[name="language"]:checked');
+            if (checkedRadio) {
+                const parentCard = checkedRadio.nextElementSibling;
+                parentCard.classList.add('selected');
+                const checkmark = parentCard.querySelector('.checkmark');
+                if (checkmark) checkmark.classList.remove('hidden');
+            }
+        });
+
+        function updateLanguage(event) {
+            event.preventDefault();
+
+            const selectedLanguage = document.querySelector('input[name="language"]:checked');
+
+            if (!selectedLanguage) {
+                alert('Please select a language');
+                return false;
+            }
+
+            // Show loading state
+            const btn = document.getElementById('saveBtn');
+            btn.disabled = true;
+            btn.innerHTML = '<span class="material-symbols-outlined animate-spin">progress_activity</span> Saving...';
+
+            // Update current language display
+            const languageValue = selectedLanguage.value;
+            const displayText = languageValue === 'hindi' ? 'हिंदी (Hindi)' : 'English';
+            document.getElementById('currentLanguageDisplay').textContent = displayText;
+
+            // Show success message
+            showSuccess();
+
+            // Submit form after showing success
+            setTimeout(() => {
+                event.target.submit();
+            }, 1500);
+
+            return false;
+        }
+
+        function showSuccess() {
+            const successMsg = document.getElementById('successMessage');
+            successMsg.classList.remove('hidden');
+
+            setTimeout(() => {
+                successMsg.classList.add('hidden');
+            }, 3000);
+        }
+    </script>
+
+    <style>
+        @keyframes spin {
+            from {
+                transform: rotate(0deg);
+            }
+
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        .animate-spin {
+            animation: spin 1s linear infinite;
+        }
+    </style>
+
+</body>
+
+</html>
