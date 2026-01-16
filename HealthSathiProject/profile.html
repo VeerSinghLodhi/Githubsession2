@@ -1,0 +1,540 @@
+<!DOCTYPE html>
+<html lang="hi">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>प्रोफाइल - हेल्थ साथी</title>
+    <link href="https://fonts.googleapis.com" rel="preconnect" />
+    <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect" />
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Devanagari:wght@400;500;600;700&display=swap"
+        rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap"
+        rel="stylesheet" />
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#0058ba",
+                        "primary-dark": "#155a96",
+                        "primary-light": "#e3f2fd",
+                        "text-main": "#1e293b",
+                        "text-secondary": "#64748b",
+                        "border-light": "#e2e8f0",
+                        "surface": "#ffffff",
+                        "background": "#f8fafc",
+                    },
+                    fontFamily: {
+                        "display": ["Poppins", "Noto Sans Devanagari", "sans-serif"],
+                        "hindi": ["Noto Sans Devanagari", "sans-serif"]
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0.75rem",
+                        "xl": "1rem",
+                        "2xl": "1.25rem",
+                        "3xl": "1.5rem"
+                    },
+                    boxShadow: {
+                        'soft': '0 4px 20px -4px rgba(30, 115, 190, 0.1)',
+                        'glow': '0 8px 30px rgba(30, 115, 190, 0.2)',
+                        'card': '0 2px 12px rgba(0, 0, 0, 0.06)',
+                        'hover': '0 8px 25px rgba(30, 115, 190, 0.15)',
+                    }
+                },
+            },
+        }
+    </script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            height: 100%;
+            overflow-y: auto;
+        }
+
+        body {
+            min-height: 100vh;
+            height: auto;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            overflow-y: auto;
+            padding-top: env(safe-area-inset-top);
+            padding-bottom: env(safe-area-inset-bottom);
+        }
+
+        .pb-safe {
+            padding-bottom: calc(80px + env(safe-area-inset-bottom));
+        }
+
+        .bottom-nav {
+            padding-bottom: env(safe-area-inset-bottom);
+        }
+
+        .animate-fade-in {
+            animation: fadeIn 0.3s ease-in;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .animate-slide-up {
+            animation: slideUp 0.3s ease-out;
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+    </style>
+</head>
+
+<body class="bg-background font-display text-text-main relative pb-safe">
+    <div
+        class="absolute -top-[10%] -right-[10%] w-[70%] h-[40%] bg-blue-100/60 rounded-full blur-3xl pointer-events-none">
+    </div>
+    <div class="absolute top-[20%] -left-[10%] w-[50%] h-[30%] bg-blue-50/60 rounded-full blur-3xl pointer-events-none">
+    </div>
+
+    <!-- Header -->
+    <header class="bg-surface/80 backdrop-blur-xl border-b border-border-light sticky top-0 z-40 px-4 py-4">
+        <div class="max-w-7xl mx-auto flex items-center justify-between">
+            <div class="flex items-center gap-3">
+                <button onclick="goBack()" class="p-2 hover:bg-gray-100 rounded-xl transition-colors">
+                    <span class="material-symbols-outlined text-text-main">arrow_back</span>
+                </button>
+                <h1 class="text-lg font-bold text-text-main">मेरी प्रोफाइल</h1>
+            </div>
+            <button onclick="openSettings()" class="p-2 hover:bg-gray-100 rounded-xl transition-colors">
+                <span class="material-symbols-outlined text-text-main">settings</span>
+            </button>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="relative z-10 max-w-7xl mx-auto px-4 py-6 pb-24">
+
+        <!-- Profile Header Card -->
+        <div
+            class="bg-gradient-to-br from-primary to-primary-dark rounded-3xl shadow-glow p-6 mb-6 text-white animate-fade-in">
+            <div class="flex flex-col items-center text-center">
+                <div class="relative mb-4">
+                    <div
+                        class="w-24 h-24 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center border-4 border-white/30">
+                        <span class="material-symbols-outlined text-[48px]">person</span>
+                    </div>
+                    <button onclick="changeProfilePicture()"
+                        class="absolute bottom-0 right-0 w-8 h-8 bg-white rounded-full flex items-center justify-center shadow-lg active:scale-95 transition-all">
+                        <span class="material-symbols-outlined text-primary text-[18px]">photo_camera</span>
+                    </button>
+                </div>
+                <h2 class="text-2xl font-bold mb-1">राज कुमार</h2>
+                <p class="text-sm opacity-90 mb-1">raj.kumar@email.com</p>
+                <p class="text-sm opacity-90">+91 9876543210</p>
+            </div>
+        </div>
+
+        <!-- Personal Information -->
+        <div class="mb-6">
+            <div class="flex items-center justify-between mb-4 px-1">
+                <h3 class="text-lg font-bold text-text-main">व्यक्तिगत जानकारी</h3>
+                <button onclick="editProfile()" class="text-xs font-semibold text-primary flex items-center gap-1">
+                    <span class="material-symbols-outlined text-[16px]">edit</span>
+                    संपादित करें
+                </button>
+            </div>
+
+            <div class="bg-surface rounded-2xl shadow-card border border-border-light p-4 space-y-4">
+                <div class="flex items-center justify-between py-2 border-b border-border-light">
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 bg-blue-50 rounded-xl flex items-center justify-center">
+                            <span class="material-symbols-outlined text-blue-600 text-[20px]">badge</span>
+                        </div>
+                        <div>
+                            <p class="text-xs text-text-secondary">पूरा नाम</p>
+                            <p class="text-sm font-semibold text-text-main">राज कुमार</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="flex items-center justify-between py-2 border-b border-border-light">
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 bg-green-50 rounded-xl flex items-center justify-center">
+                            <span class="material-symbols-outlined text-green-600 text-[20px]">mail</span>
+                        </div>
+                        <div>
+                            <p class="text-xs text-text-secondary">ईमेल</p>
+                            <p class="text-sm font-semibold text-text-main">raj.kumar@email.com</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="flex items-center justify-between py-2 border-b border-border-light">
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 bg-purple-50 rounded-xl flex items-center justify-center">
+                            <span class="material-symbols-outlined text-purple-600 text-[20px]">call</span>
+                        </div>
+                        <div>
+                            <p class="text-xs text-text-secondary">मोबाइल नंबर</p>
+                            <p class="text-sm font-semibold text-text-main">+91 9876543210</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="flex items-center justify-between py-2 border-b border-border-light">
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 bg-pink-50 rounded-xl flex items-center justify-center">
+                            <span class="material-symbols-outlined text-pink-600 text-[20px]">wc</span>
+                        </div>
+                        <div>
+                            <p class="text-xs text-text-secondary">लिंग</p>
+                            <p class="text-sm font-semibold text-text-main">पुरुष</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="flex items-center justify-between py-2">
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 bg-orange-50 rounded-xl flex items-center justify-center">
+                            <span class="material-symbols-outlined text-orange-600 text-[20px]">calendar_today</span>
+                        </div>
+                        <div>
+                            <p class="text-xs text-text-secondary">खाता बनाया गया</p>
+                            <p class="text-sm font-semibold text-text-main">15 जनवरी, 2026</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Account Status -->
+        <div class="mb-6">
+            <h3 class="text-lg font-bold text-text-main mb-4 px-1">खाता स्थिति</h3>
+            <div class="bg-surface rounded-2xl shadow-card border border-border-light p-4">
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 bg-green-50 rounded-xl flex items-center justify-center">
+                            <span class="material-symbols-outlined text-green-600 text-[20px]">verified</span>
+                        </div>
+                        <div>
+                            <p class="text-sm font-semibold text-text-main">खाता सक्रिय है</p>
+                            <p class="text-xs text-text-secondary">आपका खाता पूरी तरह से सक्रिय है</p>
+                        </div>
+                    </div>
+                    <div class="w-3 h-3 bg-green-500 rounded-full animate-pulse"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Quick Actions -->
+        <div class="mb-6">
+            <h3 class="text-lg font-bold text-text-main mb-4 px-1">त्वरित कार्य</h3>
+            <div class="space-y-3">
+                <button onclick="viewMyPatients()"
+                    class="w-full bg-surface rounded-2xl shadow-card border border-border-light p-4 hover:shadow-hover transition-all active:scale-98 flex items-center justify-between">
+                    <div class="flex items-center gap-3">
+                        <div class="w-12 h-12 bg-primary-light rounded-xl flex items-center justify-center">
+                            <span class="material-symbols-outlined text-primary text-[24px]">groups</span>
+                        </div>
+                        <div class="text-left">
+                            <p class="font-semibold text-text-main">मेरे मरीज</p>
+                            <p class="text-xs text-text-secondary">अपने सभी मरीजों को देखें</p>
+                        </div>
+                    </div>
+                    <span class="material-symbols-outlined text-text-secondary">arrow_forward_ios</span>
+                </button>
+
+                <button onclick="viewSavedSuggestions()"
+                    class="w-full bg-surface rounded-2xl shadow-card border border-border-light p-4 hover:shadow-hover transition-all active:scale-98 flex items-center justify-between">
+                    <div class="flex items-center gap-3">
+                        <div class="w-12 h-12 bg-green-50 rounded-xl flex items-center justify-center">
+                            <span class="material-symbols-outlined text-green-600 text-[24px]">bookmark</span>
+                        </div>
+                        <div class="text-left">
+                            <p class="font-semibold text-text-main">सहेजे गए सुझाव</p>
+                            <p class="text-xs text-text-secondary">आपके सहेजे गए सुझाव देखें</p>
+                        </div>
+                    </div>
+                    <span class="material-symbols-outlined text-text-secondary">arrow_forward_ios</span>
+                </button>
+
+                <button onclick="changePassword()"
+                    class="w-full bg-surface rounded-2xl shadow-card border border-border-light p-4 hover:shadow-hover transition-all active:scale-98 flex items-center justify-between">
+                    <div class="flex items-center gap-3">
+                        <div class="w-12 h-12 bg-orange-50 rounded-xl flex items-center justify-center">
+                            <span class="material-symbols-outlined text-orange-600 text-[24px]">lock</span>
+                        </div>
+                        <div class="text-left">
+                            <p class="font-semibold text-text-main">पासवर्ड बदलें</p>
+                            <p class="text-xs text-text-secondary">अपना पासवर्ड अपडेट करें</p>
+                        </div>
+                    </div>
+                    <span class="material-symbols-outlined text-text-secondary">arrow_forward_ios</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- Logout Button -->
+        <button onclick="logout()"
+            class="w-full bg-red-50 border-2 border-red-200 rounded-2xl p-4 flex items-center justify-center gap-2 hover:bg-red-100 transition-all active:scale-98">
+            <span class="material-symbols-outlined text-red-600 text-[24px]">logout</span>
+            <span class="font-bold text-red-600">लॉग आउट</span>
+        </button>
+
+    </main>
+
+    <!-- Settings Modal -->
+    <div id="settingsOverlay"
+        class="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 hidden opacity-0 transition-opacity duration-300"
+        onclick="closeSettings()"></div>
+
+    <div id="settingsModal"
+        class="fixed top-0 right-0 h-full w-full max-w-md bg-surface shadow-glow z-50 transform translate-x-full transition-transform duration-300 ease-out overflow-y-auto">
+        <div class="p-6">
+            <!-- Settings Header -->
+            <div class="flex items-center justify-between mb-6 pb-4 border-b border-border-light">
+                <h2 class="text-xl font-bold text-text-main">सेटिंग्स</h2>
+                <button onclick="closeSettings()" class="p-2 hover:bg-gray-100 rounded-xl transition-colors">
+                    <span class="material-symbols-outlined text-text-main">close</span>
+                </button>
+            </div>
+
+            <!-- App Settings -->
+            <div class="mb-6">
+                <h3 class="text-sm font-bold text-text-secondary mb-3 px-1">ऐप सेटिंग्स</h3>
+                <div class="space-y-2">
+                    <div class="bg-surface rounded-xl border border-border-light p-4 flex items-center justify-between">
+                        <div class="flex items-center gap-3">
+                            <span class="material-symbols-outlined text-primary">notifications</span>
+                            <span class="text-sm font-semibold text-text-main">सूचनाएं</span>
+                        </div>
+                        <label class="relative inline-flex items-center cursor-pointer">
+                            <input type="checkbox" class="sr-only peer" checked>
+                            <div
+                                class="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary">
+                            </div>
+                        </label>
+                    </div>
+
+                    <div class="bg-surface rounded-xl border border-border-light p-4 flex items-center justify-between">
+                        <div class="flex items-center gap-3">
+                            <span class="material-symbols-outlined text-primary">dark_mode</span>
+                            <span class="text-sm font-semibold text-text-main">डार्क मोड</span>
+                        </div>
+                        <label class="relative inline-flex items-center cursor-pointer">
+                            <input type="checkbox" class="sr-only peer">
+                            <div
+                                class="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary">
+                            </div>
+                        </label>
+                    </div>
+
+                    <div class="bg-surface rounded-xl border border-border-light p-4 flex items-center justify-between">
+                        <div class="flex items-center gap-3">
+                            <span class="material-symbols-outlined text-primary">language</span>
+                            <span class="text-sm font-semibold text-text-main">भाषा</span>
+                        </div>
+                        <select
+                            class="text-sm text-text-main bg-gray-50 border border-gray-200 rounded-lg px-3 py-1.5 focus:ring-2 focus:ring-primary focus:border-transparent">
+                            <option>हिंदी</option>
+                            <option>English</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Privacy & Security -->
+            <div class="mb-6">
+                <h3 class="text-sm font-bold text-text-secondary mb-3 px-1">गोपनीयता और सुरक्षा</h3>
+                <div class="space-y-2">
+                    <button onclick="changePassword()"
+                        class="w-full bg-surface rounded-xl border border-border-light p-4 flex items-center justify-between hover:bg-gray-50 transition-colors">
+                        <div class="flex items-center gap-3">
+                            <span class="material-symbols-outlined text-primary">lock</span>
+                            <span class="text-sm font-semibold text-text-main">पासवर्ड बदलें</span>
+                        </div>
+                        <span class="material-symbols-outlined text-text-secondary">arrow_forward_ios</span>
+                    </button>
+
+                    <button
+                        class="w-full bg-surface rounded-xl border border-border-light p-4 flex items-center justify-between hover:bg-gray-50 transition-colors">
+                        <div class="flex items-center gap-3">
+                            <span class="material-symbols-outlined text-primary">fingerprint</span>
+                            <span class="text-sm font-semibold text-text-main">बायोमेट्रिक लॉगिन</span>
+                        </div>
+                        <label class="relative inline-flex items-center cursor-pointer">
+                            <input type="checkbox" class="sr-only peer">
+                            <div
+                                class="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary">
+                            </div>
+                        </label>
+                    </button>
+
+                    <button
+                        class="w-full bg-surface rounded-xl border border-border-light p-4 flex items-center justify-between hover:bg-gray-50 transition-colors">
+                        <div class="flex items-center gap-3">
+                            <span class="material-symbols-outlined text-primary">shield</span>
+                            <span class="text-sm font-semibold text-text-main">गोपनीयता नीति</span>
+                        </div>
+                        <span class="material-symbols-outlined text-text-secondary">arrow_forward_ios</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Data Management -->
+            <div class="mb-6">
+                <h3 class="text-sm font-bold text-text-secondary mb-3 px-1">डेटा प्रबंधन</h3>
+                <div class="space-y-2">
+                    <button
+                        class="w-full bg-surface rounded-xl border border-border-light p-4 flex items-center justify-between hover:bg-gray-50 transition-colors">
+                        <div class="flex items-center gap-3">
+                            <span class="material-symbols-outlined text-primary">download</span>
+                            <span class="text-sm font-semibold text-text-main">डेटा डाउनलोड करें</span>
+                        </div>
+                        <span class="material-symbols-outlined text-text-secondary">arrow_forward_ios</span>
+                    </button>
+
+                    <button
+                        class="w-full bg-surface rounded-xl border border-border-light p-4 flex items-center justify-between hover:bg-gray-50 transition-colors">
+                        <div class="flex items-center gap-3">
+                            <span class="material-symbols-outlined text-blue-600">storage</span>
+                            <div class="text-left">
+                                <p class="text-sm font-semibold text-text-main">स्टोरेज उपयोग</p>
+                                <p class="text-xs text-text-secondary">125 MB / 500 MB उपयोग किया गया</p>
+                            </div>
+                        </div>
+                        <span class="material-symbols-outlined text-text-secondary">arrow_forward_ios</span>
+                    </button>
+
+                    <button onclick="clearCache()"
+                        class="w-full bg-surface rounded-xl border border-border-light p-4 flex items-center justify-between hover:bg-gray-50 transition-colors">
+                        <div class="flex items-center gap-3">
+                            <span class="material-symbols-outlined text-orange-600">delete_sweep</span>
+                            <span class="text-sm font-semibold text-text-main">कैश साफ़ करें</span>
+                        </div>
+                        <span class="material-symbols-outlined text-text-secondary">arrow_forward_ios</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Support & Help -->
+            <div class="mb-6">
+                <h3 class="text-sm font-bold text-text-secondary mb-3 px-1">सहायता और मदद</h3>
+                <div class="space-y-2">
+                    <button
+                        class="w-full bg-surface rounded-xl border border-border-light p-4 flex items-center justify-between hover:bg-gray-50 transition-colors">
+                        <div class="flex items-center gap-3">
+                            <span class="material-symbols-outlined text-primary">help</span>
+                            <span class="text-sm font-semibold text-text-main">मदद केंद्र</span>
+                        </div>
+                        <span class="material-symbols-outlined text-text-secondary">arrow_forward_ios</span>
+                    </button>
+
+                    <button
+                        class="w-full bg-surface rounded-xl border border-border-light p-4 flex items-center justify-between hover:bg-gray-50 transition-colors">
+                        <div class="flex items-center gap-3">
+                            <span class="material-symbols-outlined text-primary">chat</span>
+                            <span class="text-sm font-semibold text-text-main">संपर्क करें</span>
+                        </div>
+                        <span class="material-symbols-outlined text-text-secondary">arrow_forward_ios</span>
+                    </button>
+
+                    <button
+                        class="w-full bg-surface rounded-xl border border-border-light p-4 flex items-center justify-between hover:bg-gray-50 transition-colors">
+                        <div class="flex items-center gap-3">
+                            <span class="material-symbols-outlined text-primary">info</span>
+                            <div class="text-left">
+                                <p class="text-sm font-semibold text-text-main">ऐप के बारे में</p>
+                                <p class="text-xs text-text-secondary">संस्करण 1.0.0</p>
+                            </div>
+                        </div>
+                        <span class="material-symbols-outlined text-text-secondary">arrow_forward_ios</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Danger Zone -->
+            <div class="mb-6">
+                <h3 class="text-sm font-bold text-red-600 mb-3 px-1">खतरनाक क्षेत्र</h3>
+                <div class="space-y-2">
+                    <button onclick="deactivateAccount()"
+                        class="w-full bg-red-50 rounded-xl border border-red-200 p-4 flex items-center justify-between hover:bg-red-100 transition-colors">
+                        <div class="flex items-center gap-3">
+                            <span class="material-symbols-outlined text-red-600">block</span>
+                            <span class="text-sm font-semibold text-red-600">खाता निष्क्रिय करें</span>
+                        </div>
+                        <span class="material-symbols-outlined text-red-600">arrow_forward_ios</span>
+                    </button>
+
+                    <button onclick="deleteAccount()"
+                        class="w-full bg-red-50 rounded-xl border border-red-200 p-4 flex items-center justify-between hover:bg-red-100 transition-colors">
+                        <div class="flex items-center gap-3">
+                            <span class="material-symbols-outlined text-red-600">delete_forever</span>
+                            <span class="text-sm font-semibold text-red-600">खाता हटाएं</span>
+                        </div>
+                        <span class="material-symbols-outlined text-red-600">arrow_forward_ios</span>
+                    </button>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- Bottom Navigation -->
+    <nav
+        class="fixed bottom-0 left-0 right-0 bg-surface/90 backdrop-blur-xl border-t border-border-light z-40 bottom-nav">
+        <div class="max-w-7xl mx-auto px-4 py-3">
+            <div class="flex items-center justify-around">
+                <button onclick="goToHome()"
+                    class="flex flex-col items-center gap-1 px-3 py-2 text-text-secondary hover:text-primary active:scale-95 transition-all">
+                    <span class="material-symbols-outlined text-[24px]">home</span>
+                    <span class="text-[10px] font-medium">होम</span>
+                </button>
+
+                <button
+                    class="flex flex-col items-center gap-1 px-3 py-2 text-text-secondary hover:text-primary active:scale-95 transition-all">
+                    <span class="material-symbols-outlined text-[24px]">calendar_month</span>
+                    <span class="text-[10px] font-medium">अपॉइंटमेंट</span>
+                </button>
+
+                <button class="flex flex-col items-center gap-1 px-3 py-2 -mt-4">
+                    <div
+                        class="w-14 h-14 bg-primary rounded-2xl shadow-glow flex items-center justify-center active:scale-95 transition-all">
+                        <span class="material-symbols-outlined text-white text-[28px]">add</span>
+                    </div>
+                </button>
+
+                <button
+                    class="flex flex-col items-center gap-1 px-3 py-2 text-text-secondary hover:text-primary active:scale-95 transition-all">
+                    <span class="material-symbols-outlined text-[24px]">description</span>
+                    <span class="text-[10px] font-medium">रिपोर्ट्स</span>
+                </button>
+
+                <button></button>
+            </div>
+        </div>
+    </nav>
+</body>
+
+</html>

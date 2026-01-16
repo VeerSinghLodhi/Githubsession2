@@ -1,0 +1,649 @@
+<!DOCTYPE html>
+<html lang="hi" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>प्रोफाइल - हेल्थ साथी</title>
+    <link href="https://fonts.googleapis.com" rel="preconnect" />
+    <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect" />
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Devanagari:wght@400;500;600;700&display=swap"
+        rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap"
+        rel="stylesheet" />
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#0058ba",
+                        "primary-dark": "#155a96",
+                        "primary-light": "#e3f2fd",
+                        "text-main": "#1e293b",
+                        "text-secondary": "#64748b",
+                        "border-light": "#e2e8f0",
+                        "surface": "#ffffff",
+                        "background": "#f8fafc",
+                    },
+                    fontFamily: {
+                        "display": ["Poppins", "Noto Sans Devanagari", "sans-serif"],
+                        "hindi": ["Noto Sans Devanagari", "sans-serif"]
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0.75rem",
+                        "xl": "1rem",
+                        "2xl": "1.25rem",
+                        "3xl": "1.5rem"
+                    },
+                    boxShadow: {
+                        'soft': '0 4px 20px -4px rgba(30, 115, 190, 0.1)',
+                        'glow': '0 8px 30px rgba(30, 115, 190, 0.2)',
+                        'card': '0 2px 12px rgba(0, 0, 0, 0.06)',
+                        'hover': '0 8px 25px rgba(30, 115, 190, 0.15)',
+                    }
+                },
+            },
+        }
+    </script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            height: 100%;
+            overflow-y: auto;
+        }
+
+        body {
+            min-height: 100vh;
+            height: auto;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            overflow-y: auto;
+            padding-top: env(safe-area-inset-top);
+            padding-bottom: env(safe-area-inset-bottom);
+        }
+
+        .pb-safe {
+            padding-bottom: calc(80px + env(safe-area-inset-bottom));
+        }
+
+        .bottom-nav {
+            padding-bottom: env(safe-area-inset-bottom);
+        }
+
+        .animate-fade-in {
+            animation: fadeIn 0.3s ease-in;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .animate-slide-in {
+            animation: slideIn 0.3s ease-out;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateX(-20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+    </style>
+</head>
+
+<body class="bg-background font-display text-text-main relative pb-safe">
+    <div
+        class="absolute -top-[10%] -right-[10%] w-[70%] h-[40%] bg-blue-100/60 rounded-full blur-3xl pointer-events-none">
+    </div>
+    <div class="absolute top-[20%] -left-[10%] w-[50%] h-[30%] bg-blue-50/60 rounded-full blur-3xl pointer-events-none">
+    </div>
+
+    <!-- Header -->
+    <header class="bg-surface/80 backdrop-blur-xl border-b border-border-light sticky top-0 z-40 px-4 py-4">
+        <div class="max-w-7xl mx-auto flex items-center justify-between">
+            <div class="flex items-center gap-3">
+                <div class="w-10 h-10 bg-primary rounded-2xl flex items-center justify-center shadow-soft">
+                    <span class="material-symbols-outlined text-white text-[24px]">person</span>
+                </div>
+                <div>
+                    <h1 class="text-base font-bold text-text-main">प्रोफाइल</h1>
+                    <p class="text-[10px] text-text-secondary">आपकी जानकारी</p>
+                </div>
+            </div>
+            <button onclick="toggleSettingsMenu()" class="p-2 hover:bg-gray-100 rounded-xl transition-colors">
+                <span class="material-symbols-outlined text-text-secondary">settings</span>
+            </button>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="relative z-10 max-w-7xl mx-auto px-4 py-6 pb-24">
+
+        <!-- Profile Header Card -->
+        <div
+            class="bg-gradient-to-br from-primary to-primary-dark rounded-3xl shadow-glow p-6 mb-6 text-white animate-fade-in">
+            <div class="flex items-center gap-4 mb-4">
+                <div
+                    class="w-20 h-20 bg-white/20 rounded-2xl flex items-center justify-center backdrop-blur-sm text-4xl font-bold">
+                    <span th:text="${user.fullName != null ? user.fullName.substring(0,1).toUpperCase() : 'U'}">R</span>
+                </div>
+                <div class="flex-1">
+                    <h2 class="text-2xl font-bold mb-1" th:text="${user.fullName}">राज कुमार</h2>
+                    <p class="text-sm opacity-90" th:text="${user.email}">raj.kumar@example.com</p>
+                    <p class="text-xs opacity-80 mt-1">
+                        <span class="material-symbols-outlined text-[14px] align-middle">call</span>
+                        <span th:text="${user.contact}">+91 9876543210</span>
+                    </p>
+                </div>
+            </div>
+            <div class="flex gap-3">
+                <div class="flex-1 bg-white/10 rounded-xl p-3 backdrop-blur-sm">
+                    <p class="text-xs opacity-80">लिंग</p>
+                    <p class="font-semibold" th:text="${user.gender}">पुरुष</p>
+                </div>
+                <div class="flex-1 bg-white/10 rounded-xl p-3 backdrop-blur-sm">
+                    <p class="text-xs opacity-80">सदस्य बने</p>
+                    <p class="font-semibold" th:text="${#temporals.format(user.createdOn, 'dd MMM yyyy')}">15 जन 2025
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Quick Stats -->
+        <div class="grid grid-cols-3 gap-3 mb-6">
+            <div class="bg-surface rounded-2xl shadow-card p-4 border border-border-light text-center">
+                <div class="w-12 h-12 bg-primary-light rounded-xl flex items-center justify-center mx-auto mb-2">
+                    <span class="material-symbols-outlined text-primary text-[24px]">groups</span>
+                </div>
+                <p class="text-2xl font-bold text-text-main" th:text="${patientCount}">5</p>
+                <p class="text-xs text-text-secondary">मरीज</p>
+            </div>
+
+            <div class="bg-surface rounded-2xl shadow-card p-4 border border-border-light text-center">
+                <div class="w-12 h-12 bg-green-50 rounded-xl flex items-center justify-center mx-auto mb-2">
+                    <span class="material-symbols-outlined text-green-600 text-[24px]">lab_profile</span>
+                </div>
+                <p class="text-2xl font-bold text-text-main" th:text="${reportCount}">12</p>
+                <p class="text-xs text-text-secondary">रिपोर्ट्स</p>
+            </div>
+
+            <div class="bg-surface rounded-2xl shadow-card p-4 border border-border-light text-center">
+                <div class="w-12 h-12 bg-orange-50 rounded-xl flex items-center justify-center mx-auto mb-2">
+                    <span class="material-symbols-outlined text-orange-600 text-[24px]">bookmark</span>
+                </div>
+                <p class="text-2xl font-bold text-text-main" th:text="${savedCount}">8</p>
+                <p class="text-xs text-text-secondary">सहेजे गए</p>
+            </div>
+        </div>
+
+        <!-- Profile Options -->
+        <div class="space-y-3 mb-6">
+            <h3 class="text-lg font-bold text-text-main mb-4 px-1">खाता प्रबंधन</h3>
+
+            <button onclick="editProfile()"
+                class="w-full flex items-center gap-4 p-4 bg-surface rounded-2xl shadow-card border border-border-light hover:shadow-hover transition-all active:scale-98">
+                <div class="w-12 h-12 bg-blue-50 rounded-xl flex items-center justify-center">
+                    <span class="material-symbols-outlined text-primary text-[24px]">edit</span>
+                </div>
+                <div class="text-left flex-1">
+                    <h4 class="font-bold text-text-main">प्रोफाइल संपादित करें</h4>
+                    <p class="text-xs text-text-secondary">अपनी जानकारी अपडेट करें</p>
+                </div>
+                <span class="material-symbols-outlined text-text-secondary">arrow_forward_ios</span>
+            </button>
+
+            <button onclick="viewPatients()"
+                class="w-full flex items-center gap-4 p-4 bg-surface rounded-2xl shadow-card border border-border-light hover:shadow-hover transition-all active:scale-98">
+                <div class="w-12 h-12 bg-purple-50 rounded-xl flex items-center justify-center">
+                    <span class="material-symbols-outlined text-purple-600 text-[24px]">groups</span>
+                </div>
+                <div class="text-left flex-1">
+                    <h4 class="font-bold text-text-main">मेरे मरीज</h4>
+                    <p class="text-xs text-text-secondary">सभी मरीजों की सूची देखें</p>
+                </div>
+                <span class="material-symbols-outlined text-text-secondary">arrow_forward_ios</span>
+            </button>
+
+            <button onclick="viewSaved()"
+                class="w-full flex items-center gap-4 p-4 bg-surface rounded-2xl shadow-card border border-border-light hover:shadow-hover transition-all active:scale-98">
+                <div class="w-12 h-12 bg-orange-50 rounded-xl flex items-center justify-center">
+                    <span class="material-symbols-outlined text-orange-600 text-[24px]">bookmark</span>
+                </div>
+                <div class="text-left flex-1">
+                    <h4 class="font-bold text-text-main">सहेजे गए सुझाव</h4>
+                    <p class="text-xs text-text-secondary">आपके सहेजे गए आइटम</p>
+                </div>
+                <span class="material-symbols-outlined text-text-secondary">arrow_forward_ios</span>
+            </button>
+
+            <button onclick="changePassword()"
+                class="w-full flex items-center gap-4 p-4 bg-surface rounded-2xl shadow-card border border-border-light hover:shadow-hover transition-all active:scale-98">
+                <div class="w-12 h-12 bg-yellow-50 rounded-xl flex items-center justify-center">
+                    <span class="material-symbols-outlined text-yellow-600 text-[24px]">lock</span>
+                </div>
+                <div class="text-left flex-1">
+                    <h4 class="font-bold text-text-main">पासवर्ड बदलें</h4>
+                    <p class="text-xs text-text-secondary">अपना पासवर्ड अपडेट करें</p>
+                </div>
+                <span class="material-symbols-outlined text-text-secondary">arrow_forward_ios</span>
+            </button>
+        </div>
+
+        <!-- Support Section -->
+        <div class="space-y-3 mb-6">
+            <h3 class="text-lg font-bold text-text-main mb-4 px-1">सहायता और समर्थन</h3>
+
+            <button onclick="openHelp()"
+                class="w-full flex items-center gap-4 p-4 bg-surface rounded-2xl shadow-card border border-border-light hover:shadow-hover transition-all active:scale-98">
+                <div class="w-12 h-12 bg-green-50 rounded-xl flex items-center justify-center">
+                    <span class="material-symbols-outlined text-green-600 text-[24px]">help</span>
+                </div>
+                <div class="text-left flex-1">
+                    <h4 class="font-bold text-text-main">सहायता केंद्र</h4>
+                    <p class="text-xs text-text-secondary">FAQ और सहायता</p>
+                </div>
+                <span class="material-symbols-outlined text-text-secondary">arrow_forward_ios</span>
+            </button>
+
+            <button onclick="contactSupport()"
+                class="w-full flex items-center gap-4 p-4 bg-surface rounded-2xl shadow-card border border-border-light hover:shadow-hover transition-all active:scale-98">
+                <div class="w-12 h-12 bg-blue-50 rounded-xl flex items-center justify-center">
+                    <span class="material-symbols-outlined text-blue-600 text-[24px]">support_agent</span>
+                </div>
+                <div class="text-left flex-1">
+                    <h4 class="font-bold text-text-main">संपर्क करें</h4>
+                    <p class="text-xs text-text-secondary">हमसे संपर्क करें</p>
+                </div>
+                <span class="material-symbols-outlined text-text-secondary">arrow_forward_ios</span>
+            </button>
+
+            <button onclick="aboutApp()"
+                class="w-full flex items-center gap-4 p-4 bg-surface rounded-2xl shadow-card border border-border-light hover:shadow-hover transition-all active:scale-98">
+                <div class="w-12 h-12 bg-purple-50 rounded-xl flex items-center justify-center">
+                    <span class="material-symbols-outlined text-purple-600 text-[24px]">info</span>
+                </div>
+                <div class="text-left flex-1">
+                    <h4 class="font-bold text-text-main">ऐप के बारे में</h4>
+                    <p class="text-xs text-text-secondary">संस्करण और जानकारी</p>
+                </div>
+                <span class="material-symbols-outlined text-text-secondary">arrow_forward_ios</span>
+            </button>
+        </div>
+
+        <!-- Logout Button -->
+        <button onclick="confirmLogout()"
+            class="w-full flex items-center justify-center gap-3 p-4 bg-red-50 rounded-2xl border border-red-200 text-red-600 font-bold hover:bg-red-100 transition-all active:scale-98">
+            <span class="material-symbols-outlined text-[24px]">logout</span>
+            लॉगआउट करें
+        </button>
+
+    </main>
+
+    <!-- Bottom Navigation -->
+    <nav
+        class="fixed bottom-0 left-0 right-0 bg-surface/90 backdrop-blur-xl border-t border-border-light z-50 bottom-nav">
+        <div class="max-w-7xl mx-auto px-4 py-3">
+            <div class="flex items-center justify-around">
+                <a href="/user/dashboard"
+                    class="flex flex-col items-center gap-1 px-3 py-2 text-text-secondary hover:text-primary active:scale-95 transition-all">
+                    <span class="material-symbols-outlined text-[24px]">home</span>
+                    <span class="text-[10px] font-medium">होम</span>
+                </a>
+
+                <a href="/user/appointments"
+                    class="flex flex-col items-center gap-1 px-3 py-2 text-text-secondary hover:text-primary active:scale-95 transition-all">
+                    <span class="material-symbols-outlined text-[24px]">calendar_month</span>
+                    <span class="text-[10px] font-medium">अपॉइंटमेंट</span>
+                </a>
+
+                <button class="flex flex-col items-center gap-1 px-3 py-2 -mt-4" onclick="toggleAddMenu()">
+                    <div class="w-14 h-14 bg-primary rounded-2xl shadow-glow flex items-center justify-center active:scale-95 transition-all"
+                        id="addButton">
+                        <span class="material-symbols-outlined text-white text-[28px]" id="addIcon">add</span>
+                    </div>
+                </button>
+
+                <a href="/user/reports"
+                    class="flex flex-col items-center gap-1 px-3 py-2 text-text-secondary hover:text-primary active:scale-95 transition-all">
+                    <span class="material-symbols-outlined text-[24px]">description</span>
+                    <span class="text-[10px] font-medium">रिपोर्ट्स</span>
+                </a>
+
+                <a href="/user/profile"
+                    class="flex flex-col items-center gap-1 px-3 py-2 text-primary active:scale-95 transition-all">
+                    <span class="material-symbols-outlined text-[24px]"
+                        style="font-variation-settings: 'FILL' 1">person</span>
+                    <span class="text-[10px] font-semibold">प्रोफाइल</span>
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Add Menu Popup -->
+    <div id="addMenuOverlay"
+        class="fixed inset-0 bg-black/50 backdrop-blur-sm z-40 hidden opacity-0 transition-opacity duration-300"
+        onclick="toggleAddMenu()"></div>
+
+    <div id="addMenu"
+        class="fixed bottom-0 left-0 right-0 bg-surface rounded-t-3xl shadow-glow z-50 transform translate-y-full transition-transform duration-300 ease-out">
+        <div class="max-w-7xl mx-auto px-6 py-6 pb-safe">
+            <div class="w-12 h-1.5 bg-gray-300 rounded-full mx-auto mb-6"></div>
+            <h3 class="text-lg font-bold text-text-main mb-4 text-center">नया जोड़ें</h3>
+            <div class="space-y-3 mb-4">
+                <button onclick="addReport()"
+                    class="w-full flex items-center gap-4 p-4 bg-gradient-to-r from-blue-50 to-primary-light rounded-2xl border border-primary/20 hover:shadow-hover transition-all active:scale-98">
+                    <div
+                        class="w-12 h-12 bg-primary rounded-xl flex items-center justify-center flex-shrink-0 shadow-soft">
+                        <span class="material-symbols-outlined text-white text-[24px]">person_add</span>
+                    </div>
+                    <div class="text-left flex-1">
+                        <h4 class="font-bold text-text-main">नई रिपोर्ट जोड़ें</h4>
+                        <p class="text-xs text-text-secondary">Add New Report</p>
+                    </div>
+                    <span class="material-symbols-outlined text-primary">arrow_forward</span>
+                </button>
+
+                <button onclick="addPrescription()"
+                    class="w-full flex items-center gap-4 p-4 bg-gradient-to-r from-green-50 to-green-100 rounded-2xl border border-green-200 hover:shadow-hover transition-all active:scale-98">
+                    <div
+                        class="w-12 h-12 bg-green-600 rounded-xl flex items-center justify-center flex-shrink-0 shadow-soft">
+                        <span class="material-symbols-outlined text-white text-[24px]">prescription</span>
+                    </div>
+                    <div class="text-left flex-1">
+                        <h4 class="font-bold text-text-main">नया प्रिस्क्रिप्शन</h4>
+                        <p class="text-xs text-text-secondary">Add New Prescription</p>
+                    </div>
+                    <span class="material-symbols-outlined text-green-600">arrow_forward</span>
+                </button>
+
+                <button onclick="viewMyPatients()"
+                    class="w-full flex items-center gap-4 p-4 bg-gradient-to-r from-purple-50 to-purple-100 rounded-2xl border border-purple-200 hover:shadow-hover transition-all active:scale-98">
+                    <div
+                        class="w-12 h-12 bg-purple-600 rounded-xl flex items-center justify-center flex-shrink-0 shadow-soft">
+                        <span class="material-symbols-outlined text-white text-[24px]">groups</span>
+                    </div>
+                    <div class="text-left flex-1">
+                        <h4 class="font-bold text-text-main">मेरे मरीज देखें</h4>
+                        <p class="text-xs text-text-secondary">View My Patients</p>
+                    </div>
+                    <span class="material-symbols-outlined text-purple-600">arrow_forward</span>
+                </button>
+            </div>
+            <button onclick="toggleAddMenu()"
+                class="w-full py-3 text-text-secondary font-semibold rounded-xl hover:bg-gray-100 transition-all">
+                रद्द करें
+            </button>
+        </div>
+    </div>
+
+    <!-- Settings Menu -->
+    <div id="settingsOverlay"
+        class="fixed inset-0 bg-black/50 backdrop-blur-sm z-40 hidden opacity-0 transition-opacity duration-300"
+        onclick="toggleSettingsMenu()"></div>
+
+    <div id="settingsMenu"
+        class="fixed bottom-0 left-0 right-0 bg-surface rounded-t-3xl shadow-glow z-50 transform translate-y-full transition-transform duration-300 ease-out">
+        <div class="max-w-7xl mx-auto px-6 py-6 pb-safe">
+            <div class="w-12 h-1.5 bg-gray-300 rounded-full mx-auto mb-6"></div>
+            <h3 class="text-lg font-bold text-text-main mb-4 text-center">सेटिंग्स</h3>
+            <div class="space-y-3 mb-4">
+                <button onclick="toggleNotifications()"
+                    class="w-full flex items-center justify-between p-4 bg-surface rounded-2xl border border-border-light hover:shadow-card transition-all">
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 bg-blue-50 rounded-xl flex items-center justify-center">
+                            <span class="material-symbols-outlined text-primary text-[20px]">notifications</span>
+                        </div>
+                        <span class="font-semibold text-text-main">सूचनाएं</span>
+                    </div>
+                    <label class="relative inline-flex items-center cursor-pointer">
+                        <input type="checkbox" class="sr-only peer" checked>
+                        <div
+                            class="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary">
+                        </div>
+                    </label>
+                </button>
+
+                <button onclick="toggleDarkMode()"
+                    class="w-full flex items-center justify-between p-4 bg-surface rounded-2xl border border-border-light hover:shadow-card transition-all">
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 bg-purple-50 rounded-xl flex items-center justify-center">
+                            <span class="material-symbols-outlined text-purple-600 text-[20px]">dark_mode</span>
+                        </div>
+                        <span class="font-semibold text-text-main">डार्क मोड</span>
+                    </div>
+                    <label class="relative inline-flex items-center cursor-pointer">
+                        <input type="checkbox" class="sr-only peer">
+                        <div
+                            class="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary">
+                        </div>
+                    </label>
+                </button>
+
+                <button onclick="changeLanguage()"
+                    class="w-full flex items-center justify-between p-4 bg-surface rounded-2xl border border-border-light hover:shadow-card transition-all">
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 bg-green-50 rounded-xl flex items-center justify-center">
+                            <span class="material-symbols-outlined text-green-600 text-[20px]">language</span>
+                        </div>
+                        <div class="text-left">
+                            <p class="font-semibold text-text-main">भाषा</p>
+                            <p class="text-xs text-text-secondary">हिंदी</p>
+                        </div>
+                    </div>
+                    <span class="material-symbols-outlined text-text-secondary">arrow_forward_ios</span>
+                </button>
+
+                <button onclick="privacySettings()"
+                    class="w-full flex items-center justify-between p-4 bg-surface rounded-2xl border border-border-light hover:shadow-card transition-all">
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 bg-orange-50 rounded-xl flex items-center justify-center">
+                            <span class="material-symbols-outlined text-orange-600 text-[20px]">privacy_tip</span>
+                        </div>
+                        <span class="font-semibold text-text-main">गोपनीयता</span>
+                    </div>
+                    <span class="material-symbols-outlined text-text-secondary">arrow_forward_ios</span>
+                </button>
+
+                <button onclick="termsAndConditions()"
+                    class="w-full flex items-center justify-between p-4 bg-surface rounded-2xl border border-border-light hover:shadow-card transition-all">
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 bg-yellow-50 rounded-xl flex items-center justify-center">
+                            <span class="material-symbols-outlined text-yellow-600 text-[20px]">description</span>
+                        </div>
+                        <span class="font-semibold text-text-main">नियम और शर्तें</span>
+                    </div>
+                    <span class="material-symbols-outlined text-text-secondary">arrow_forward_ios</span>
+                </button>
+            </div>
+            <button onclick="toggleSettingsMenu()"
+                class="w-full py-3 text-text-secondary font-semibold rounded-xl hover:bg-gray-100 transition-all">
+                बंद करें
+            </button>
+        </div>
+    </div>
+
+    <!-- Logout Confirmation Modal -->
+    <div id="logoutOverlay"
+        class="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 hidden opacity-0 transition-opacity duration-300"
+        onclick="closeLogout()"></div>
+
+    <div id="logoutModal"
+        class="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-surface rounded-3xl shadow-glow z-50 w-[90%] max-w-sm p-6 transform scale-95 opacity-0 transition-all duration-300">
+        <div class="text-center mb-6">
+            <div class="w-16 h-16 bg-red-50 rounded-2xl flex items-center justify-center mx-auto mb-4">
+                <span class="material-symbols-outlined text-red-600 text-[32px]">logout</span>
+            </div>
+            <h3 class="text-xl font-bold text-text-main mb-2">लॉगआउट करें?</h3>
+            <p class="text-sm text-text-secondary">क्या आप वाकई लॉगआउट करना चाहते हैं?</p>
+        </div>
+        <div class="flex gap-3">
+            <button onclick="closeLogout()"
+                class="flex-1 py-3 bg-gray-100 text-text-main font-semibold rounded-xl hover:bg-gray-200 transition-all active:scale-95">
+                रद्द करें
+            </button>
+            <button onclick="performLogout()"
+                class="flex-1 py-3 bg-red-600 text-white font-semibold rounded-xl hover:bg-red-700 transition-all active:scale-95">
+                लॉगआउट
+            </button>
+        </div>
+    </div>
+
+    <script>
+        // Add Menu Toggle
+        function toggleAddMenu() {
+            const overlay = document.getElementById('addMenuOverlay');
+            const menu = document.getElementById('addMenu');
+            const addIcon = document.getElementById('addIcon');
+            const isOpen = !menu.classList.contains('translate-y-full');
+
+            if (isOpen) {
+                menu.classList.add('translate-y-full');
+                overlay.classList.add('hidden');
+                setTimeout(() => overlay.classList.add('opacity-0'), 10);
+                addIcon.textContent = 'add';
+                addIcon.style.transform = 'rotate(0deg)';
+            } else {
+                overlay.classList.remove('hidden');
+                setTimeout(() => overlay.classList.remove('opacity-0'), 10);
+                menu.classList.remove('translate-y-full');
+                addIcon.textContent = 'close';
+                addIcon.style.transform = 'rotate(180deg)';
+            }
+        }
+
+        // Settings Menu Toggle
+        function toggleSettingsMenu() {
+            const overlay = document.getElementById('settingsOverlay');
+            const menu = document.getElementById('settingsMenu');
+            const isOpen = !menu.classList.contains('translate-y-full');
+
+            if (isOpen) {
+                menu.classList.add('translate-y-full');
+                overlay.classList.add('hidden');
+                setTimeout(() => overlay.classList.add('opacity-0'), 10);
+            } else {
+                overlay.classList.remove('hidden');
+                setTimeout(() => overlay.classList.remove('opacity-0'), 10);
+                menu.classList.remove('translate-y-full');
+            }
+        }
+
+        // Add Menu Functions
+        function addReport() {
+            window.location.href = '/user/add/report';
+        }
+
+        function viewMyPatients() {
+            window.location.href = '/user/patient/view';
+        }
+
+        function addPrescription() {
+            window.location.href = '/user/prescription/add';
+        }
+
+        // Profile Functions
+        function editProfile() {
+            window.location.href = '/user/profile/edit';
+        }
+
+        function viewPatients() {
+            window.location.href = '/user/patient/view';
+        }
+
+        function viewSaved() {
+            window.location.href = '/user/saved';
+        }
+
+        function changePassword() {
+            window.location.href = '/user/profile/change-password';
+        }
+
+        // Support Functions
+        function openHelp() {
+            window.location.href = '/user/help';
+        }
+
+        function contactSupport() {
+            window.location.href = '/user/support';
+        }
+
+        function aboutApp() {
+            window.location.href = '/user/about';
+        }
+
+        // Settings Functions
+        function toggleNotifications() {
+            // Handle notification toggle
+            console.log('Notifications toggled');
+        }
+
+        function toggleDarkMode() {
+            // Handle dark mode toggle
+            console.log('Dark mode toggled');
+        }
+
+        function changeLanguage() {
+            window.location.href = '/user/settings/language';
+        }
+
+        function privacySettings() {
+            window.location.href = '/user/settings/privacy';
+        }
+
+        function termsAndConditions() {
+            window.location.href = '/user/terms';
+        }
+
+        // Logout Functions
+        function confirmLogout() {
+            const overlay = document.getElementById('logoutOverlay');
+            const modal = document.getElementById('logoutModal');
+
+            overlay.classList.remove('hidden');
+            setTimeout(() => {
+                overlay.classList.remove('opacity-0');
+                modal.classList.remove('scale-95', 'opacity-0');
+                modal.classList.add('scale-100', 'opacity-100');
+            }, 10);
+        }
+
+        function closeLogout() {
+            const overlay = document.getElementById('logoutOverlay');
+            const modal = document.getElementById('logoutModal');
+
+            modal.classList.remove('scale-100', 'opacity-100');
+            modal.classList.add('scale-95', 'opacity-0');
+            overlay.classList.add('opacity-0');
+
+            setTimeout(() => {
+                overlay.classList.add('hidden');
+            }, 300);
+        }
+
+        function performLogout() {
+            window.location.href = '/logout';
+        }
+    </script>
+
+</body>
+
+</html>

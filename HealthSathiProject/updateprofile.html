@@ -1,0 +1,420 @@
+<!DOCTYPE html>
+<html lang="hi" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>प्रोफाइल संपादित करें - हेल्थ साथी</title>
+    <link href="https://fonts.googleapis.com" rel="preconnect" />
+    <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect" />
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Devanagari:wght@400;500;600;700&display=swap"
+        rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap"
+        rel="stylesheet" />
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#0058ba",
+                        "primary-dark": "#155a96",
+                        "primary-light": "#e3f2fd",
+                        "text-main": "#1e293b",
+                        "text-secondary": "#64748b",
+                        "border-light": "#e2e8f0",
+                        "surface": "#ffffff",
+                        "background": "#f8fafc",
+                    },
+                    fontFamily: {
+                        "display": ["Poppins", "Noto Sans Devanagari", "sans-serif"],
+                        "hindi": ["Noto Sans Devanagari", "sans-serif"]
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0.75rem",
+                        "xl": "1rem",
+                        "2xl": "1.25rem",
+                        "3xl": "1.5rem"
+                    },
+                    boxShadow: {
+                        'soft': '0 4px 20px -4px rgba(30, 115, 190, 0.1)',
+                        'glow': '0 8px 30px rgba(30, 115, 190, 0.2)',
+                        'card': '0 2px 12px rgba(0, 0, 0, 0.06)',
+                        'hover': '0 8px 25px rgba(30, 115, 190, 0.15)',
+                    }
+                },
+            },
+        }
+    </script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            height: 100%;
+            overflow-y: auto;
+        }
+
+        body {
+            min-height: 100vh;
+            height: auto;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            overflow-y: auto;
+            padding-top: env(safe-area-inset-top);
+        }
+
+        .animate-fade-in {
+            animation: fadeIn 0.3s ease-in;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        input[type="radio"]:checked+.radio-label {
+            border-color: #0058ba;
+            background-color: #e3f2fd;
+        }
+
+        .radio-label {
+            transition: all 0.2s ease;
+        }
+
+        input:focus {
+            outline: none;
+        }
+
+        .success-message {
+            animation: slideDown 0.3s ease-out;
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+    </style>
+</head>
+
+<body class="bg-background font-display text-text-main relative">
+    <div
+        class="absolute -top-[10%] -right-[10%] w-[70%] h-[40%] bg-blue-100/60 rounded-full blur-3xl pointer-events-none">
+    </div>
+    <div class="absolute top-[20%] -left-[10%] w-[50%] h-[30%] bg-blue-50/60 rounded-full blur-3xl pointer-events-none">
+    </div>
+
+    <!-- Header -->
+    <header class="bg-surface/80 backdrop-blur-xl border-b border-border-light sticky top-0 z-40 px-4 py-4">
+        <div class="max-w-7xl mx-auto flex items-center justify-between">
+            <button onclick="goBack()" class="p-2 hover:bg-gray-100 rounded-xl transition-colors active:scale-95">
+                <span class="material-symbols-outlined text-text-secondary">arrow_back</span>
+            </button>
+            <div class="text-center">
+                <h1 class="text-base font-bold text-text-main">प्रोफाइल संपादित करें</h1>
+                <p class="text-[10px] text-text-secondary">अपनी जानकारी अपडेट करें</p>
+            </div>
+            <div class="w-10"></div>
+        </div>
+    </header>
+
+    <!-- Success Message (Hidden by default) -->
+    <div id="successMessage" class="hidden fixed top-20 left-1/2 -translate-x-1/2 z-50 w-[90%] max-w-md">
+        <div class="bg-green-500 text-white px-6 py-4 rounded-2xl shadow-glow flex items-center gap-3 success-message">
+            <span class="material-symbols-outlined text-[24px]">check_circle</span>
+            <div>
+                <p class="font-semibold">सफलता!</p>
+                <p class="text-sm opacity-90">प्रोफाइल सफलतापूर्वक अपडेट हो गई</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Error Message (Hidden by default) -->
+    <div id="errorMessage" class="hidden fixed top-20 left-1/2 -translate-x-1/2 z-50 w-[90%] max-w-md">
+        <div class="bg-red-500 text-white px-6 py-4 rounded-2xl shadow-glow flex items-center gap-3 success-message">
+            <span class="material-symbols-outlined text-[24px]">error</span>
+            <div>
+                <p class="font-semibold">त्रुटि!</p>
+                <p class="text-sm opacity-90" id="errorText">कुछ गलत हो गया</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <main class="relative z-10 max-w-7xl mx-auto px-4 py-6 pb-8">
+
+        <!-- Profile Picture Section -->
+        <div class="bg-surface rounded-3xl shadow-card p-6 border border-border-light mb-6 animate-fade-in">
+            <div class="flex flex-col items-center">
+                <div class="relative mb-4">
+                    <div
+                        class="w-24 h-24 bg-gradient-to-br from-primary to-primary-dark rounded-2xl flex items-center justify-center text-white text-4xl font-bold shadow-glow">
+                        <span id="profileInitial"
+                            th:text="${user.fullName != null ? user.fullName.substring(0,1).toUpperCase() : 'U'}">R</span>
+                    </div>
+                    <button onclick="changeProfilePicture()"
+                        class="absolute bottom-0 right-0 w-8 h-8 bg-primary rounded-lg flex items-center justify-center text-white shadow-soft hover:shadow-glow transition-all active:scale-95">
+                        <span class="material-symbols-outlined text-[18px]">photo_camera</span>
+                    </button>
+                </div>
+                <p class="text-sm text-text-secondary">प्रोफाइल फोटो बदलें</p>
+            </div>
+        </div>
+
+        <!-- Edit Form -->
+        <form th:action="@{/user/profile/update}" th:object="${user}" method="post"
+            onsubmit="return validateForm(event)" class="space-y-4">
+
+            <!-- Full Name -->
+            <div class="bg-surface rounded-2xl shadow-card p-5 border border-border-light animate-fade-in">
+                <label class="flex items-center gap-2 text-sm font-semibold text-text-main mb-3">
+                    <span class="material-symbols-outlined text-primary text-[20px]">person</span>
+                    पूरा नाम <span class="text-red-500">*</span>
+                </label>
+                <input type="text" id="fullName" th:field="*{fullName}" required
+                    class="w-full px-4 py-3 rounded-xl border-2 border-border-light focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none transition-all text-text-main"
+                    placeholder="अपना पूरा नाम दर्ज करें" />
+                <p class="text-xs text-text-secondary mt-2 ml-1">कृपया अपना पूरा नाम हिंदी या अंग्रेजी में लिखें</p>
+            </div>
+
+            <!-- Email (Read Only) -->
+            <div class="bg-surface rounded-2xl shadow-card p-5 border border-border-light animate-fade-in">
+                <label class="flex items-center gap-2 text-sm font-semibold text-text-main mb-3">
+                    <span class="material-symbols-outlined text-primary text-[20px]">email</span>
+                    ईमेल पता
+                </label>
+                <input type="email" th:field="*{email}" readonly
+                    class="w-full px-4 py-3 rounded-xl border-2 border-border-light bg-gray-50 text-text-secondary outline-none cursor-not-allowed"
+                    placeholder="email@example.com" />
+                <p class="text-xs text-text-secondary mt-2 ml-1 flex items-center gap-1">
+                    <span class="material-symbols-outlined text-[14px]">lock</span>
+                    ईमेल पता बदला नहीं जा सकता
+                </p>
+            </div>
+
+            <!-- Contact Number -->
+            <div class="bg-surface rounded-2xl shadow-card p-5 border border-border-light animate-fade-in">
+                <label class="flex items-center gap-2 text-sm font-semibold text-text-main mb-3">
+                    <span class="material-symbols-outlined text-primary text-[20px]">call</span>
+                    संपर्क नंबर <span class="text-red-500">*</span>
+                </label>
+                <div class="flex items-center gap-2">
+                    <div
+                        class="px-3 py-3 bg-gray-50 rounded-xl border-2 border-border-light text-text-secondary font-semibold">
+                        +91
+                    </div>
+                    <input type="tel" id="contact" th:field="*{contact}" required pattern="[0-9]{10}" maxlength="10"
+                        class="flex-1 px-4 py-3 rounded-xl border-2 border-border-light focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none transition-all text-text-main"
+                        placeholder="1234567890" />
+                </div>
+                <p class="text-xs text-text-secondary mt-2 ml-1">10 अंकों का मोबाइल नंबर दर्ज करें</p>
+            </div>
+
+            <!-- Gender Selection -->
+            <div class="bg-surface rounded-2xl shadow-card p-5 border border-border-light animate-fade-in">
+                <label class="flex items-center gap-2 text-sm font-semibold text-text-main mb-3">
+                    <span class="material-symbols-outlined text-primary text-[20px]">wc</span>
+                    लिंग <span class="text-red-500">*</span>
+                </label>
+                <div class="grid grid-cols-2 gap-3">
+                    <label class="relative">
+                        <input type="radio" name="gender" th:field="*{gender}" value="पुरुष"
+                            class="absolute opacity-0" />
+                        <div
+                            class="radio-label flex items-center justify-center gap-2 p-4 rounded-xl border-2 border-border-light cursor-pointer hover:border-primary/50 transition-all active:scale-95">
+                            <span class="material-symbols-outlined text-blue-600">male</span>
+                            <span class="font-semibold text-text-main">पुरुष</span>
+                        </div>
+                    </label>
+                    <label class="relative">
+                        <input type="radio" name="gender" th:field="*{gender}" value="महिला"
+                            class="absolute opacity-0" />
+                        <div
+                            class="radio-label flex items-center justify-center gap-2 p-4 rounded-xl border-2 border-border-light cursor-pointer hover:border-primary/50 transition-all active:scale-95">
+                            <span class="material-symbols-outlined text-pink-600">female</span>
+                            <span class="font-semibold text-text-main">महिला</span>
+                        </div>
+                    </label>
+                </div>
+            </div>
+
+            <!-- Account Created Date (Read Only) -->
+            <div
+                class="bg-gradient-to-r from-primary-light to-blue-50 rounded-2xl shadow-card p-5 border border-primary/20 animate-fade-in">
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center gap-3">
+                        <div class="w-12 h-12 bg-primary rounded-xl flex items-center justify-center">
+                            <span class="material-symbols-outlined text-white text-[24px]">calendar_today</span>
+                        </div>
+                        <div>
+                            <p class="text-xs text-text-secondary">सदस्य बने</p>
+                            <p class="font-bold text-text-main"
+                                th:text="${#temporals.format(user.createdOn, 'dd MMMM yyyy')}">15 जनवरी 2025</p>
+                        </div>
+                    </div>
+                    <div class="text-right">
+                        <p class="text-xs text-text-secondary">समय</p>
+                        <p class="font-semibold text-text-main" th:text="${#temporals.format(user.createdOn, 'HH:mm')}">
+                            10:30</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="flex gap-3 pt-4">
+                <button type="button" onclick="goBack()"
+                    class="flex-1 py-4 bg-gray-100 text-text-main font-bold rounded-xl hover:bg-gray-200 transition-all active:scale-95 flex items-center justify-center gap-2">
+                    <span class="material-symbols-outlined">close</span>
+                    रद्द करें
+                </button>
+                <button type="submit"
+                    class="flex-1 py-4 bg-gradient-to-r from-primary to-primary-dark text-white font-bold rounded-xl shadow-soft hover:shadow-glow transition-all active:scale-95 flex items-center justify-center gap-2">
+                    <span class="material-symbols-outlined">save</span>
+                    सहेजें
+                </button>
+            </div>
+
+        </form>
+
+        <!-- Additional Info -->
+        <div class="mt-8 p-4 bg-blue-50/50 rounded-2xl border border-primary/10">
+            <div class="flex items-start gap-3">
+                <span class="material-symbols-outlined text-primary text-[20px] mt-0.5">info</span>
+                <div>
+                    <p class="text-sm font-semibold text-text-main mb-1">महत्वपूर्ण जानकारी</p>
+                    <p class="text-xs text-text-secondary leading-relaxed">
+                        आपकी व्यक्तिगत जानकारी सुरक्षित और गोपनीय रखी जाती है। केवल आवश्यक फ़ील्ड को अपडेट करें।
+                    </p>
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <script>
+        // Go Back Function
+        function goBack() {
+            window.history.back();
+        }
+
+        // Form Validation
+        function validateForm(event) {
+            event.preventDefault();
+
+            const fullName = document.getElementById('fullName').value.trim();
+            const contact = document.getElementById('contact').value.trim();
+            const genderInputs = document.querySelectorAll('input[name="gender"]');
+            let genderSelected = false;
+
+            genderInputs.forEach(input => {
+                if (input.checked) genderSelected = true;
+            });
+
+            // Validate Full Name
+            if (fullName.length < 3) {
+                showError('नाम कम से कम 3 अक्षर का होना चाहिए');
+                return false;
+            }
+
+            // Validate Contact
+            if (!/^[0-9]{10}$/.test(contact)) {
+                showError('कृपया 10 अंकों का सही मोबाइल नंबर दर्ज करें');
+                return false;
+            }
+
+            // Validate Gender
+            if (!genderSelected) {
+                showError('कृपया लिंग चुनें');
+                return false;
+            }
+
+            // If all validations pass, submit the form
+            event.target.submit();
+            return true;
+        }
+
+        // Show Success Message
+        function showSuccess(message = 'प्रोफाइल सफलतापूर्वक अपडेट हो गई') {
+            const successMsg = document.getElementById('successMessage');
+            successMsg.classList.remove('hidden');
+
+            setTimeout(() => {
+                successMsg.classList.add('hidden');
+            }, 3000);
+        }
+
+        // Show Error Message
+        function showError(message) {
+            const errorMsg = document.getElementById('errorMessage');
+            const errorText = document.getElementById('errorText');
+            errorText.textContent = message;
+            errorMsg.classList.remove('hidden');
+
+            setTimeout(() => {
+                errorMsg.classList.add('hidden');
+            }, 3000);
+        }
+
+        // Change Profile Picture (Placeholder)
+        function changeProfilePicture() {
+            showError('प्रोफाइल फोटो बदलने की सुविधा जल्द आ रही है');
+        }
+
+        // Update profile initial when name changes
+        document.getElementById('fullName')?.addEventListener('input', function (e) {
+            const name = e.target.value.trim();
+            if (name.length > 0) {
+                document.getElementById('profileInitial').textContent = name.charAt(0).toUpperCase();
+            }
+        });
+
+        // Auto-format phone number
+        document.getElementById('contact')?.addEventListener('input', function (e) {
+            this.value = this.value.replace(/[^0-9]/g, '');
+        });
+
+        // Handle radio button selection styling
+        document.querySelectorAll('input[type="radio"][name="gender"]').forEach(radio => {
+            radio.addEventListener('change', function () {
+                document.querySelectorAll('.radio-label').forEach(label => {
+                    label.classList.remove('border-primary', 'bg-primary-light');
+                    label.classList.add('border-border-light');
+                });
+                if (this.checked) {
+                    const label = this.nextElementSibling;
+                    label.classList.remove('border-border-light');
+                    label.classList.add('border-primary', 'bg-primary-light');
+                }
+            });
+        });
+
+        // Set initial radio button style on page load
+        window.addEventListener('DOMContentLoaded', function () {
+            const checkedRadio = document.querySelector('input[type="radio"][name="gender"]:checked');
+            if (checkedRadio) {
+                const label = checkedRadio.nextElementSibling;
+                label.classList.add('border-primary', 'bg-primary-light');
+            }
+        });
+    </script>
+
+</body>
+
+</html>
