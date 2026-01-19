@@ -1,0 +1,725 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Edit Profile - Health Sathi</title>
+    <link href="https://fonts.googleapis.com" rel="preconnect" />
+    <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap"
+        rel="stylesheet" />
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#0058ba",
+                        "primary-dark": "#155a96",
+                        "primary-light": "#e3f2fd",
+                        "text-main": "#1e293b",
+                        "text-secondary": "#64748b",
+                        "border-light": "#e2e8f0",
+                        "surface": "#ffffff",
+                        "background": "#f8fafc",
+                    },
+                    fontFamily: {
+                        "display": ["Inter", "sans-serif"]
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0.75rem",
+                        "xl": "1rem",
+                        "2xl": "1.25rem",
+                        "3xl": "1.5rem"
+                    },
+                    boxShadow: {
+                        'soft': '0 4px 20px -4px rgba(30, 115, 190, 0.1)',
+                        'glow': '0 8px 30px rgba(30, 115, 190, 0.2)',
+                        'card': '0 2px 12px rgba(0, 0, 0, 0.06)',
+                        'hover': '0 8px 25px rgba(30, 115, 190, 0.15)',
+                    }
+                },
+            },
+        }
+    </script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            height: 100%;
+            overflow-y: auto;
+        }
+
+        body {
+            min-height: 100vh;
+            height: auto;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            overflow-y: auto;
+            padding-top: env(safe-area-inset-top);
+        }
+
+        .animate-fade-in {
+            animation: fadeIn 0.3s ease-in;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        input[type="radio"]:checked+.radio-label {
+            border-color: #0058ba;
+            background-color: #e3f2fd;
+        }
+
+        .radio-label {
+            transition: all 0.2s ease;
+        }
+
+        input:focus {
+            outline: none;
+        }
+
+        .success-message,
+        .error-message {
+            animation: slideDown 0.3s ease-out;
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .modal-backdrop {
+            animation: fadeInBackdrop 0.2s ease;
+        }
+
+        @keyframes fadeInBackdrop {
+            from {
+                opacity: 0;
+            }
+
+            to {
+                opacity: 1;
+            }
+        }
+
+        .modal-content {
+            animation: slideUp 0.3s ease-out;
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        #profileImage {
+            object-fit: cover;
+        }
+
+        @media (min-width: 640px) {
+            .container-grid {
+                display: grid;
+                grid-template-columns: repeat(2, 1fr);
+                gap: 1rem;
+            }
+        }
+
+        @media (min-width: 1024px) {
+            .main-container {
+                max-width: 900px;
+            }
+        }
+    </style>
+</head>
+
+<body class="bg-background font-display text-text-main relative">
+    <div
+        class="absolute -top-[10%] -right-[10%] w-[70%] h-[40%] bg-blue-100/60 rounded-full blur-3xl pointer-events-none">
+    </div>
+    <div class="absolute top-[20%] -left-[10%] w-[50%] h-[30%] bg-blue-50/60 rounded-full blur-3xl pointer-events-none">
+    </div>
+
+    <!-- Header -->
+    <header class="bg-surface/80 backdrop-blur-xl border-b border-border-light sticky top-0 z-40 px-4 py-4">
+        <div class="max-w-7xl mx-auto flex items-center justify-between">
+            <button onclick="goBack()" class="p-2 hover:bg-gray-100 rounded-xl transition-colors active:scale-95">
+                <span class="material-symbols-outlined text-text-secondary">arrow_back</span>
+            </button>
+            <div class="text-center">
+                <h1 class="text-base sm:text-lg font-bold text-text-main">Edit Profile</h1>
+                <p class="text-[10px] sm:text-xs text-text-secondary">Update your information</p>
+            </div>
+            <div class="w-10"></div>
+        </div>
+    </header>
+
+    <!-- Success Message -->
+    <div id="successMessage" class="hidden fixed top-20 left-1/2 -translate-x-1/2 z-50 w-[90%] max-w-md">
+        <div class="bg-green-500 text-white px-6 py-4 rounded-2xl shadow-glow flex items-center gap-3 success-message">
+            <span class="material-symbols-outlined text-[24px]">check_circle</span>
+            <div>
+                <p class="font-semibold">Success!</p>
+                <p class="text-sm opacity-90" id="successText">Profile updated successfully</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Error Message -->
+    <div id="errorMessage" class="hidden fixed top-20 left-1/2 -translate-x-1/2 z-50 w-[90%] max-w-md">
+        <div class="bg-red-500 text-white px-6 py-4 rounded-2xl shadow-glow flex items-center gap-3 error-message">
+            <span class="material-symbols-outlined text-[24px]">error</span>
+            <div>
+                <p class="font-semibold">Error!</p>
+                <p class="text-sm opacity-90" id="errorText">Something went wrong</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- OTP Modal -->
+    <div id="otpModal"
+        class="hidden fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4 modal-backdrop">
+        <div class="bg-white rounded-3xl shadow-glow max-w-md w-full p-6 modal-content">
+            <div class="flex items-center justify-between mb-4">
+                <h3 class="text-lg font-bold text-text-main">Verify OTP</h3>
+                <button onclick="closeOtpModal()" class="p-2 hover:bg-gray-100 rounded-lg transition-colors">
+                    <span class="material-symbols-outlined text-text-secondary">close</span>
+                </button>
+            </div>
+            <p class="text-sm text-text-secondary mb-4">Enter the 6-digit code sent to <span id="otpTarget"
+                    class="font-semibold text-text-main"></span></p>
+
+            <div class="flex gap-2 mb-6" id="otpInputs">
+                <input type="text" maxlength="1"
+                    class="w-12 h-12 text-center text-xl font-bold border-2 border-border-light rounded-xl focus:border-primary focus:ring-2 focus:ring-primary/20" />
+                <input type="text" maxlength="1"
+                    class="w-12 h-12 text-center text-xl font-bold border-2 border-border-light rounded-xl focus:border-primary focus:ring-2 focus:ring-primary/20" />
+                <input type="text" maxlength="1"
+                    class="w-12 h-12 text-center text-xl font-bold border-2 border-border-light rounded-xl focus:border-primary focus:ring-2 focus:ring-primary/20" />
+                <input type="text" maxlength="1"
+                    class="w-12 h-12 text-center text-xl font-bold border-2 border-border-light rounded-xl focus:border-primary focus:ring-2 focus:ring-primary/20" />
+                <input type="text" maxlength="1"
+                    class="w-12 h-12 text-center text-xl font-bold border-2 border-border-light rounded-xl focus:border-primary focus:ring-2 focus:ring-primary/20" />
+                <input type="text" maxlength="1"
+                    class="w-12 h-12 text-center text-xl font-bold border-2 border-border-light rounded-xl focus:border-primary focus:ring-2 focus:ring-primary/20" />
+            </div>
+
+            <div class="flex items-center justify-between mb-4">
+                <p class="text-sm text-text-secondary">Time remaining: <span id="otpTimer"
+                        class="font-semibold text-primary">30s</span></p>
+                <button id="resendBtn" onclick="resendOtp()" disabled
+                    class="text-sm font-semibold text-primary disabled:text-text-secondary disabled:cursor-not-allowed">Resend
+                    OTP</button>
+            </div>
+
+            <button onclick="verifyOtp()"
+                class="w-full py-3 bg-gradient-to-r from-primary to-primary-dark text-white font-bold rounded-xl shadow-soft hover:shadow-glow transition-all active:scale-95">
+                Verify OTP
+            </button>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <main class="relative z-10 max-w-7xl mx-auto px-4 py-6 pb-8 main-container">
+
+        <!-- Profile Picture Section -->
+        <div class="bg-surface rounded-3xl shadow-card p-6 border border-border-light mb-6 animate-fade-in">
+            <div class="flex flex-col items-center">
+                <div class="relative mb-4">
+                    <div id="profileImageContainer"
+                        class="w-24 h-24 sm:w-32 sm:h-32 bg-gradient-to-br from-primary to-primary-dark rounded-2xl flex items-center justify-center text-white text-4xl sm:text-5xl font-bold shadow-glow overflow-hidden">
+                        <img id="profileImage" th:if="${user.profilePicture != null}"
+                            th:src="@{'data:image/jpeg;base64,' + ${#strings.arrayJoin(user.profilePicture, '')}}"
+                            alt="Profile" class="w-full h-full hidden" />
+                        <span id="profileInitial"
+                            th:text="${user.fullName != null ? user.fullName.substring(0,1).toUpperCase() : 'U'}">U</span>
+                    </div>
+                    <input type="file" id="profilePictureInput" accept="image/*" class="hidden"
+                        onchange="handleProfilePictureChange(event)" />
+                    <button onclick="document.getElementById('profilePictureInput').click()"
+                        class="absolute bottom-0 right-0 w-8 h-8 sm:w-10 sm:h-10 bg-primary rounded-lg flex items-center justify-center text-white shadow-soft hover:shadow-glow transition-all active:scale-95">
+                        <span class="material-symbols-outlined text-[18px] sm:text-[20px]">photo_camera</span>
+                    </button>
+                </div>
+                <p class="text-sm text-text-secondary">Change profile photo</p>
+                <p class="text-xs text-text-secondary mt-1">Max size: 2MB (JPG, PNG)</p>
+            </div>
+        </div>
+
+        <!-- Edit Form -->
+        <form th:action="@{/user/profile/update}" th:object="${user}" method="post" enctype="multipart/form-data"
+            onsubmit="return validateForm(event)" class="space-y-4">
+
+            <input type="hidden" name="profilePictureData" id="profilePictureData" />
+
+            <div class="container-grid">
+                <!-- Full Name -->
+                <div class="bg-surface rounded-2xl shadow-card p-5 border border-border-light animate-fade-in">
+                    <label class="flex items-center gap-2 text-sm font-semibold text-text-main mb-3">
+                        <span class="material-symbols-outlined text-primary text-[20px]">person</span>
+                        Full Name <span class="text-red-500">*</span>
+                    </label>
+                    <input type="text" id="fullName" th:field="*{fullName}" required
+                        class="w-full px-4 py-3 rounded-xl border-2 border-border-light focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none transition-all text-text-main"
+                        placeholder="Enter your full name" />
+                    <p class="text-xs text-text-secondary mt-2 ml-1">Please enter your full name</p>
+                </div>
+
+                <!-- Gender Selection -->
+                <div class="bg-surface rounded-2xl shadow-card p-5 border border-border-light animate-fade-in">
+                    <label class="flex items-center gap-2 text-sm font-semibold text-text-main mb-3">
+                        <span class="material-symbols-outlined text-primary text-[20px]">wc</span>
+                        Gender <span class="text-red-500">*</span>
+                    </label>
+                    <div class="grid grid-cols-2 gap-3">
+                        <label class="relative">
+                            <input type="radio" name="gender" th:field="*{gender}" value="Male"
+                                class="absolute opacity-0" />
+                            <div
+                                class="radio-label flex items-center justify-center gap-2 p-3 rounded-xl border-2 border-border-light cursor-pointer hover:border-primary/50 transition-all active:scale-95">
+                                <span class="material-symbols-outlined text-blue-600 text-[20px]">male</span>
+                                <span class="font-semibold text-text-main text-sm">Male</span>
+                            </div>
+                        </label>
+                        <label class="relative">
+                            <input type="radio" name="gender" th:field="*{gender}" value="Female"
+                                class="absolute opacity-0" />
+                            <div
+                                class="radio-label flex items-center justify-center gap-2 p-3 rounded-xl border-2 border-border-light cursor-pointer hover:border-primary/50 transition-all active:scale-95">
+                                <span class="material-symbols-outlined text-pink-600 text-[20px]">female</span>
+                                <span class="font-semibold text-text-main text-sm">Female</span>
+                            </div>
+                        </label>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Email -->
+            <div class="bg-surface rounded-2xl shadow-card p-5 border border-border-light animate-fade-in">
+                <label class="flex items-center gap-2 text-sm font-semibold text-text-main mb-3">
+                    <span class="material-symbols-outlined text-primary text-[20px]">email</span>
+                    Email Address <span class="text-red-500">*</span>
+                </label>
+                <div class="flex gap-2">
+                    <input type="email" id="email" th:field="*{email}" required
+                        class="flex-1 px-4 py-3 rounded-xl border-2 border-border-light focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none transition-all text-text-main"
+                        placeholder="email@example.com" />
+                    <button type="button" onclick="requestEmailOtp()"
+                        class="px-4 py-3 bg-primary text-white font-semibold rounded-xl hover:bg-primary-dark transition-all active:scale-95 whitespace-nowrap text-sm">
+                        Verify
+                    </button>
+                </div>
+                <p class="text-xs text-text-secondary mt-2 ml-1 flex items-center gap-1">
+                    <span class="material-symbols-outlined text-[14px]" id="emailVerifiedIcon">shield</span>
+                    <span id="emailVerifiedText">Email verification required for updates</span>
+                </p>
+                <input type="hidden" id="emailVerified" name="emailVerified" value="false" />
+            </div>
+
+            <!-- Contact Number -->
+            <div class="bg-surface rounded-2xl shadow-card p-5 border border-border-light animate-fade-in">
+                <label class="flex items-center gap-2 text-sm font-semibold text-text-main mb-3">
+                    <span class="material-symbols-outlined text-primary text-[20px]">call</span>
+                    Contact Number <span class="text-red-500">*</span>
+                </label>
+                <div class="flex gap-2">
+                    <div
+                        class="px-3 py-3 bg-gray-50 rounded-xl border-2 border-border-light text-text-secondary font-semibold">
+                        +91
+                    </div>
+                    <input type="tel" id="contact" th:field="*{contact}" required pattern="[0-9]{10}" maxlength="10"
+                        class="flex-1 px-4 py-3 rounded-xl border-2 border-border-light focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none transition-all text-text-main"
+                        placeholder="1234567890" />
+                    <button type="button" onclick="requestPhoneOtp()"
+                        class="px-4 py-3 bg-primary text-white font-semibold rounded-xl hover:bg-primary-dark transition-all active:scale-95 whitespace-nowrap text-sm">
+                        Verify
+                    </button>
+                </div>
+                <p class="text-xs text-text-secondary mt-2 ml-1 flex items-center gap-1">
+                    <span class="material-symbols-outlined text-[14px]" id="phoneVerifiedIcon">shield</span>
+                    <span id="phoneVerifiedText">Phone verification required for updates</span>
+                </p>
+                <input type="hidden" id="phoneVerified" name="phoneVerified" value="false" />
+            </div>
+
+            <!-- Account Created Date -->
+            <div
+                class="bg-gradient-to-r from-primary-light to-blue-50 rounded-2xl shadow-card p-5 border border-primary/20 animate-fade-in">
+                <div class="flex items-center justify-between flex-wrap gap-4">
+                    <div class="flex items-center gap-3">
+                        <div class="w-12 h-12 bg-primary rounded-xl flex items-center justify-center">
+                            <span class="material-symbols-outlined text-white text-[24px]">calendar_today</span>
+                        </div>
+                        <div>
+                            <p class="text-xs text-text-secondary">Member Since</p>
+                            <p class="font-bold text-text-main"
+                                th:text="${#temporals.format(user.createdOn, 'dd MMMM yyyy')}">15 January 2025</p>
+                        </div>
+                    </div>
+                    <div class="text-right">
+                        <p class="text-xs text-text-secondary">Time</p>
+                        <p class="font-semibold text-text-main" th:text="${#temporals.format(user.createdOn, 'HH:mm')}">
+                            10:30</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="flex gap-3 pt-4">
+                <button type="button" onclick="goBack()"
+                    class="flex-1 py-4 bg-gray-100 text-text-main font-bold rounded-xl hover:bg-gray-200 transition-all active:scale-95 flex items-center justify-center gap-2">
+                    <span class="material-symbols-outlined">close</span>
+                    Cancel
+                </button>
+                <button type="submit"
+                    class="flex-1 py-4 bg-gradient-to-r from-primary to-primary-dark text-white font-bold rounded-xl shadow-soft hover:shadow-glow transition-all active:scale-95 flex items-center justify-center gap-2">
+                    <span class="material-symbols-outlined">save</span>
+                    Save Changes
+                </button>
+            </div>
+
+        </form>
+
+        <!-- Additional Info -->
+        <div class="mt-8 p-4 bg-blue-50/50 rounded-2xl border border-primary/10">
+            <div class="flex items-start gap-3">
+                <span class="material-symbols-outlined text-primary text-[20px] mt-0.5">info</span>
+                <div>
+                    <p class="text-sm font-semibold text-text-main mb-1">Important Information</p>
+                    <p class="text-xs text-text-secondary leading-relaxed">
+                        Your personal information is kept secure and confidential. Email and phone number changes
+                        require OTP verification for security.
+                    </p>
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <script>
+        let otpTimer;
+        let otpTimerSeconds = 30;
+        let currentOtpType = '';
+        let originalEmail = '';
+        let originalPhone = '';
+
+        // Initialize original values
+        window.addEventListener('DOMContentLoaded', function () {
+            originalEmail = document.getElementById('email').value;
+            originalPhone = document.getElementById('contact').value;
+
+            // Set initial radio button style
+            const checkedRadio = document.querySelector('input[type="radio"][name="gender"]:checked');
+            if (checkedRadio) {
+                checkedRadio.nextElementSibling.classList.add('border-primary', 'bg-primary-light');
+            }
+
+            // Check if profile picture exists
+            const profileImg = document.getElementById('profileImage');
+            if (profileImg && profileImg.src) {
+                profileImg.classList.remove('hidden');
+                document.getElementById('profileInitial').classList.add('hidden');
+            }
+        });
+
+        function goBack() {
+            window.location.href = '/user/profile';
+        }
+
+        function handleProfilePictureChange(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            // Validate file size (2MB)
+            if (file.size > 2 * 1024 * 1024) {
+                showError('File size must be less than 2MB');
+                return;
+            }
+
+            // Validate file type
+            if (!file.type.match('image/(jpeg|jpg|png)')) {
+                showError('Only JPG and PNG images are allowed');
+                return;
+            }
+
+            const reader = new FileReader();
+            reader.onload = function (e) {
+                const profileImg = document.getElementById('profileImage');
+                const profileInitial = document.getElementById('profileInitial');
+
+                profileImg.src = e.target.result;
+                profileImg.classList.remove('hidden');
+                profileInitial.classList.add('hidden');
+
+                // Store base64 data for form submission
+                document.getElementById('profilePictureData').value = e.target.result.split(',')[1];
+            };
+            reader.readAsDataURL(file);
+        }
+
+        function requestEmailOtp() {
+            const email = document.getElementById('email').value.trim();
+
+            if (!email || !validateEmail(email)) {
+                showError('Please enter a valid email address');
+                return;
+            }
+
+            if (email === originalEmail) {
+                showError('This email is already registered to your account');
+                return;
+            }
+
+            currentOtpType = 'email';
+            document.getElementById('otpTarget').textContent = email;
+
+            // Simulate sending OTP (replace with actual API call)
+            showSuccess('OTP sent to ' + email);
+            openOtpModal();
+        }
+
+        function requestPhoneOtp() {
+            const phone = document.getElementById('contact').value.trim();
+
+            if (!phone || !/^[0-9]{10}$/.test(phone)) {
+                showError('Please enter a valid 10-digit phone number');
+                return;
+            }
+
+            if (phone === originalPhone) {
+                showError('This phone number is already registered to your account');
+                return;
+            }
+
+            currentOtpType = 'phone';
+            document.getElementById('otpTarget').textContent = '+91 ' + phone;
+
+            // Simulate sending OTP (replace with actual API call)
+            showSuccess('OTP sent to +91 ' + phone);
+            openOtpModal();
+        }
+
+        function openOtpModal() {
+            document.getElementById('otpModal').classList.remove('hidden');
+            startOtpTimer();
+
+            const inputs = document.querySelectorAll('#otpInputs input');
+            inputs[0].focus();
+
+            // Auto-focus next input
+            inputs.forEach((input, index) => {
+                input.addEventListener('input', function () {
+                    if (this.value.length === 1 && index < inputs.length - 1) {
+                        inputs[index + 1].focus();
+                    }
+                });
+
+                input.addEventListener('keydown', function (e) {
+                    if (e.key === 'Backspace' && !this.value && index > 0) {
+                        inputs[index - 1].focus();
+                    }
+                });
+            });
+        }
+
+        function closeOtpModal() {
+            document.getElementById('otpModal').classList.add('hidden');
+            clearInterval(otpTimer);
+            otpTimerSeconds = 30;
+
+            // Clear OTP inputs
+            document.querySelectorAll('#otpInputs input').forEach(input => input.value = '');
+        }
+
+        function startOtpTimer() {
+            otpTimerSeconds = 30;
+            document.getElementById('resendBtn').disabled = true;
+
+            otpTimer = setInterval(() => {
+                otpTimerSeconds--;
+                document.getElementById('otpTimer').textContent = otpTimerSeconds + 's';
+
+                if (otpTimerSeconds <= 0) {
+                    clearInterval(otpTimer);
+                    document.getElementById('resendBtn').disabled = false;
+                    document.getElementById('otpTimer').textContent = 'Expired';
+                }
+            }, 1000);
+        }
+
+        function resendOtp() {
+            if (currentOtpType === 'email') {
+                requestEmailOtp();
+            } else if (currentOtpType === 'phone') {
+                requestPhoneOtp();
+            }
+        }
+
+        function verifyOtp() {
+            const inputs = document.querySelectorAll('#otpInputs input');
+            const otp = Array.from(inputs).map(input => input.value).join('');
+
+            if (otp.length !== 6) {
+                showError('Please enter the complete 6-digit OTP');
+                return;
+            }
+
+            // Simulate OTP verification (replace with actual API call)
+            // For demo, accept any 6-digit OTP
+            if (currentOtpType === 'email') {
+                document.getElementById('emailVerified').value = 'true';
+                document.getElementById('emailVerifiedIcon').textContent = 'verified';
+                document.getElementById('emailVerifiedIcon').classList.add('text-green-500');
+                document.getElementById('emailVerifiedText').textContent = 'Email verified successfully';
+                document.getElementById('emailVerifiedText').classList.add('text-green-600');
+            } else if (currentOtpType === 'phone') {
+                document.getElementById('phoneVerified').value = 'true';
+                document.getElementById('phoneVerifiedIcon').textContent = 'verified';
+                document.getElementById('phoneVerifiedIcon').classList.add('text-green-500');
+                document.getElementById('phoneVerifiedText').textContent = 'Phone verified successfully';
+                document.getElementById('phoneVerifiedText').classList.add('text-green-600');
+            }
+
+            showSuccess('OTP verified successfully!');
+            closeOtpModal();
+        }
+
+        function validateForm(event) {
+            event.preventDefault();
+
+            const fullName = document.getElementById('fullName').value.trim();
+            const email = document.getElementById('email').value.trim();
+            const contact = document.getElementById('contact').value.trim();
+            const genderInputs = document.querySelectorAll('input[name="gender"]');
+            let genderSelected = false;
+
+            genderInputs.forEach(input => {
+                if (input.checked) genderSelected = true;
+            });
+
+            // Validate Full Name
+            if (fullName.length < 3) {
+                showError('Name must be at least 3 characters long');
+                return false;
+            }
+
+            // Validate Email
+            if (!validateEmail(email)) {
+                showError('Please enter a valid email address');
+                return false;
+            }
+
+            // Check if email changed and needs verification
+            if (email !== originalEmail && document.getElementById('emailVerified').value !== 'true') {
+                showError('Please verify your new email address');
+                return false;
+            }
+
+            // Validate Contact
+            if (!/^[0-9]{10}$/.test(contact)) {
+                showError('Please enter a valid 10-digit mobile number');
+                return false;
+            }
+
+            // Check if phone changed and needs verification
+            if (contact !== originalPhone && document.getElementById('phoneVerified').value !== 'true') {
+                showError('Please verify your new phone number');
+                return false;
+            }
+
+            // Validate Gender
+            if (!genderSelected) {
+                showError('Please select your gender');
+                return false;
+            }
+
+            // Submit form
+            event.target.submit();
+            return true;
+        }
+
+        function validateEmail(email) {
+            return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+        }
+
+        function showSuccess(message = 'Profile updated successfully') {
+            const successMsg = document.getElementById('successMessage');
+            document.getElementById('successText').textContent = message;
+            successMsg.classList.remove('hidden');
+
+            setTimeout(() => {
+                successMsg.classList.add('hidden');
+            }, 3000);
+        }
+
+        function showError(message) {
+            const errorMsg = document.getElementById('errorMessage');
+            const errorText = document.getElementById('errorText');
+            errorText.textContent = message;
+            errorMsg.classList.remove('hidden');
+
+            setTimeout(() => {
+                errorMsg.classList.add('hidden');
+            }, 3000);
+        }
+
+        // Update profile initial when name changes
+        document.getElementById('fullName')?.addEventListener('input', function (e) {
+            const name = e.target.value.trim();
+            if (name.length > 0 && !document.getElementById('profileImage').src) {
+                document.getElementById('profileInitial').textContent = name.charAt(0).toUpperCase();
+            }
+        });
+
+        // Auto-format phone number
+        document.getElementById('contact')?.addEventListener('input', function (e) {
+            this.value = this.value.replace(/[^0-9]/g, '');
+        });
+
+        // Handle radio button selection styling
+        document.querySelectorAll('input[type="radio"][name="gender"]').forEach(radio => {
+            radio.addEventListener('change', function () {
+                document.querySelectorAll('.radio-label').forEach(label => {
+                    label.classList.remove('border-primary', 'bg-primary-light');
+                    label.classList.add('border-border-light');
+                });
+                if (this.checked) {
+                    const label = this.nextElementSibling;
+                    label.classList.remove('border-border-light');
+                    label.classList.add('border-primary', 'bg-primary-light');
+                }
+            });
+        });
+    </script>
+
+</body>
+
+</html>
