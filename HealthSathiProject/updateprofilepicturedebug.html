@@ -1,0 +1,466 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Edit Profile - Health Sathi</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap"
+        rel="stylesheet" />
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#0058ba",
+                        "primary-dark": "#155a96",
+                        "primary-light": "#e3f2fd",
+                        "text-main": "#1e293b",
+                        "text-secondary": "#64748b",
+                        "border-light": "#e2e8f0",
+                        "surface": "#ffffff",
+                        "background": "#f8fafc",
+                    },
+                    fontFamily: {
+                        "display": ["Inter", "sans-serif"]
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html,
+        body {
+            height: 100%;
+            width: 100%;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        body {
+            min-height: 100vh;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+
+        .animate-fade-in {
+            animation: fadeIn 0.3s ease-in;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        input[type="radio"]:checked+.radio-label {
+            border-color: #0058ba;
+            background-color: #e3f2fd;
+        }
+
+        #profileImage {
+            object-fit: cover;
+        }
+
+        .success-message,
+        .error-message {
+            animation: slideDown 0.3s ease-out;
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        .animate-spin {
+            animation: spin 1s linear infinite;
+        }
+    </style>
+</head>
+
+<body class="bg-background font-display text-text-main relative">
+    <div
+        class="absolute -top-[10%] -right-[10%] w-[70%] h-[40%] bg-blue-100/60 rounded-full blur-3xl pointer-events-none">
+    </div>
+    <div class="absolute top-[20%] -left-[10%] w-[50%] h-[30%] bg-blue-50/60 rounded-full blur-3xl pointer-events-none">
+    </div>
+
+    <!-- Header -->
+    <header class="bg-surface/80 backdrop-blur-xl border-b border-border-light sticky top-0 z-40 px-4 py-4">
+        <div class="max-w-4xl mx-auto flex items-center justify-between">
+            <button onclick="goBack()" class="p-2 hover:bg-gray-100 rounded-xl transition-colors active:scale-95">
+                <span class="material-symbols-outlined text-text-secondary">arrow_back</span>
+            </button>
+            <div class="text-center">
+                <h1 class="text-lg font-bold text-text-main">Edit Profile</h1>
+                <p class="text-xs text-text-secondary">Update your information</p>
+            </div>
+            <div class="w-10"></div>
+        </div>
+    </header>
+
+    <!-- Success Message -->
+    <div id="successMessage" class="hidden fixed top-20 left-1/2 -translate-x-1/2 z-50 w-[90%] max-w-md">
+        <div class="bg-green-500 text-white px-6 py-4 rounded-2xl shadow-lg flex items-center gap-3 success-message">
+            <span class="material-symbols-outlined text-[24px]">check_circle</span>
+            <div>
+                <p class="font-semibold">Success!</p>
+                <p class="text-sm opacity-90" id="successText">Profile updated successfully</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Error Message -->
+    <div id="errorMessage" class="hidden fixed top-20 left-1/2 -translate-x-1/2 z-50 w-[90%] max-w-md">
+        <div class="bg-red-500 text-white px-6 py-4 rounded-2xl shadow-lg flex items-center gap-3 error-message">
+            <span class="material-symbols-outlined text-[24px]">error</span>
+            <div>
+                <p class="font-semibold">Error!</p>
+                <p class="text-sm opacity-90" id="errorText">Something went wrong</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <main class="relative z-10 max-w-4xl mx-auto px-4 py-6 pb-8">
+
+        <!-- Profile Picture Section -->
+        <div class="bg-surface rounded-3xl shadow-lg p-6 border border-border-light mb-6 animate-fade-in">
+            <div class="flex flex-col items-center">
+                <div class="relative mb-4">
+                    <div id="profileImageContainer"
+                        class="w-28 h-28 bg-gradient-to-br from-primary to-primary-dark rounded-2xl flex items-center justify-center text-white text-5xl font-bold shadow-lg overflow-hidden">
+                        <img id="profileImage" src="" alt="Profile" class="w-full h-full object-cover hidden" />
+                        <span id="profileInitial">U</span>
+                    </div>
+
+                    <!-- Loading Spinner -->
+                    <div id="uploadSpinner"
+                        class="hidden absolute inset-0 bg-black/50 rounded-2xl flex items-center justify-center">
+                        <div class="w-8 h-8 border-4 border-white border-t-transparent rounded-full animate-spin"></div>
+                    </div>
+
+                    <input type="file" id="profilePictureInput" accept="image/jpeg,image/jpg,image/png" class="hidden"
+                        onchange="handleProfilePictureChange(event)" />
+                    <button onclick="document.getElementById('profilePictureInput').click()"
+                        class="absolute bottom-0 right-0 w-10 h-10 bg-primary rounded-xl flex items-center justify-center text-white shadow-lg hover:shadow-xl transition-all active:scale-95">
+                        <span class="material-symbols-outlined text-[20px]">photo_camera</span>
+                    </button>
+                </div>
+                <p class="text-sm text-text-secondary">Change profile photo</p>
+                <p class="text-xs text-text-secondary mt-1">Max size: 2MB (JPG, PNG)</p>
+            </div>
+        </div>
+
+        <!-- Edit Form -->
+        <form action="/user/profile/update" method="post" id="profileForm" onsubmit="return validateForm(event)"
+            class="space-y-4">
+
+            <!-- CRITICAL: Hidden input for profile picture base64 data -->
+            <input type="hidden" name="profilePictureData" id="profilePictureData" value="" />
+
+            <!-- Full Name -->
+            <div class="bg-surface rounded-2xl shadow-lg p-5 border border-border-light animate-fade-in">
+                <label for="fullName" class="flex items-center gap-2 text-sm font-semibold text-text-main mb-3">
+                    <span class="material-symbols-outlined text-primary text-[20px]">person</span>
+                    Full Name <span class="text-red-500">*</span>
+                </label>
+                <input type="text" id="fullName" name="fullName" required value="John Doe"
+                    class="w-full px-4 py-3 rounded-xl border-2 border-border-light focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none transition-all text-text-main"
+                    placeholder="Enter your full name" />
+            </div>
+
+            <!-- Gender Selection -->
+            <div class="bg-surface rounded-2xl shadow-lg p-5 border border-border-light animate-fade-in">
+                <label class="flex items-center gap-2 text-sm font-semibold text-text-main mb-3">
+                    <span class="material-symbols-outlined text-primary text-[20px]">wc</span>
+                    Gender <span class="text-red-500">*</span>
+                </label>
+                <div class="grid grid-cols-2 gap-3">
+                    <label class="relative">
+                        <input type="radio" name="gender" value="Male" checked class="absolute opacity-0" />
+                        <div
+                            class="radio-label flex items-center justify-center gap-2 p-3 rounded-xl border-2 border-border-light cursor-pointer hover:border-primary/50 transition-all active:scale-95">
+                            <span class="material-symbols-outlined text-blue-600 text-[20px]">male</span>
+                            <span class="font-semibold text-text-main text-sm">Male</span>
+                        </div>
+                    </label>
+                    <label class="relative">
+                        <input type="radio" name="gender" value="Female" class="absolute opacity-0" />
+                        <div
+                            class="radio-label flex items-center justify-center gap-2 p-3 rounded-xl border-2 border-border-light cursor-pointer hover:border-primary/50 transition-all active:scale-95">
+                            <span class="material-symbols-outlined text-pink-600 text-[20px]">female</span>
+                            <span class="font-semibold text-text-main text-sm">Female</span>
+                        </div>
+                    </label>
+                </div>
+            </div>
+
+            <!-- Contact Number -->
+            <div class="bg-surface rounded-2xl shadow-lg p-5 border border-border-light animate-fade-in">
+                <label for="contact" class="flex items-center gap-2 text-sm font-semibold text-text-main mb-3">
+                    <span class="material-symbols-outlined text-primary text-[20px]">call</span>
+                    Contact Number <span class="text-red-500">*</span>
+                </label>
+                <div class="flex gap-2">
+                    <div
+                        class="px-4 py-3 bg-gray-50 rounded-xl border-2 border-border-light text-text-secondary font-semibold">
+                        +91</div>
+                    <input type="tel" id="contact" name="contact" required pattern="[0-9]{10}" maxlength="10"
+                        value="9876543210"
+                        class="flex-1 px-4 py-3 rounded-xl border-2 border-border-light focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none transition-all text-text-main"
+                        placeholder="1234567890" />
+                </div>
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="flex gap-3 pt-4">
+                <button type="button" onclick="goBack()"
+                    class="flex-1 py-4 bg-gray-100 text-text-main font-bold rounded-xl hover:bg-gray-200 transition-all active:scale-95 flex items-center justify-center gap-2">
+                    <span class="material-symbols-outlined">close</span>
+                    Cancel
+                </button>
+                <button type="submit"
+                    class="flex-1 py-4 bg-gradient-to-r from-primary to-primary-dark text-white font-bold rounded-xl shadow-lg hover:shadow-xl transition-all active:scale-95 flex items-center justify-center gap-2">
+                    <span class="material-symbols-outlined">save</span>
+                    Save Changes
+                </button>
+            </div>
+        </form>
+
+    </main>
+
+    <script>
+        // Initialize on page load
+        document.addEventListener('DOMContentLoaded', function () {
+            initializeForm();
+            setupEventListeners();
+        });
+
+        function initializeForm() {
+            // Set initial radio button style
+            const checkedRadio = document.querySelector('input[type="radio"][name="gender"]:checked');
+            if (checkedRadio) {
+                checkedRadio.nextElementSibling.classList.add('border-primary', 'bg-primary-light');
+            }
+
+            // Update initial based on name
+            const fullName = document.getElementById('fullName').value.trim();
+            if (fullName) {
+                document.getElementById('profileInitial').textContent = fullName.charAt(0).toUpperCase();
+            }
+        }
+
+        function setupEventListeners() {
+            // Full name input - update initial letter
+            document.getElementById('fullName').addEventListener('input', function (e) {
+                const name = e.target.value.trim();
+                const profileImg = document.getElementById('profileImage');
+                const profileInitial = document.getElementById('profileInitial');
+
+                // Only update initial if no image is shown
+                if (name.length > 0 && profileImg.classList.contains('hidden')) {
+                    profileInitial.textContent = name.charAt(0).toUpperCase();
+                }
+            });
+
+            // Contact number - only allow digits
+            document.getElementById('contact').addEventListener('input', function (e) {
+                this.value = this.value.replace(/[^0-9]/g, '');
+            });
+
+            // Gender radio buttons
+            document.querySelectorAll('input[type="radio"][name="gender"]').forEach(radio => {
+                radio.addEventListener('change', function () {
+                    document.querySelectorAll('.radio-label').forEach(label => {
+                        label.classList.remove('border-primary', 'bg-primary-light');
+                    });
+                    if (this.checked) {
+                        this.nextElementSibling.classList.add('border-primary', 'bg-primary-light');
+                    }
+                });
+            });
+        }
+
+        function goBack() {
+            window.history.back();
+        }
+
+        function handleProfilePictureChange(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            // Show loading spinner
+            const spinner = document.getElementById('uploadSpinner');
+            spinner.classList.remove('hidden');
+
+            try {
+                // Validate file size (2MB = 2 * 1024 * 1024 bytes)
+                const maxSize = 2 * 1024 * 1024;
+                if (file.size > maxSize) {
+                    showError('File size must be less than 2MB');
+                    event.target.value = '';
+                    spinner.classList.add('hidden');
+                    return;
+                }
+
+                // Validate file type
+                const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png'];
+                if (!allowedTypes.includes(file.type)) {
+                    showError('Only JPG and PNG images are allowed');
+                    event.target.value = '';
+                    spinner.classList.add('hidden');
+                    return;
+                }
+
+                const reader = new FileReader();
+
+                reader.onload = function (e) {
+                    try {
+                        const base64String = e.target.result;
+                        const profileImg = document.getElementById('profileImage');
+                        const profileInitial = document.getElementById('profileInitial');
+
+                        // Display the image
+                        profileImg.src = base64String;
+                        profileImg.classList.remove('hidden');
+                        profileInitial.classList.add('hidden');
+
+                        // Extract base64 data (remove the data:image/xxx;base64, prefix)
+                        const base64Data = base64String.split(',')[1];
+
+                        // Store in hidden input for form submission
+                        document.getElementById('profilePictureData').value = base64Data;
+
+                        // Hide spinner and show success
+                        spinner.classList.add('hidden');
+                        showSuccess('Photo uploaded successfully!');
+
+                        console.log('Image uploaded successfully');
+                        console.log('Base64 length:', base64Data.length);
+                    } catch (error) {
+                        console.error('Error processing image:', error);
+                        showError('Failed to process image');
+                        spinner.classList.add('hidden');
+                    }
+                };
+
+                reader.onerror = function () {
+                    showError('Failed to read image file');
+                    spinner.classList.add('hidden');
+                    event.target.value = '';
+                };
+
+                // Read the file as data URL
+                reader.readAsDataURL(file);
+
+            } catch (error) {
+                console.error('Error handling profile picture:', error);
+                showError('Failed to upload image');
+                spinner.classList.add('hidden');
+                event.target.value = '';
+            }
+        }
+
+        function validateForm(event) {
+            event.preventDefault();
+
+            const fullName = document.getElementById('fullName').value.trim();
+            const contact = document.getElementById('contact').value.trim();
+            const genderSelected = document.querySelector('input[name="gender"]:checked');
+
+            // Validate Full Name
+            if (fullName.length < 3) {
+                showError('Name must be at least 3 characters long');
+                return false;
+            }
+
+            // Validate Gender
+            if (!genderSelected) {
+                showError('Please select your gender');
+                return false;
+            }
+
+            // Validate Contact
+            if (!/^[0-9]{10}$/.test(contact)) {
+                showError('Please enter a valid 10-digit mobile number');
+                return false;
+            }
+
+            // Log form data for debugging
+            const profilePictureData = document.getElementById('profilePictureData').value;
+            console.log('Form submission:');
+            console.log('Name:', fullName);
+            console.log('Gender:', genderSelected.value);
+            console.log('Contact:', contact);
+            console.log('Has profile picture:', profilePictureData ? 'Yes' : 'No');
+
+            // Show success and submit
+            showSuccess('Saving changes...');
+
+            // In real implementation, submit the form:
+            // event.target.submit();
+
+            // For demo, just show success after delay
+            setTimeout(() => {
+                showSuccess('Profile updated successfully!');
+            }, 1500);
+
+            return false; // Remove this in production
+        }
+
+        function showSuccess(message) {
+            const successMsg = document.getElementById('successMessage');
+            const successText = document.getElementById('successText');
+
+            successText.textContent = message;
+            successMsg.classList.remove('hidden');
+
+            setTimeout(() => {
+                successMsg.classList.add('hidden');
+            }, 3000);
+        }
+
+        function showError(message) {
+            const errorMsg = document.getElementById('errorMessage');
+            const errorText = document.getElementById('errorText');
+
+            errorText.textContent = message;
+            errorMsg.classList.remove('hidden');
+
+            setTimeout(() => {
+                errorMsg.classList.add('hidden');
+            }, 3000);
+        }
+    </script>
+
+</body>
+
+</html>

@@ -1,0 +1,484 @@
+<!DOCTYPE html>
+<html class="light" lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Level Clear Screen</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Spline+Sans:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap"
+        rel="stylesheet" />
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#f20d0d",
+                        "background-light": "#f8f5f5",
+                        "background-dark": "#221010",
+                    },
+                    fontFamily: {
+                        "display": ["Spline Sans", "sans-serif"]
+                    },
+                    borderRadius: {
+                        "DEFAULT": "1rem",
+                        "lg": "2rem",
+                        "xl": "3rem",
+                        "full": "9999px"
+                    },
+                },
+            },
+        }
+    </script>
+    <style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+
+        .filled-icon {
+            font-variation-settings: 'FILL' 1;
+        }
+
+        @keyframes confetti-fall {
+            0% {
+                transform: translateY(-100vh) rotate(0deg);
+                opacity: 1;
+            }
+
+            100% {
+                transform: translateY(100vh) rotate(720deg);
+                opacity: 0;
+            }
+        }
+
+        @keyframes bounce-in {
+            0% {
+                transform: scale(0) rotate(-180deg);
+                opacity: 0;
+            }
+
+            50% {
+                transform: scale(1.2) rotate(10deg);
+            }
+
+            100% {
+                transform: scale(1) rotate(0deg);
+                opacity: 1;
+            }
+        }
+
+        @keyframes slide-up {
+            0% {
+                transform: translateY(50px);
+                opacity: 0;
+            }
+
+            100% {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        @keyframes pulse-glow {
+
+            0%,
+            100% {
+                box-shadow: 0 0 20px rgba(242, 13, 13, 0.4);
+            }
+
+            50% {
+                box-shadow: 0 0 40px rgba(242, 13, 13, 0.8);
+            }
+        }
+
+        @keyframes character-jump {
+
+            0%,
+            100% {
+                transform: translateY(0) scale(1);
+            }
+
+            50% {
+                transform: translateY(-20px) scale(1.05);
+            }
+        }
+
+        @keyframes count-up {
+            0% {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+
+            100% {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .confetti {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            animation: confetti-fall linear forwards;
+        }
+
+        .animate-bounce-in {
+            animation: bounce-in 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+        }
+
+        .animate-slide-up {
+            animation: slide-up 0.5s ease-out forwards;
+        }
+
+        .animate-pulse-glow {
+            animation: pulse-glow 2s ease-in-out infinite;
+        }
+
+        .animate-character-jump {
+            animation: character-jump 1s ease-in-out infinite;
+        }
+
+        .star-shimmer {
+            animation: shimmer 1.5s ease-in-out infinite;
+        }
+
+        @keyframes shimmer {
+
+            0%,
+            100% {
+                opacity: 1;
+                transform: scale(1);
+            }
+
+            50% {
+                opacity: 0.6;
+                transform: scale(1.2);
+            }
+        }
+    </style>
+</head>
+
+<body class="bg-background-light dark:bg-background-dark font-display min-h-screen">
+    <div class="relative flex h-screen w-full flex-col overflow-hidden">
+        <!-- Confetti Container -->
+        <div id="confettiContainer" class="absolute inset-0 pointer-events-none z-50"></div>
+
+        <!-- Header -->
+        <header class="flex items-center justify-between whitespace-nowrap px-10 py-6 relative z-10">
+            <div class="flex items-center gap-4 text-primary">
+                <div class="size-8">
+                    <svg fill="currentColor" viewbox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
+                        <path
+                            d="M47.2426 24L24 47.2426L0.757355 24L24 0.757355L47.2426 24ZM12.2426 21H35.7574L24 9.24264L12.2426 21Z">
+                        </path>
+                    </svg>
+                </div>
+                <h2 class="text-[#181111] dark:text-white text-xl font-extrabold leading-tight tracking-tight">Super
+                    Plumber Adventures</h2>
+            </div>
+            <div class="flex gap-3">
+                <button
+                    class="flex size-12 cursor-pointer items-center justify-center rounded-full bg-white dark:bg-zinc-800 shadow-sm border border-zinc-100 dark:border-zinc-700 hover:scale-110 transition-transform"
+                    onclick="toggleSettings()">
+                    <span class="material-symbols-outlined text-[#181111] dark:text-white">settings</span>
+                </button>
+                <button
+                    class="flex size-12 cursor-pointer items-center justify-center rounded-full bg-white dark:bg-zinc-800 shadow-sm border border-zinc-100 dark:border-zinc-700 hover:scale-110 transition-transform"
+                    onclick="toggleSound()" id="soundBtn">
+                    <span class="material-symbols-outlined text-[#181111] dark:text-white"
+                        id="soundIcon">volume_up</span>
+                </button>
+            </div>
+        </header>
+
+        <!-- Main Content -->
+        <main class="flex flex-1 flex-col items-center justify-center px-4 -mt-10 relative z-10">
+            <!-- Course Clear Title -->
+            <div class="relative mb-8 opacity-0 animate-bounce-in"
+                style="animation-delay: 0.2s; animation-fill-mode: forwards;">
+                <h1 class="text-primary text-6xl md:text-8xl font-black tracking-tighter text-center uppercase drop-shadow-[0_4px_0_rgba(0,0,0,0.1)]"
+                    id="clearTitle">
+                    Course Clear!
+                </h1>
+                <div class="absolute -top-4 -right-4 text-yellow-400 rotate-12 star-shimmer">
+                    <span class="material-symbols-outlined text-5xl font-bold filled-icon">star</span>
+                </div>
+                <div class="absolute -bottom-2 -left-6 text-yellow-400 -rotate-12 star-shimmer"
+                    style="animation-delay: 0.3s;">
+                    <span class="material-symbols-outlined text-4xl font-bold filled-icon">star</span>
+                </div>
+            </div>
+
+            <div class="flex flex-col md:flex-row items-center justify-center gap-12 w-full max-w-5xl">
+                <!-- Character & Flagpole -->
+                <div class="relative w-full max-w-[400px] aspect-square flex items-end justify-center opacity-0 animate-slide-up"
+                    style="animation-delay: 0.4s; animation-fill-mode: forwards;">
+                    <!-- Flagpole -->
+                    <div
+                        class="absolute bottom-0 left-1/2 -translate-x-1/2 w-4 h-full bg-zinc-300 dark:bg-zinc-700 rounded-full">
+                        <div class="absolute top-4 -left-12 w-12 h-10 bg-primary rounded-l-md flex items-center justify-center"
+                            id="flag">
+                            <span class="material-symbols-outlined text-white text-xl">flag</span>
+                        </div>
+                        <div
+                            class="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 w-8 h-8 bg-yellow-500 rounded-full border-4 border-yellow-300">
+                        </div>
+                    </div>
+                    <!-- Character Victory Pose -->
+                    <div class="relative z-10 w-64 h-64 bg-center bg-no-repeat bg-contain animate-character-jump"
+                        style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuAc1qsHuOE0NHEymgS5G3fy3Nwi2Y2O4VppZR-F8PITcDp0f3U5KQkRvJ8LvuwMLnEA9IzevjpbY7xOR66656iMXEs1KICgpq3UZbFg1NpdJ_792fqww_mb9B6PPvteQ3IZaAA89SjyX0WYx44xVyOFVfb0ghmHv7yd3L3buAZdIhfWaHXIfO1qQxkI2ffuPDA-uQ_Hu_A8CLoSGbPHj7maIM-iMT3tlb9YWU93h8rGv8m2r3fubvldej5YVYg6lqp62W-dxFgRng");'>
+                    </div>
+                </div>
+
+                <!-- Stats Card -->
+                <div class="w-full max-w-md bg-white dark:bg-zinc-900 rounded-xl p-8 shadow-2xl border border-zinc-100 dark:border-zinc-800 opacity-0 animate-slide-up"
+                    style="animation-delay: 0.6s; animation-fill-mode: forwards;">
+                    <div class="space-y-6">
+                        <div
+                            class="flex justify-between items-center border-b border-zinc-100 dark:border-zinc-800 pb-4">
+                            <div class="flex items-center gap-3">
+                                <span
+                                    class="material-symbols-outlined text-yellow-500 text-3xl font-bold filled-icon">monetization_on</span>
+                                <p class="text-zinc-500 dark:text-zinc-400 text-lg font-bold">Coins</p>
+                            </div>
+                            <p class="text-[#181111] dark:text-white text-3xl font-black" id="coinsDisplay">0</p>
+                        </div>
+
+                        <div
+                            class="flex justify-between items-center border-b border-zinc-100 dark:border-zinc-800 pb-4">
+                            <div class="flex items-center gap-3">
+                                <span
+                                    class="material-symbols-outlined text-blue-500 text-3xl font-bold filled-icon">timer</span>
+                                <p class="text-zinc-500 dark:text-zinc-400 text-lg font-bold">Time Bonus</p>
+                            </div>
+                            <p class="text-[#181111] dark:text-white text-3xl font-black" id="timeBonusDisplay">0</p>
+                        </div>
+
+                        <div
+                            class="flex justify-between items-center border-b border-zinc-100 dark:border-zinc-800 pb-4">
+                            <div class="flex items-center gap-3">
+                                <span
+                                    class="material-symbols-outlined text-green-500 text-3xl font-bold filled-icon">stars</span>
+                                <p class="text-zinc-500 dark:text-zinc-400 text-lg font-bold">Star Bonus</p>
+                            </div>
+                            <p class="text-[#181111] dark:text-white text-3xl font-black" id="starBonusDisplay">0</p>
+                        </div>
+
+                        <div class="flex justify-between items-center pt-2">
+                            <p class="text-primary text-2xl font-black uppercase tracking-widest">Total</p>
+                            <div class="flex items-baseline gap-1">
+                                <p class="text-primary text-5xl font-black" id="totalDisplay">0</p>
+                                <p class="text-primary text-xl font-bold">PTS</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="flex flex-col sm:flex-row gap-4 mt-12 w-full max-w-md px-4 opacity-0 animate-slide-up"
+                style="animation-delay: 0.8s; animation-fill-mode: forwards;">
+                <button
+                    class="group flex flex-1 items-center justify-center gap-3 rounded-full h-16 bg-primary text-white text-xl font-black tracking-wide shadow-[0_6px_0_#b90a0a] active:shadow-none active:translate-y-1 transition-all hover:scale-105 animate-pulse-glow"
+                    onclick="nextLevel()">
+                    <span>Next Level</span>
+                    <span
+                        class="material-symbols-outlined font-bold transition-transform group-hover:translate-x-1">arrow_forward</span>
+                </button>
+                <button
+                    class="flex flex-1 items-center justify-center gap-3 rounded-full h-16 bg-white dark:bg-zinc-800 text-zinc-900 dark:text-white text-xl font-black tracking-wide shadow-[0_6px_0_#d1d1d1] dark:shadow-[0_6px_0_#111] border border-zinc-100 dark:border-zinc-700 active:shadow-none active:translate-y-1 transition-all hover:scale-105"
+                    onclick="returnToMap()">
+                    <span class="material-symbols-outlined font-bold">map</span>
+                    <span>Map</span>
+                </button>
+            </div>
+        </main>
+
+        <!-- Footer / Progress Bar -->
+        <footer class="px-10 py-8 flex justify-center relative z-10">
+            <div class="flex items-center gap-3 bg-zinc-200 dark:bg-zinc-800 px-6 py-2 rounded-full opacity-0 animate-slide-up"
+                style="animation-delay: 1s; animation-fill-mode: forwards;">
+                <div class="flex gap-1" id="starsContainer">
+                    <span class="material-symbols-outlined text-zinc-400 text-sm font-bold filled-icon">stars</span>
+                    <span class="material-symbols-outlined text-zinc-400 text-sm font-bold filled-icon">stars</span>
+                    <span class="material-symbols-outlined text-zinc-400 text-sm font-bold filled-icon">stars</span>
+                </div>
+                <p class="text-xs font-bold text-zinc-500 dark:text-zinc-400 uppercase tracking-widest" id="starsText">0
+                    of 3 Stars Collected</p>
+            </div>
+        </footer>
+    </div>
+
+    <script>
+        const levelData = {
+            coins: 500,
+            timeBonus: 1200,
+            starsCollected: 2,
+            starBonus: 600,
+            total: 0,
+            soundEnabled: true
+        };
+
+        function createConfetti() {
+            const container = document.getElementById('confettiContainer');
+            const colors = ['#f20d0d', '#ffd700', '#4caf50', '#2196f3', '#9c27b0', '#ff9800'];
+
+            for (let i = 0; i < 100; i++) {
+                const confetti = document.createElement('div');
+                confetti.className = 'confetti';
+                confetti.style.left = Math.random() * 100 + '%';
+                confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+                confetti.style.animationDuration = (Math.random() * 3 + 2) + 's';
+                confetti.style.animationDelay = (Math.random() * 2) + 's';
+                confetti.style.borderRadius = Math.random() > 0.5 ? '50%' : '0%';
+                container.appendChild(confetti);
+            }
+        }
+
+        function animateCounter(element, target, duration, prefix = '', suffix = '') {
+            let start = 0;
+            const increment = target / (duration / 16);
+            const timer = setInterval(() => {
+                start += increment;
+                if (start >= target) {
+                    element.textContent = prefix + target.toLocaleString() + suffix;
+                    clearInterval(timer);
+                } else {
+                    element.textContent = prefix + Math.floor(start).toLocaleString() + suffix;
+                }
+            }, 16);
+        }
+
+        function calculateStars() {
+            const total = levelData.coins + levelData.timeBonus + levelData.starBonus;
+            if (total >= 2000) return 3;
+            if (total >= 1500) return 2;
+            return 1;
+        }
+
+        function updateStars() {
+            const starsContainer = document.getElementById('starsContainer');
+            const starsText = document.getElementById('starsText');
+            starsContainer.innerHTML = '';
+
+            for (let i = 0; i < 3; i++) {
+                const star = document.createElement('span');
+                star.className = 'material-symbols-outlined text-sm font-bold filled-icon transition-all duration-300';
+                star.textContent = 'stars';
+                star.style.color = i < levelData.starsCollected ? '#f20d0d' : '#9ca3af';
+                starsContainer.appendChild(star);
+
+                if (i < levelData.starsCollected) {
+                    setTimeout(() => {
+                        star.classList.add('star-shimmer');
+                    }, (i + 1) * 500);
+                }
+            }
+
+            starsText.textContent = `${levelData.starsCollected} of 3 Stars Collected`;
+        }
+
+        function animateFlag() {
+            const flag = document.getElementById('flag');
+            let position = 350;
+            const interval = setInterval(() => {
+                position -= 10;
+                flag.style.top = position + 'px';
+                if (position <= 16) {
+                    clearInterval(interval);
+                }
+            }, 20);
+        }
+
+        function initializeLevelClear() {
+            createConfetti();
+
+            setTimeout(() => {
+                levelData.total = levelData.coins + levelData.timeBonus + levelData.starBonus;
+                levelData.starsCollected = calculateStars();
+
+                animateCounter(document.getElementById('coinsDisplay'), levelData.coins, 1000);
+
+                setTimeout(() => {
+                    animateCounter(document.getElementById('timeBonusDisplay'), levelData.timeBonus, 1000);
+                }, 500);
+
+                setTimeout(() => {
+                    animateCounter(document.getElementById('starBonusDisplay'), levelData.starBonus, 1000);
+                }, 1000);
+
+                setTimeout(() => {
+                    animateCounter(document.getElementById('totalDisplay'), levelData.total, 1500);
+                }, 1500);
+
+                setTimeout(() => {
+                    updateStars();
+                }, 2000);
+
+                animateFlag();
+            }, 1000);
+        }
+
+        function toggleSound() {
+            levelData.soundEnabled = !levelData.soundEnabled;
+            const icon = document.getElementById('soundIcon');
+            icon.textContent = levelData.soundEnabled ? 'volume_up' : 'volume_off';
+            showNotification(levelData.soundEnabled ? '🔊 Sound On' : '🔇 Sound Off');
+        }
+
+        function toggleSettings() {
+            showNotification('⚙️ Settings menu coming soon!');
+        }
+
+        function nextLevel() {
+            showNotification('🎮 Loading next level...');
+            setTimeout(() => {
+                document.body.style.opacity = '0';
+                setTimeout(() => {
+                    location.reload();
+                }, 500);
+            }, 1000);
+        }
+
+        function returnToMap() {
+            showNotification('🗺️ Returning to world map...');
+            setTimeout(() => {
+                document.body.style.opacity = '0';
+            }, 500);
+        }
+
+        function showNotification(message) {
+            const existingNotif = document.getElementById('notification');
+            if (existingNotif) existingNotif.remove();
+
+            const notif = document.createElement('div');
+            notif.id = 'notification';
+            notif.className = 'fixed top-24 right-6 bg-white dark:bg-zinc-800 px-6 py-4 rounded-xl shadow-2xl border-2 border-primary z-50 transform translate-x-0 transition-all duration-300';
+            notif.innerHTML = `<p class="font-bold text-[#181111] dark:text-white">${message}</p>`;
+            document.body.appendChild(notif);
+
+            setTimeout(() => {
+                notif.style.transform = 'translateX(400px)';
+                setTimeout(() => notif.remove(), 300);
+            }, 2500);
+        }
+
+        // Dark mode toggle
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'd' || e.key === 'D') {
+                document.documentElement.classList.toggle('dark');
+                showNotification(document.documentElement.classList.contains('dark') ? '🌙 Dark Mode' : '☀️ Light Mode');
+            }
+        });
+
+        // Initialize on load
+        window.addEventListener('load', () => {
+            initializeLevelClear();
+        });
+    </script>
+</body>
+
+</html>

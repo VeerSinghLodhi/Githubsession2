@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Super Platformer - Level Map Overworld</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Spline+Sans:wght@300;400;500;600;700&amp;family=Noto+Sans:wght@400;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#f20d0d",
+                        "background-light": "#f8f5f5",
+                        "background-dark": "#221010",
+                    },
+                    fontFamily: {
+                        "display": ["Spline Sans"]
+                    },
+                    borderRadius: {"DEFAULT": "1rem", "lg": "2rem", "xl": "3rem", "full": "9999px"},
+                },
+            },
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            vertical-align: middle;
+        }
+        .filled-icon {
+            font-variation-settings: 'FILL' 1;
+        }
+        .map-gradient {
+            background: linear-gradient(90deg, #90EE90 0%, #F0E68C 50%, #FF6347 100%);
+        }
+        .path-line {
+            stroke: #ffffff;
+            stroke-width: 4;
+            stroke-dasharray: 8, 8;
+            fill: none;
+        }
+    </style>
+</head>
+<body class="bg-background-light dark:bg-background-dark font-display text-[#181111] dark:text-white transition-colors duration-300">
+<div class="relative flex h-auto min-h-screen w-full flex-col group/design-root overflow-x-hidden">
+<div class="layout-container flex h-full grow flex-col">
+<!-- Top Navigation Bar -->
+<header class="flex items-center justify-between whitespace-nowrap border-b border-solid border-b-[#e6dbdb] dark:border-b-[#3d2a2a] px-10 py-3 bg-white dark:bg-background-dark/80 backdrop-blur-md sticky top-0 z-50">
+<div class="flex items-center gap-4 text-[#181111] dark:text-white">
+<div class="size-6 text-primary">
+<svg fill="currentColor" viewbox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
+<path d="M42.4379 44C42.4379 44 36.0744 33.9038 41.1692 24C46.8624 12.9336 42.2078 4 42.2078 4L7.01134 4C7.01134 4 11.6577 12.932 5.96912 23.9969C0.876273 33.9029 7.27094 44 7.27094 44L42.4379 44Z"></path>
+</svg>
+</div>
+<h2 class="text-lg font-bold leading-tight tracking-[-0.015em]">Super Platformer</h2>
+</div>
+<div class="flex flex-1 justify-end gap-8">
+<div class="hidden md:flex items-center gap-9">
+<a class="text-sm font-medium leading-normal hover:text-primary transition-colors" href="#">World Map</a>
+<a class="text-sm font-medium leading-normal hover:text-primary transition-colors" href="#">Leaderboard</a>
+<a class="text-sm font-medium leading-normal hover:text-primary transition-colors" href="#">Shop</a>
+<a class="text-sm font-medium leading-normal hover:text-primary transition-colors" href="#">Settings</a>
+</div>
+<button class="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-full h-10 px-4 bg-primary text-white text-sm font-bold leading-normal tracking-[0.015em] hover:bg-primary/90">
+<span class="truncate">Profile</span>
+</button>
+<div class="bg-center bg-no-repeat aspect-square bg-cover rounded-full size-10 border-2 border-primary/20" data-alt="User avatar placeholder" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuD0cJvExwGKalEEw_2DhevrI1GWqJ6nS5rRwKlItfqV1gbjA9GU4Sl8Mrn7rgJpNiLXNLRWvON53YBk2qCFtj13GoDVP6FwtFX42uvwTKcJZKGGyKQyX63I0k8jPpYBEjpkCsAd0Xz2HD3H-WZJxgGlUCekwvKNz3lW0FZ-w80_JYsXNOQFNcArFvPOY_njbR5fiAD9pzyD5sHqmLA3fDszRJqXfSoud92oauoDuU9wedQp5bMBET9-MSLLnQOv4Tc4VV-xuC-Q3Q");'></div>
+</div>
+</header>
+<main class="flex flex-1 flex-col items-center">
+<!-- World Title Section -->
+<div class="w-full max-w-[960px] pt-8 px-4">
+<div class="bg-white dark:bg-[#3d2a2a] rounded-full px-6 py-2 shadow-sm inline-flex items-center gap-2 mx-auto border border-[#e6dbdb] dark:border-[#523a3a]">
+<span class="material-symbols-outlined text-primary">public</span>
+<h1 class="text-[#181111] dark:text-white tracking-light text-xl font-bold leading-tight">World 1: Elemental Isles</h1>
+</div>
+</div>
+<!-- Stats HUD -->
+<div class="w-full max-w-[960px] px-4">
+<div class="flex flex-wrap gap-4 py-6">
+<div class="flex min-w-[120px] flex-1 items-center gap-4 rounded-xl p-4 bg-white dark:bg-[#3d2a2a] border border-[#e6dbdb] dark:border-[#523a3a] shadow-sm">
+<div class="p-2 bg-yellow-100 dark:bg-yellow-900/30 rounded-lg">
+<span class="material-symbols-outlined text-yellow-500 filled-icon">star</span>
+</div>
+<div>
+<p class="text-xs font-medium text-gray-500 dark:text-gray-400">Total Stars</p>
+<p class="text-xl font-bold">42 / 120</p>
+</div>
+</div>
+<div class="flex min-w-[120px] flex-1 items-center gap-4 rounded-xl p-4 bg-white dark:bg-[#3d2a2a] border border-[#e6dbdb] dark:border-[#523a3a] shadow-sm">
+<div class="p-2 bg-red-100 dark:bg-red-900/30 rounded-lg">
+<span class="material-symbols-outlined text-primary filled-icon">favorite</span>
+</div>
+<div>
+<p class="text-xs font-medium text-gray-500 dark:text-gray-400">Lives</p>
+<p class="text-xl font-bold">5</p>
+</div>
+</div>
+<div class="flex min-w-[120px] flex-1 items-center gap-4 rounded-xl p-4 bg-white dark:bg-[#3d2a2a] border border-[#e6dbdb] dark:border-[#523a3a] shadow-sm">
+<div class="p-2 bg-blue-100 dark:bg-blue-900/30 rounded-lg">
+<span class="material-symbols-outlined text-blue-500 filled-icon">monetization_on</span>
+</div>
+<div>
+<p class="text-xs font-medium text-gray-500 dark:text-gray-400">Coins</p>
+<p class="text-xl font-bold">1,250</p>
+</div>
+</div>
+</div>
+</div>
+<!-- Main Overworld Map Canvas Area -->
+<div class="w-full max-w-[1200px] px-4 pb-12">
+<div class="relative overflow-hidden rounded-xl h-[500px] border-4 border-white dark:border-[#3d2a2a] shadow-2xl bg-slate-200">
+<!-- Map Background with Biomes -->
+<div class="absolute inset-0 flex" data-location="Game World Map Biomes" style="">
+<!-- Greenery Grove -->
+<div class="flex-1 bg-[#d4f3d4] dark:bg-[#1a331a] relative">
+<div class="absolute inset-0 opacity-20" style="background-image: radial-gradient(#2d5a27 2px, transparent 2px); background-size: 20px 20px;"></div>
+</div>
+<!-- Sandy Dunes -->
+<div class="flex-1 bg-[#fff4d1] dark:bg-[#332b1a] relative">
+<div class="absolute inset-0 opacity-20" style="background-image: radial-gradient(#8b7535 2px, transparent 2px); background-size: 30px 30px;"></div>
+</div>
+<!-- Lava Land -->
+<div class="flex-1 bg-[#ffd1d1] dark:bg-[#331a1a] relative">
+<div class="absolute inset-0 opacity-20" style="background-image: radial-gradient(#8b3535 2px, transparent 2px); background-size: 25px 25px;"></div>
+</div>
+</div>
+<!-- Level Path SVG Overlay -->
+<svg class="absolute inset-0 w-full h-full pointer-events-none">
+<path class="path-line opacity-50" d="M 100 250 Q 200 150 300 250 T 500 250 T 700 250 T 900 250"></path>
+</svg>
+<!-- Level Nodes -->
+<div class="absolute inset-0 z-10">
+<!-- 1-1: Completed -->
+<div class="absolute left-[80px] top-[230px] group">
+<div class="w-12 h-12 rounded-full bg-primary border-4 border-white shadow-lg flex items-center justify-center cursor-pointer transition-transform hover:scale-110">
+<span class="material-symbols-outlined text-yellow-400 filled-icon text-sm">star</span>
+</div>
+<div class="absolute top-full mt-2 left-1/2 -translate-x-1/2 bg-white dark:bg-[#3d2a2a] px-3 py-1 rounded-lg text-xs font-bold whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity">
+                                    1-1: Greenery Grove
+                                </div>
+</div>
+<!-- 1-2: Completed -->
+<div class="absolute left-[280px] top-[230px] group">
+<div class="w-12 h-12 rounded-full bg-primary border-4 border-white shadow-lg flex items-center justify-center cursor-pointer transition-transform hover:scale-110">
+<span class="material-symbols-outlined text-yellow-400 filled-icon text-sm">star</span>
+</div>
+<div class="absolute top-full mt-2 left-1/2 -translate-x-1/2 bg-white dark:bg-[#3d2a2a] px-3 py-1 rounded-lg text-xs font-bold whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity">
+                                    1-2: Sandy Dunes
+                                </div>
+</div>
+<!-- 1-3: Current (Active) -->
+<div class="absolute left-[480px] top-[230px] group">
+<div class="relative">
+<div class="absolute -inset-2 bg-primary/30 rounded-full animate-pulse"></div>
+<div class="relative w-14 h-14 rounded-full bg-primary border-4 border-white shadow-xl flex items-center justify-center cursor-pointer transition-transform hover:scale-110">
+<span class="text-white font-bold">1-3</span>
+</div>
+</div>
+<div class="absolute top-full mt-4 left-1/2 -translate-x-1/2 bg-white dark:bg-white text-primary px-4 py-2 rounded-xl text-sm font-black whitespace-nowrap shadow-lg animate-bounce border-2 border-primary">
+                                    PLAY NOW!
+                                </div>
+</div>
+<!-- 1-4: Locked -->
+<div class="absolute left-[680px] top-[230px] group opacity-60">
+<div class="w-12 h-12 rounded-full bg-gray-400 dark:bg-gray-600 border-4 border-white shadow-md flex items-center justify-center cursor-not-allowed">
+<span class="material-symbols-outlined text-white text-sm">lock</span>
+</div>
+<div class="absolute top-full mt-2 left-1/2 -translate-x-1/2 bg-white dark:bg-[#3d2a2a] px-3 py-1 rounded-lg text-xs font-bold whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity">
+                                    1-4: Oasis Springs
+                                </div>
+</div>
+<!-- 1-5: Boss Castle (Locked) -->
+<div class="absolute left-[880px] top-[230px] group opacity-60">
+<div class="w-20 h-20 rounded-xl bg-gray-500 dark:bg-gray-700 border-4 border-white shadow-md flex items-center justify-center cursor-not-allowed relative">
+<div class="absolute -top-4">
+<span class="material-symbols-outlined text-3xl">castle</span>
+</div>
+<span class="material-symbols-outlined text-white text-xl">lock</span>
+</div>
+<div class="absolute top-full mt-2 left-1/2 -translate-x-1/2 bg-white dark:bg-[#3d2a2a] px-3 py-1 rounded-lg text-xs font-bold whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity">
+                                    1-5: Boss Castle
+                                </div>
+</div>
+</div>
+<!-- Map Controls -->
+<div class="absolute bottom-6 right-6 flex flex-col gap-3 z-20">
+<div class="flex flex-col rounded-full bg-white dark:bg-[#3d2a2a] shadow-lg overflow-hidden border border-[#e6dbdb] dark:border-[#523a3a]">
+<button class="p-3 hover:bg-gray-100 dark:hover:bg-white/10 transition-colors">
+<span class="material-symbols-outlined">add</span>
+</button>
+<div class="h-px bg-[#e6dbdb] dark:bg-[#523a3a] mx-2"></div>
+<button class="p-3 hover:bg-gray-100 dark:hover:bg-white/10 transition-colors">
+<span class="material-symbols-outlined">remove</span>
+</button>
+</div>
+<button class="size-12 rounded-full bg-white dark:bg-[#3d2a2a] shadow-lg flex items-center justify-center border border-[#e6dbdb] dark:border-[#523a3a] hover:bg-gray-100 dark:hover:bg-white/10">
+<span class="material-symbols-outlined">near_me</span>
+</button>
+</div>
+<!-- Level Search Overlay -->
+<div class="absolute top-6 left-6 z-20 w-64">
+<div class="relative group">
+<div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+<span class="material-symbols-outlined text-gray-400 text-lg">search</span>
+</div>
+<input class="w-full bg-white/90 dark:bg-background-dark/90 backdrop-blur border-none rounded-xl py-2 pl-10 pr-4 text-sm focus:ring-2 focus:ring-primary shadow-lg" placeholder="Search levels..." type="text"/>
+</div>
+</div>
+</div>
+</div>
+<!-- Footer Section / Secondary Navigation -->
+<div class="w-full max-w-[960px] px-4 pb-20">
+<div class="flex justify-between items-center bg-white dark:bg-[#3d2a2a] p-6 rounded-2xl border border-[#e6dbdb] dark:border-[#523a3a] shadow-sm">
+<div class="flex flex-col gap-1">
+<h3 class="font-bold text-lg">Continue Playing?</h3>
+<p class="text-sm text-gray-500 dark:text-gray-400">Current Progress: World 1-3</p>
+</div>
+<div class="flex gap-4">
+<button class="px-6 py-3 rounded-full font-bold text-sm bg-gray-100 dark:bg-white/10 hover:bg-gray-200 dark:hover:bg-white/20 transition-all">
+                                Return to Menu
+                            </button>
+<button class="px-8 py-3 rounded-full font-bold text-sm bg-primary text-white shadow-lg shadow-primary/20 hover:scale-105 active:scale-95 transition-all">
+                                Start Level 1-3
+                            </button>
+</div>
+</div>
+</div>
+</main>
+</div>
+</div>
+</body></html>

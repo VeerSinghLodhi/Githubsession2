@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Super Mario Game</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            background: linear-gradient(to bottom, #5c94fc 0%, #5c94fc 70%, #000 70%);
+            font-family: 'Arial', sans-serif;
+            min-height: 100vh;
+        }
+
+        #gameCanvas {
+            border: 4px solid #000;
+            background: #5c94fc;
+            image-rendering: pixelated;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        }
+
+        .controls {
+            margin-top: 20px;
+            color: white;
+            text-align: center;
+            font-size: 18px;
+            background: rgba(0, 0, 0, 0.5);
+            padding: 15px 30px;
+            border-radius: 10px;
+        }
+
+        .score {
+            color: white;
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8);
+        }
+
+        #gameOver {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(0, 0, 0, 0.9);
+            color: white;
+            padding: 40px;
+            border-radius: 15px;
+            text-align: center;
+            display: none;
+            z-index: 10;
+        }
+
+        #gameOver h2 {
+            margin: 0 0 20px 0;
+            font-size: 48px;
+            color: #ff0000;
+        }
+
+        #gameOver button {
+            background: #00ff00;
+            border: none;
+            padding: 15px 40px;
+            font-size: 24px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        #gameOver button:hover {
+            background: #00dd00;
+            transform: scale(1.05);
+        }
+    </style>
+</head>
+
+<body>
+    <div class="score">Score: <span id="score">0</span> | Coins: <span id="coins">0</span></div>
+    <canvas id="gameCanvas"></canvas>
+    <div class="controls">
+        <div>🎮 Arrow Keys or WASD to Move | SPACE to Jump</div>
+        <div>Collect coins and avoid enemies!</div>
+    </div>
+
+    <div id="gameOver">
+        <h2>Game Over!</h2>
+        <p id="finalScore"></p>
+        <button onclick="restartGame()">Play Again</button>
+    </div>
+
+    <script>
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
+        canvas.width = 800;
+        canvas.height = 400;
+
+        let score = 0;
+        let coins = 0;
+        let gameRunning = true;
+        let keys = {};
+
+        const player = {
+            x: 50,
+            y: 300,
+            width: 32,
+            height: 32,
+            velX: 0,
+            velY: 0,
+            speed: 5,
+            jumpPower: 12,
+            onGround: false,
+            direction: 1
+        };
+
+        const gravity = 0.5;
+        const friction = 0.8;
+
+        let platforms = [
+            { x: 0, y: 360, width: 800, height: 40 },
+            { x: 200, y: 280, width: 150, height: 20 },
+            { x: 400, y: 200, width: 150, height: 20 },
+            { x: 600, y: 280, width: 150, height: 20 }
+        ];
+
+        let coinItems = [
+            { x: 250, y: 240, collected: false },
+            { x: 450, y: 160, collected: false },
+            { x: 650, y: 240, collected: false },
+            { x: 350, y: 320, collected: false }
+        ];
+
+        let enemies = [
+            { x: 300, y: 330, width: 30, height: 30, velX: 2 },
+            { x: 500, y: 170, width: 30, height: 30, velX: 2 }
+        ];
+
+        document.addEventListener('keydown', (e) => {
+            keys[e.key] = true;
+            if ((e.key === ' ' || e.key === 'ArrowUp' || e.key === 'w') && player.onGround) {
+                player.velY = -player.jumpPower;
+                player.onGround = false;
+            }
+        });
+
+        document.addEventListener('keyup', (e) => {
+            keys[e.key] = false;
+        });
+
+        function updatePlayer() {
+            if (keys['ArrowLeft'] || keys['a']) {
+                player.velX = -player.speed;
+                player.direction = -1;
+            } else if (keys['ArrowRight'] || keys['d']) {
+                player.velX = player.speed;
+                player.direction = 1;
+            } else {
+                player.velX *= friction;
+            }
+
+            player.velY += gravity;
+            player.x += player.velX;
+            player.y += player.velY;
+
+            if (player.x < 0) player.x = 0;
+            if (player.x + player.width > canvas.width) player.x = canvas.width - player.width;
+
+            player.onGround = false;
+
+            platforms.forEach(platform => {
+                if (player.x < platform.x + platform.width &&
+                    player.x + player.width > platform.x &&
+                    player.y + player.height > platform.y &&
+                    player.y + player.height < platform.y + platform.height) {
+
+                    player.y = platform.y - player.height;
+                    player.velY = 0;
+                    player.onGround = true;
+                }
+            });
+
+            if (player.y > canvas.height) {
+                endGame();
+            }
+        }
+
+        function updateEnemies() {
+            enemies.forEach(enemy => {
+                enemy.x += enemy.velX;
+
+                if (enemy.x <= 0 || enemy.x + enemy.width >= canvas.width) {
+                    enemy.velX *= -1;
+                }
+
+                if (player.x < enemy.x + enemy.width &&
+                    player.x + player.width > enemy.x &&
+                    player.y < enemy.y + enemy.height &&
+                    player.y + player.height > enemy.y) {
+
+                    if (player.velY > 0 && player.y + player.height - 10 < enemy.y) {
+                        enemy.x = -100;
+                        player.velY = -8;
+                        score += 100;
+                        updateScore();
+                    } else {
+                        endGame();
+                    }
+                }
+            });
+        }
+
+        function updateCoins() {
+            coinItems.forEach(coin => {
+                if (!coin.collected &&
+                    player.x < coin.x + 20 &&
+                    player.x + player.width > coin.x &&
+                    player.y < coin.y + 20 &&
+                    player.y + player.height > coin.y) {
+
+                    coin.collected = true;
+                    coins++;
+                    score += 50;
+                    updateScore();
+                }
+            });
+        }
+
+        function drawPlayer() {
+            ctx.fillStyle = '#e60000';
+            ctx.fillRect(player.x, player.y, player.width, player.height);
+
+            ctx.fillStyle = '#8b4513';
+            ctx.fillRect(player.x + 8, player.y - 8, 16, 8);
+
+            ctx.fillStyle = '#ffd700';
+            ctx.fillRect(player.x + 6, player.y + 8, 8, 8);
+            ctx.fillRect(player.x + 18, player.y + 8, 8, 8);
+
+            ctx.fillStyle = '#0000ff';
+            ctx.fillRect(player.x + 4, player.y + 16, 24, 10);
+        }
+
+        function drawPlatforms() {
+            platforms.forEach(platform => {
+                ctx.fillStyle = '#8b4513';
+                ctx.fillRect(platform.x, platform.y, platform.width, platform.height);
+
+                ctx.fillStyle = '#654321';
+                for (let i = 0; i < platform.width; i += 20) {
+                    ctx.fillRect(platform.x + i, platform.y, 18, 5);
+                }
+            });
+        }
+
+        function drawCoins() {
+            coinItems.forEach(coin => {
+                if (!coin.collected) {
+                    ctx.fillStyle = '#ffd700';
+                    ctx.beginPath();
+                    ctx.arc(coin.x + 10, coin.y + 10, 10, 0, Math.PI * 2);
+                    ctx.fill();
+
+                    ctx.fillStyle = '#ffed4e';
+                    ctx.beginPath();
+                    ctx.arc(coin.x + 10, coin.y + 10, 6, 0, Math.PI * 2);
+                    ctx.fill();
+                }
+            });
+        }
+
+        function drawEnemies() {
+            enemies.forEach(enemy => {
+                if (enemy.x > 0) {
+                    ctx.fillStyle = '#8b4513';
+                    ctx.fillRect(enemy.x, enemy.y, enemy.width, enemy.height);
+
+                    ctx.fillStyle = '#000';
+                    ctx.fillRect(enemy.x + 5, enemy.y + 5, 5, 5);
+                    ctx.fillRect(enemy.x + 20, enemy.y + 5, 5, 5);
+
+                    ctx.fillRect(enemy.x + 8, enemy.y + 15, 14, 3);
+                }
+            });
+        }
+
+        function drawBackground() {
+            ctx.fillStyle = '#5c94fc';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            ctx.fillStyle = 'rgba(255, 255, 255, 0.6)';
+            ctx.beginPath();
+            ctx.arc(100, 80, 30, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.beginPath();
+            ctx.arc(130, 70, 35, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.beginPath();
+            ctx.arc(160, 80, 30, 0, Math.PI * 2);
+            ctx.fill();
+        }
+
+        function updateScore() {
+            document.getElementById('score').textContent = score;
+            document.getElementById('coins').textContent = coins;
+        }
+
+        function endGame() {
+            gameRunning = false;
+            document.getElementById('gameOver').style.display = 'block';
+            document.getElementById('finalScore').textContent =
+                `Final Score: ${score} | Coins Collected: ${coins}`;
+        }
+
+        function restartGame() {
+            player.x = 50;
+            player.y = 300;
+            player.velX = 0;
+            player.velY = 0;
+            score = 0;
+            coins = 0;
+            gameRunning = true;
+
+            coinItems.forEach(coin => coin.collected = false);
+            enemies = [
+                { x: 300, y: 330, width: 30, height: 30, velX: 2 },
+                { x: 500, y: 170, width: 30, height: 30, velX: 2 }
+            ];
+
+            document.getElementById('gameOver').style.display = 'none';
+            updateScore();
+            gameLoop();
+        }
+
+        function gameLoop() {
+            if (!gameRunning) return;
+
+            drawBackground();
+            drawPlatforms();
+            drawCoins();
+            drawEnemies();
+            drawPlayer();
+
+            updatePlayer();
+            updateEnemies();
+            updateCoins();
+
+            requestAnimationFrame(gameLoop);
+        }
+
+        gameLoop();
+    </script>
+</body>
+
+</html>
