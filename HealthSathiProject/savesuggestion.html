@@ -1,0 +1,568 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>सहेजे गए सुझाव - हेल्थ साथी</title>
+    <meta name="_csrf" th:content="${_csrf.token}">
+    <meta name="_csrf_header" th:content="${_csrf.headerName}">
+
+    <link href="https://fonts.googleapis.com" rel="preconnect" />
+    <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect" />
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Devanagari:wght@400;500;600;700&display=swap"
+        rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap"
+        rel="stylesheet" />
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <script id="tailwind-config">
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#0058ba",
+                        "primary-dark": "#155a96",
+                        "primary-light": "#e3f2fd",
+                        "text-main": "#1e293b",
+                        "text-secondary": "#64748b",
+                        "border-light": "#e2e8f0",
+                        "surface": "#ffffff",
+                        "background": "#f8fafc",
+                    },
+                    fontFamily: {
+                        "display": ["Noto Sans Devanagari", "sans-serif"],
+                        "hindi": ["Noto Sans Devanagari", "sans-serif"]
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0.75rem",
+                        "xl": "1rem",
+                        "2xl": "1.25rem",
+                        "3xl": "1.5rem"
+                    },
+                    boxShadow: {
+                        'soft': '0 4px 20px -4px rgba(30, 115, 190, 0.1)',
+                        'glow': '0 8px 30px rgba(30, 115, 190, 0.2)',
+                        'card': '0 2px 12px rgba(0, 0, 0, 0.06)',
+                        'hover': '0 8px 25px rgba(30, 115, 190, 0.15)',
+                    }
+                },
+            },
+        }
+    </script>
+    <link rel="stylesheet" th:href="@{/FragmentStyle.css}" />
+    <style>
+        .tab-active {
+            background-color: #0058ba;
+            color: white;
+        }
+
+        .tab-inactive {
+            background-color: #f1f5f9;
+            color: #64748b;
+        }
+
+        .save-btn {
+            transition: all 0.3s ease;
+        }
+
+        .save-btn.saved {
+            color: #0058ba;
+        }
+
+        .save-btn.saved .material-symbols-outlined {
+            font-variation-settings: 'FILL' 1, 'wght' 600;
+        }
+
+        .expanded-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.4s ease-in-out;
+        }
+
+        .expanded-content.active {
+            max-height: 2000px;
+        }
+
+        .youtube-thumbnail {
+            position: relative;
+            cursor: pointer;
+            overflow: hidden;
+            border-radius: 12px;
+        }
+
+        .youtube-thumbnail:hover .play-button {
+            transform: scale(1.1);
+        }
+
+        .play-button {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            transition: transform 0.3s ease;
+            background: rgba(0, 0, 0, 0.7);
+            border-radius: 50%;
+            width: 60px;
+            height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .video-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.9);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .video-modal.active {
+            display: flex;
+        }
+
+        .video-container {
+            position: relative;
+            width: 90%;
+            max-width: 900px;
+            aspect-ratio: 16/9;
+        }
+
+        .video-container iframe {
+            width: 100%;
+            height: 100%;
+            border-radius: 12px;
+        }
+
+        .close-video {
+            position: absolute;
+            top: -40px;
+            right: 0;
+            background: white;
+            border-radius: 50%;
+            width: 35px;
+            height: 35px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+        }
+
+        .image-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.95);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .image-modal.active {
+            display: flex;
+        }
+
+        .image-modal-content {
+            max-width: 90%;
+            max-height: 90vh;
+            border-radius: 12px;
+        }
+
+        .card-removing {
+            opacity: 0;
+            transform: scale(0.95);
+            transition: all 0.3s ease;
+        }
+    </style>
+</head>
+
+<body class="bg-background antialiased text-text-main">
+    <div class="relative flex min-h-screen w-full flex-col overflow-hidden pb-24">
+
+        <!-- Header with Back Button -->
+        <header class="sticky top-0 z-20 bg-white/90 backdrop-blur-md px-5 py-4 border-b border-slate-100">
+            <div class="flex items-center gap-4">
+                <button onclick="window.history.back()"
+                    class="flex items-center justify-center size-10 rounded-full bg-slate-50 text-slate-600 hover:bg-slate-100 transition-colors">
+                    <span class="material-symbols-outlined text-[24px]">arrow_back</span>
+                </button>
+                <div class="flex-1">
+                    <h1 class="text-xl font-bold text-slate-900">सहेजे गए सुझाव</h1>
+                    <p class="text-xs text-slate-500">Saved Suggestions</p>
+                </div>
+                <div class="flex items-center gap-2">
+                    <span class="material-symbols-outlined text-primary text-[24px]">bookmark</span>
+                    <span class="text-sm font-semibold text-slate-900"
+                        th:text="${#lists.size(savedSuggestions)}">0</span>
+                </div>
+            </div>
+        </header>
+
+        <main class="flex-1 flex flex-col gap-6 p-5">
+
+            <!-- Tab Navigation -->
+            <div class="flex gap-2 overflow-x-auto pb-2">
+                <button onclick="filterSuggestions('ALL')" id="tab-all"
+                    class="tab-active px-4 py-2 rounded-xl text-sm font-semibold whitespace-nowrap transition-all">
+                    सभी (All)
+                </button>
+                <button onclick="filterSuggestions('TEXT')" id="tab-text"
+                    class="tab-inactive px-4 py-2 rounded-xl text-sm font-semibold whitespace-nowrap transition-all">
+                    लेख (Text)
+                </button>
+                <button onclick="filterSuggestions('VIDEO')" id="tab-video"
+                    class="tab-inactive px-4 py-2 rounded-xl text-sm font-semibold whitespace-nowrap transition-all">
+                    वीडियो (Video)
+                </button>
+                <button onclick="filterSuggestions('IMAGE')" id="tab-image"
+                    class="tab-inactive px-4 py-2 rounded-xl text-sm font-semibold whitespace-nowrap transition-all">
+                    चित्र (Image)
+                </button>
+            </div>
+
+            <!-- Suggestions Grid -->
+            <div id="suggestions-container" class="grid grid-cols-1 gap-4">
+
+                <!-- Text Suggestions - WITH "और पढ़ें" BUTTON -->
+                <div th:each="userSuggestion : ${savedSuggestions}"
+                    th:if="${userSuggestion.suggestion.suggestionType == T(PatientManagementSystem.PatientManagementSystem.HealthSuggestion.HealthSuggestion.SuggestionType).TEXT}"
+                    class="suggestion-card suggestion-TEXT bg-white rounded-2xl p-5 border border-slate-100 shadow-soft hover:shadow-hover transition-all"
+                    th:attr="data-suggestion-id=${userSuggestion.suggestion.suggestionId}">
+                    <div class="flex items-start justify-between mb-3">
+                        <div class="flex items-center gap-2">
+                            <span class="material-symbols-outlined text-slate-400 text-[24px]">article</span>
+                            <span class="text-xs font-medium px-2 py-1 rounded-full bg-green-50 text-green-600"
+                                th:text="${userSuggestion.suggestion.category}">श्रेणी</span>
+                            <span class="text-xs font-medium px-2 py-1 rounded-full bg-blue-50 text-blue-600">लेख</span>
+                        </div>
+                        <button
+                            th:onclick="'event.stopPropagation(); removeSaved(' + ${userSuggestion.suggestion.suggestionId} + ')'"
+                            class="save-btn saved flex items-center justify-center size-8 rounded-full hover:bg-slate-100"
+                            th:attr="data-save-btn=${userSuggestion.suggestion.suggestionId}">
+                            <span class="material-symbols-outlined text-[20px]">bookmark</span>
+                        </button>
+                    </div>
+                    <h4 class="text-base font-bold text-slate-900 mb-2" th:text="${userSuggestion.suggestion.title}">
+                        शीर्षक</h4>
+                    <p class="text-sm text-slate-600 leading-relaxed mb-3 line-clamp-3"
+                        th:text="${userSuggestion.suggestion.videoDescription}">विवरण...</p>
+
+                    <!-- Expanded Content for Text -->
+                    <div class="expanded-content" th:attr="data-expanded-id=${userSuggestion.suggestion.suggestionId}">
+                        <div class="bg-slate-50 rounded-xl p-4 mt-3">
+                            <h5 class="text-sm font-semibold text-slate-900 mb-2">पूर्ण विवरण:</h5>
+                            <p class="text-sm text-slate-700 leading-relaxed whitespace-pre-line"
+                                th:text="${userSuggestion.suggestion.text}">Full text content here...</p>
+                        </div>
+                    </div>
+
+                    <div class="flex items-center justify-between mt-3">
+                        <div class="flex flex-col">
+                            <span class="text-xs text-slate-400"
+                                th:text="'Posted: ' + ${#temporals.format(userSuggestion.suggestion.postedDate, 'dd MMM yyyy')}">तारीख</span>
+                            <span class="text-xs text-primary font-medium"
+                                th:text="'Saved: ' + ${#temporals.format(userSuggestion.savedAt, 'dd MMM yyyy')}">सहेजा
+                                गया</span>
+                        </div>
+                        <button th:onclick="'toggleExpand(' + ${userSuggestion.suggestion.suggestionId} + ', event)'"
+                            class="expand-btn text-xs font-semibold text-primary hover:text-primary-dark transition-colors flex items-center gap-1"
+                            th:attr="data-expand-btn=${userSuggestion.suggestion.suggestionId}">
+                            <span>और पढ़ें</span>
+                            <span class="material-symbols-outlined text-[16px]">expand_more</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Video Suggestions - DIRECT DISPLAY -->
+                <div th:each="userSuggestion : ${savedSuggestions}"
+                    th:if="${userSuggestion.suggestion.suggestionType == T(PatientManagementSystem.PatientManagementSystem.HealthSuggestion.HealthSuggestion.SuggestionType).VIDEO}"
+                    class="suggestion-card suggestion-VIDEO bg-white rounded-2xl p-5 border border-slate-100 shadow-soft hover:shadow-hover transition-all"
+                    th:attr="data-suggestion-id=${userSuggestion.suggestion.suggestionId}">
+                    <div class="flex items-start justify-between mb-3">
+                        <div class="flex items-center gap-2">
+                            <span class="material-symbols-outlined text-red-500 text-[24px]">play_circle</span>
+                            <span class="text-xs font-medium px-2 py-1 rounded-full bg-green-50 text-green-600"
+                                th:text="${userSuggestion.suggestion.category}">श्रेणी</span>
+                            <span
+                                class="text-xs font-medium px-2 py-1 rounded-full bg-red-50 text-red-600">वीडियो</span>
+                        </div>
+                        <button
+                            th:onclick="'event.stopPropagation(); removeSaved(' + ${userSuggestion.suggestion.suggestionId} + ')'"
+                            class="save-btn saved flex items-center justify-center size-8 rounded-full hover:bg-slate-100"
+                            th:attr="data-save-btn=${userSuggestion.suggestion.suggestionId}">
+                            <span class="material-symbols-outlined text-[20px]">bookmark</span>
+                        </button>
+                    </div>
+                    <h4 class="text-base font-bold text-slate-900 mb-2" th:text="${userSuggestion.suggestion.title}">
+                        शीर्षक</h4>
+
+                    <!-- DIRECT VIDEO THUMBNAIL -->
+                    <div class="mt-3">
+                        <div class="youtube-thumbnail" th:attr="data-video-id=${userSuggestion.suggestion.youtubeVideoId},
+                                  data-suggestion-id=${userSuggestion.suggestion.suggestionId}"
+                            onclick="playVideoFromElement(this)">
+                            <img th:src="'https://img.youtube.com/vi/' + ${userSuggestion.suggestion.youtubeVideoId} + '/maxresdefault.jpg'"
+                                alt="Video Thumbnail" class="w-full rounded-xl"
+                                onerror="this.src='https://img.youtube.com/vi/' + this.closest('[data-video-id]').getAttribute('data-video-id') + '/hqdefault.jpg'">
+                            <div class="play-button">
+                                <span class="material-symbols-outlined text-white text-[32px]">play_arrow</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Video Description -->
+                    <div class="bg-slate-50 rounded-xl p-4 mt-3">
+                        <h5 class="text-sm font-semibold text-slate-900 mb-2">विवरण:</h5>
+                        <p class="text-sm text-slate-700 leading-relaxed"
+                            th:text="${userSuggestion.suggestion.videoDescription}">Full description...</p>
+                    </div>
+
+                    <div class="flex items-center justify-between mt-3">
+                        <div class="flex flex-col">
+                            <span class="text-xs text-slate-400"
+                                th:text="'Posted: ' + ${#temporals.format(userSuggestion.suggestion.postedDate, 'dd MMM yyyy')}">तारीख</span>
+                            <span class="text-xs text-primary font-medium"
+                                th:text="'Saved: ' + ${#temporals.format(userSuggestion.savedAt, 'dd MMM yyyy')}">सहेजा
+                                गया</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Image Suggestions - DIRECT DISPLAY -->
+                <div th:each="userSuggestion : ${savedSuggestions}"
+                    th:if="${userSuggestion.suggestion.suggestionType == T(PatientManagementSystem.PatientManagementSystem.HealthSuggestion.HealthSuggestion.SuggestionType).IMAGE}"
+                    class="suggestion-card suggestion-IMAGE bg-white rounded-2xl p-5 border border-slate-100 shadow-soft hover:shadow-hover transition-all"
+                    th:attr="data-suggestion-id=${userSuggestion.suggestion.suggestionId}">
+                    <div class="flex items-start justify-between mb-3">
+                        <div class="flex items-center gap-2">
+                            <span class="material-symbols-outlined text-purple-500 text-[24px]">image</span>
+                            <span class="text-xs font-medium px-2 py-1 rounded-full bg-green-50 text-green-600"
+                                th:text="${userSuggestion.suggestion.category}">श्रेणी</span>
+                            <span
+                                class="text-xs font-medium px-2 py-1 rounded-full bg-purple-50 text-purple-600">चित्र</span>
+                        </div>
+                        <button
+                            th:onclick="'event.stopPropagation(); removeSaved(' + ${userSuggestion.suggestion.suggestionId} + ')'"
+                            class="save-btn saved flex items-center justify-center size-8 rounded-full hover:bg-slate-100"
+                            th:attr="data-save-btn=${userSuggestion.suggestion.suggestionId}">
+                            <span class="material-symbols-outlined text-[20px]">bookmark</span>
+                        </button>
+                    </div>
+                    <h4 class="text-base font-bold text-slate-900 mb-2" th:text="${userSuggestion.suggestion.title}">
+                        शीर्षक</h4>
+
+                    <!-- DIRECT IMAGE -->
+                    <div class="mt-3">
+                        <img th:src="@{'/user/api/suggestions/image/' + ${userSuggestion.suggestion.suggestionId}}"
+                            alt="Health Suggestion Image"
+                            class="w-full rounded-xl cursor-pointer hover:opacity-90 transition-opacity"
+                            th:onclick="'openImageModal(\'/user/api/suggestions/image/' + ${userSuggestion.suggestion.suggestionId} + '\')'">>
+                    </div>
+
+                    <!-- Image Description -->
+                    <div class="bg-slate-50 rounded-xl p-4 mt-3">
+                        <h5 class="text-sm font-semibold text-slate-900 mb-2">विवरण:</h5>
+                        <p class="text-sm text-slate-700 leading-relaxed"
+                            th:text="${userSuggestion.suggestion.videoDescription}">Full description...</p>
+                    </div>
+
+                    <div class="flex items-center justify-between mt-3">
+                        <div class="flex flex-col">
+                            <span class="text-xs text-slate-400"
+                                th:text="'Posted: ' + ${#temporals.format(userSuggestion.suggestion.postedDate, 'dd MMM yyyy')}">तारीख</span>
+                            <span class="text-xs text-primary font-medium"
+                                th:text="'Saved: ' + ${#temporals.format(userSuggestion.savedAt, 'dd MMM yyyy')}">सहेजा
+                                गया</span>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- Empty State -->
+            <div id="empty-state" th:if="${#lists.isEmpty(savedSuggestions)}" class="text-center py-16">
+                <span class="material-symbols-outlined text-slate-300 text-[80px] mb-4">bookmark_border</span>
+                <h3 class="text-lg font-bold text-slate-900 mb-2">कोई सहेजा गया सुझाव नहीं</h3>
+                <p class="text-slate-500 text-sm mb-6">आप बाद में पढ़ने के लिए सुझाव सहेज सकते हैं</p>
+                <button onclick="window.location.href='/user/suggestions/all'"
+                    class="px-6 py-3 bg-primary hover:bg-primary-dark text-white text-sm font-semibold rounded-xl transition-colors inline-flex items-center gap-2">
+                    <span class="material-symbols-outlined text-[20px]">search</span>
+                    सुझाव देखें
+                </button>
+            </div>
+
+            <!-- Empty State for Filter -->
+            <div id="filter-empty-state" class="hidden text-center py-12">
+                <span class="material-symbols-outlined text-slate-300 text-[64px] mb-4">filter_list_off</span>
+                <p class="text-slate-500 font-medium">इस प्रकार का कोई सहेजा गया सुझाव नहीं</p>
+                <p class="text-slate-400 text-sm">No saved suggestions of this type</p>
+            </div>
+
+        </main>
+
+        <div th:insert="~{Fragment/PatientMobileFragment :: NavContent}"></div>
+
+    </div>
+
+    <!-- Video Modal -->
+    <div id="videoModal" class="video-modal">
+        <div class="video-container">
+            <button class="close-video" onclick="closeVideoModal()">
+                <span class="material-symbols-outlined text-slate-900">close</span>
+            </button>
+            <iframe id="videoIframe" frameborder="0" allowfullscreen></iframe>
+        </div>
+    </div>
+
+    <!-- Image Modal -->
+    <div id="imageModal" class="image-modal" onclick="closeImageModal()">
+        <button class="close-video" style="position: absolute; top: 20px; right: 20px;"
+            onclick="event.stopPropagation(); closeImageModal()">
+            <span class="material-symbols-outlined text-slate-900">close</span>
+        </button>
+        <img id="imageModalContent" class="image-modal-content" alt="Full Image">
+    </div>
+
+    <script th:src="@{/FragmentScript.js}"></script>
+    <script>
+        function filterSuggestions(type) {
+            const allCards = document.querySelectorAll('.suggestion-card');
+            const filterEmptyState = document.getElementById('filter-empty-state');
+            const tabs = document.querySelectorAll('[id^="tab-"]');
+
+            tabs.forEach(tab => {
+                tab.classList.remove('tab-active');
+                tab.classList.add('tab-inactive');
+            });
+            document.getElementById('tab-' + type.toLowerCase()).classList.add('tab-active');
+            document.getElementById('tab-' + type.toLowerCase()).classList.remove('tab-inactive');
+
+            let visibleCount = 0;
+
+            if (type === 'ALL') {
+                allCards.forEach(card => {
+                    card.style.display = 'block';
+                    visibleCount++;
+                });
+            } else {
+                allCards.forEach(card => {
+                    if (card.classList.contains('suggestion-' + type)) {
+                        card.style.display = 'block';
+                        visibleCount++;
+                    } else {
+                        card.style.display = 'none';
+                    }
+                });
+            }
+
+            if (visibleCount === 0 && allCards.length > 0) {
+                filterEmptyState.classList.remove('hidden');
+            } else {
+                filterEmptyState.classList.add('hidden');
+            }
+        }
+
+        function toggleExpand(suggestionId, event) {
+            event.stopPropagation();
+
+            const card = document.querySelector(`[data-suggestion-id="${suggestionId}"]`);
+            const expandedContent = card.querySelector('.expanded-content');
+            const expandBtn = card.querySelector(`[data-expand-btn="${suggestionId}"]`);
+            const expandIcon = expandBtn.querySelector('.material-symbols-outlined');
+            const expandText = expandBtn.querySelector('span:first-child');
+
+            if (expandedContent.classList.contains('active')) {
+                expandedContent.classList.remove('active');
+                expandText.textContent = 'और पढ़ें';
+                expandIcon.textContent = 'expand_more';
+            } else {
+                expandedContent.classList.add('active');
+                expandText.textContent = 'कम दिखाएं';
+                expandIcon.textContent = 'expand_less';
+            }
+        }
+
+        function playVideoFromElement(el) {
+            const videoId = el.dataset.videoId;
+            const modal = document.getElementById('videoModal');
+            const iframe = document.getElementById('videoIframe');
+
+            iframe.src = `https://www.youtube.com/embed/${videoId}?autoplay=1`;
+            modal.classList.add('active');
+        }
+
+        function closeVideoModal() {
+            const modal = document.getElementById('videoModal');
+            const iframe = document.getElementById('videoIframe');
+
+            iframe.src = '';
+            modal.classList.remove('active');
+        }
+
+        function openImageModal(imageSrc) {
+            const modal = document.getElementById('imageModal');
+            const img = document.getElementById('imageModalContent');
+
+            img.src = imageSrc;
+            modal.classList.add('active');
+        }
+
+        function closeImageModal() {
+            const modal = document.getElementById('imageModal');
+            modal.classList.remove('active');
+        }
+
+        function removeSaved(suggestionId) {
+            const saveBtn = document.querySelector(`[data-save-btn="${suggestionId}"]`);
+            const card = saveBtn.closest('.suggestion-card');
+
+            const csrfToken = document.querySelector('meta[name="_csrf"]').getAttribute('content');
+            const csrfHeader = document.querySelector('meta[name="_csrf_header"]').getAttribute('content');
+
+            fetch(`/user/api/suggestions/${suggestionId}/save`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    [csrfHeader]: csrfToken
+                }
+            })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success && !data.isSaved) {
+                        // Animate card removal
+                        card.classList.add('card-removing');
+
+                        setTimeout(() => {
+                            card.remove();
+
+                            // Check if there are any cards left
+                            const remainingCards = document.querySelectorAll('.suggestion-card');
+                            if (remainingCards.length === 0) {
+                                location.reload(); // Reload to show empty state
+                            }
+                        }, 300);
+                    }
+                })
+                .catch(error => console.error('Error removing saved:', error));
+        }
+
+        // Close modals on Escape key
+        document.addEventListener('keydown', function (event) {
+            if (event.key === 'Escape') {
+                closeVideoModal();
+                closeImageModal();
+            }
+        });
+    </script>
+</body>
+
+</html>
