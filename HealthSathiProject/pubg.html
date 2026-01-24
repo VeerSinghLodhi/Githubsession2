@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Battle Royale Main Lobby</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800&amp;display=swap"
+        rel="stylesheet" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+        rel="stylesheet" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+        rel="stylesheet" />
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#36e27b",
+                        "background-light": "#f6f8f7",
+                        "background-dark": "#112117",
+                    },
+                    fontFamily: {
+                        "display": ["Be Vietnam Pro", "sans-serif"]
+                    },
+                    borderRadius: { "DEFAULT": "1rem", "lg": "2rem", "xl": "3rem", "full": "9999px" },
+                },
+            },
+        }
+    </script>
+    <style>
+        body {
+            font-family: 'Be Vietnam Pro', sans-serif;
+            background-color: #112117;
+            overflow: hidden;
+        }
+
+        .glass-panel {
+            background: rgba(18, 33, 24, 0.7);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(54, 226, 123, 0.1);
+        }
+
+        .hero-gradient {
+            background: linear-gradient(0deg, rgba(17, 33, 23, 1) 0%, rgba(17, 33, 23, 0.4) 50%, rgba(17, 33, 23, 0) 100%);
+        }
+
+        .map-card-gradient {
+            background: linear-gradient(180deg, rgba(27, 50, 36, 0) 0%, rgba(27, 50, 36, 0.9) 100%);
+        }
+    </style>
+</head>
+
+<body class="bg-background-light dark:bg-background-dark text-white font-display">
+    <!-- Background Layer -->
+    <div class="fixed inset-0 z-0">
+        <div class="absolute inset-0 bg-center bg-cover" data-alt="Gritty military base at sunset with smoke"
+            style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuAVmbWXB--MLQDcUKDHu1hkPXbzDnDcpHmIk94i69ZkkkxIBlC9gkp-IlsPoz9Jj-aam9stNFyPVwpsWbFaUwhfA_NOAkzFI-lwPYFDOx-Ef4cnsmJgtDnh5DjU9SmgHl-niY2SiLfMSyotP6ntLdZjrDLnC05Y8YfdbkCjpmN-zTjHkiTQmEntLp-HmgjArqx8L2_zNg9AUnrQ7cUTTFVaiy-mdocPnTIU9Babjxtot2VyxX2iDoajU16LpgLobkV0IOKo08sJNb4");'>
+        </div>
+        <div class="absolute inset-0 bg-black/40"></div>
+        <div class="absolute inset-0 hero-gradient"></div>
+    </div>
+    <!-- Main Layout Container -->
+    <div class="relative z-10 flex flex-col h-screen w-full">
+        <!-- Top Navigation Bar -->
+        <header class="flex items-center justify-between px-8 py-4 glass-panel border-b-0">
+            <div class="flex items-center gap-6">
+                <div class="flex items-center gap-3">
+                    <div
+                        class="size-10 bg-primary flex items-center justify-center rounded-lg shadow-[0_0_15px_rgba(54,226,123,0.4)]">
+                        <span class="material-symbols-outlined text-background-dark font-bold">shield</span>
+                    </div>
+                    <div>
+                        <h2 class="text-white text-xl font-black leading-tight tracking-tighter uppercase">Battle Royale
+                        </h2>
+                        <p class="text-primary text-[10px] font-bold tracking-[0.2em] uppercase">Season 12: Origins</p>
+                    </div>
+                </div>
+            </div>
+            <div class="flex items-center gap-4">
+                <div class="flex items-center gap-2 bg-black/40 px-4 py-2 rounded-full border border-white/10">
+                    <span class="material-symbols-outlined text-primary text-sm">stars</span>
+                    <span class="text-sm font-bold">Level 42</span>
+                    <div class="w-20 h-1.5 bg-white/10 rounded-full overflow-hidden">
+                        <div class="bg-primary h-full w-[70%]"></div>
+                    </div>
+                </div>
+                <div class="flex gap-2">
+                    <button
+                        class="flex min-w-[100px] cursor-pointer items-center justify-center rounded-full h-10 px-4 bg-white/5 border border-white/10 hover:bg-white/10 transition-all">
+                        <span class="text-primary font-black mr-2 text-xs">BP</span>
+                        <span class="text-sm font-bold">15,400</span>
+                    </button>
+                    <button
+                        class="flex min-w-[100px] cursor-pointer items-center justify-center rounded-full h-10 px-4 bg-white/5 border border-white/10 hover:bg-white/10 transition-all">
+                        <span class="text-yellow-500 font-black mr-2 text-xs">UC</span>
+                        <span class="text-sm font-bold">1,200</span>
+                    </button>
+                    <button
+                        class="flex size-10 items-center justify-center rounded-full bg-white/5 border border-white/10 hover:rotate-90 transition-transform duration-500">
+                        <span class="material-symbols-outlined text-white">settings</span>
+                    </button>
+                </div>
+                <div class="bg-center bg-no-repeat aspect-square bg-cover rounded-full size-10 border-2 border-primary"
+                    data-alt="User avatar with elite rank frame"
+                    style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuC4115rLZI1JXAq3fRoUuGxwAzDtUdWN2Ik-3xzA9lpjVpleYXywn3c75n9J8BRmEqpZ0S8KmPZMHylZyVoh5SU7V6s4Z4jRq3baKZ5NYa18oaG6Si6zxKDs_EToN6jbGxtbiJlCBNfmyOawOyWJhxpN26IELBn8SyBKp65TKYv_MyccXfXjDSOiWbJ5kcpU9lK1ZhLuqZYVHYmD82cjSjAJbna-kIXyfTsq6TBFgGhNMLm8z0VWL4tP4Qu4zchYHuv74RxDPXkRxI");'>
+                </div>
+            </div>
+        </header>
+        <!-- Main Content Area -->
+        <div class="flex flex-1 overflow-hidden">
+            <!-- Left Sidebar -->
+            <div class="w-64 flex flex-col justify-between p-6 glass-panel border-r-0 m-4 rounded-xl">
+                <div class="flex flex-col gap-8">
+                    <div class="flex flex-col gap-2">
+                        <div
+                            class="flex items-center gap-4 px-4 py-3 rounded-xl bg-primary text-background-dark shadow-[0_0_20px_rgba(54,226,123,0.2)] cursor-pointer">
+                            <span class="material-symbols-outlined fill-1">home</span>
+                            <p class="text-sm font-bold uppercase tracking-wider">Lobby</p>
+                        </div>
+                        <div
+                            class="flex items-center gap-4 px-4 py-3 rounded-xl hover:bg-white/5 text-white/60 hover:text-white transition-all cursor-pointer">
+                            <span class="material-symbols-outlined">person</span>
+                            <p class="text-sm font-bold uppercase tracking-wider">Career</p>
+                        </div>
+                        <div
+                            class="flex items-center gap-4 px-4 py-3 rounded-xl hover:bg-white/5 text-white/60 hover:text-white transition-all cursor-pointer">
+                            <span class="material-symbols-outlined">leaderboard</span>
+                            <p class="text-sm font-bold uppercase tracking-wider">Ranking</p>
+                        </div>
+                        <div
+                            class="flex items-center gap-4 px-4 py-3 rounded-xl hover:bg-white/5 text-white/60 hover:text-white transition-all cursor-pointer">
+                            <span class="material-symbols-outlined">shopping_bag</span>
+                            <p class="text-sm font-bold uppercase tracking-wider">Market</p>
+                        </div>
+                    </div>
+                    <div class="pt-6 border-t border-white/10">
+                        <p class="text-[10px] font-bold text-white/40 uppercase tracking-widest mb-4 px-4">Social</p>
+                        <div class="flex flex-col gap-4 px-2">
+                            <div class="flex items-center justify-between group cursor-pointer">
+                                <div class="flex items-center gap-3">
+                                    <div class="relative">
+                                        <div class="size-8 rounded-full bg-center bg-cover" data-alt="Friend avatar"
+                                            style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuD2m6VRrgDDDHM5W8RZi5DF6yHlU59T2W1THBaLwXVTdtg9q8PtAdjw_TAlrqKI82LP3wJJH4BEI9zbcXIW6KHnr3TmHT01hwVBnemzEkgjifziGKOb-CG6D4v2CYWmXPm-nOin4VHIFZ4aFuoGR5dLd0lre3VajAOSTcR7LPA4EsOGRzHLykAANz18jWWZ0r7xysHDbNr1sJ0K2f97dlG0vdPXwaeZbMn2tCprYSK4LpESqWATDE45LECx_jFX-8Zghz-abufgXOg");'>
+                                        </div>
+                                        <div
+                                            class="absolute bottom-0 right-0 size-2 bg-primary rounded-full border-2 border-background-dark">
+                                        </div>
+                                    </div>
+                                    <p class="text-xs font-medium text-white/80 group-hover:text-white">Ghost_Riley</p>
+                                </div>
+                                <span
+                                    class="material-symbols-outlined text-white/20 text-sm group-hover:text-primary">chat</span>
+                            </div>
+                            <div class="flex items-center justify-between group cursor-pointer">
+                                <div class="flex items-center gap-3">
+                                    <div class="relative">
+                                        <div class="size-8 rounded-full bg-center bg-cover" data-alt="Friend avatar"
+                                            style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuB0EDZyZzPrVXDslUzvi0u_B9DNUoWBgGlVwIA8agosikLVG2_vkxajMtWqX8aDq_r6u0QsMcXriYSVhf26t8MsnBbuqO6KMMSc1qwG8XqCD1FaJFX1l2WIG9JjeuEIk_0G3WpbNvtPurLF3wqs7UigusO0364NyQxTFX5QlGsGqUIrokKIOVt5DUAnDMlDjdZgOnqC28ZQGj3fskZlejw1VpnIHCIXFCpOrqNEkqHigsPkOdxnJXZNMD4Z1zBQBxl3AgQ2sL8djzU");'>
+                                        </div>
+                                        <div
+                                            class="absolute bottom-0 right-0 size-2 bg-primary rounded-full border-2 border-background-dark">
+                                        </div>
+                                    </div>
+                                    <p class="text-xs font-medium text-white/80 group-hover:text-white">Sarah_V2</p>
+                                </div>
+                                <span
+                                    class="material-symbols-outlined text-white/20 text-sm group-hover:text-primary">chat</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <button
+                    class="flex w-full cursor-pointer items-center justify-center rounded-xl h-12 px-4 bg-white/5 border border-white/20 text-white text-xs font-bold uppercase tracking-widest hover:bg-white/10 transition-all">
+                    <span class="material-symbols-outlined mr-2 text-sm">group_add</span>
+                    Invite Squad
+                </button>
+            </div>
+            <!-- Central Character Area (Empty for visual focus) -->
+            <div class="flex-1 relative flex items-center justify-center">
+                <!-- Placeholder for 3D Character -->
+                <div class="absolute bottom-0 w-full h-[80%] flex items-end justify-center pointer-events-none">
+                    <div class="w-[500px] h-full opacity-40 blur-3xl bg-primary/10 rounded-full"></div>
+                </div>
+                <!-- Version/Region Info -->
+                <div
+                    class="absolute bottom-8 left-1/2 -translate-x-1/2 flex items-center gap-4 text-[10px] font-bold text-white/30 tracking-widest uppercase">
+                    <span>Ver. 2.9.0.1244</span>
+                    <span class="size-1 bg-white/20 rounded-full"></span>
+                    <span>Region: NA-EAST</span>
+                    <span class="size-1 bg-white/20 rounded-full"></span>
+                    <span>60ms</span>
+                </div>
+            </div>
+            <!-- Right Matchmaking Panel -->
+            <div class="w-[400px] flex flex-col gap-4 p-6 m-4">
+                <!-- Map Selection Card -->
+                <div class="glass-panel rounded-2xl overflow-hidden border border-white/10 group cursor-pointer">
+                    <div class="relative aspect-video">
+                        <div class="absolute inset-0 bg-center bg-cover transition-transform duration-700 group-hover:scale-110"
+                            data-alt="Erangel map top view" data-location="Erangel"
+                            style='background-image: url("https://placeholder.pics/svg/300");'></div>
+                        <div class="absolute inset-0 map-card-gradient"></div>
+                        <div class="absolute bottom-4 left-4">
+                            <p class="text-primary text-[10px] font-black uppercase tracking-widest">Classic Mode</p>
+                            <h3 class="text-2xl font-black uppercase tracking-tight">Erangel</h3>
+                        </div>
+                        <div class="absolute top-4 right-4 bg-black/60 backdrop-blur-md p-2 rounded-lg">
+                            <span class="material-symbols-outlined text-white text-lg">map</span>
+                        </div>
+                    </div>
+                    <div class="p-4 flex items-center justify-between bg-[#1b3224]/80">
+                        <div class="flex flex-col">
+                            <p class="text-white/60 text-[10px] font-bold uppercase">Settings</p>
+                            <p class="text-sm font-bold">TPP | SQUAD</p>
+                        </div>
+                        <button
+                            class="bg-primary/10 border border-primary/20 text-primary text-[10px] font-black uppercase px-4 py-2 rounded-full hover:bg-primary hover:text-background-dark transition-all">
+                            Change Map
+                        </button>
+                    </div>
+                </div>
+                <!-- Mode Selectors -->
+                <div class="glass-panel p-4 rounded-2xl flex flex-col gap-4">
+                    <h4 class="text-[10px] font-black text-white/40 uppercase tracking-[0.2em]">Match Settings</h4>
+                    <div class="flex gap-2 p-1 bg-black/40 rounded-xl">
+                        <label
+                            class="flex-1 flex cursor-pointer h-10 items-center justify-center rounded-lg transition-all has-[:checked]:bg-primary has-[:checked]:text-background-dark text-white/40 text-xs font-bold uppercase">
+                            <span>TPP</span>
+                            <input checked="" class="hidden" name="perspective" type="radio" value="tpp" />
+                        </label>
+                        <label
+                            class="flex-1 flex cursor-pointer h-10 items-center justify-center rounded-lg transition-all has-[:checked]:bg-primary has-[:checked]:text-background-dark text-white/40 text-xs font-bold uppercase">
+                            <span>FPP</span>
+                            <input class="hidden" name="perspective" type="radio" value="fpp" />
+                        </label>
+                    </div>
+                    <div class="grid grid-cols-3 gap-2">
+                        <label
+                            class="flex flex-col items-center justify-center p-3 rounded-xl border border-white/5 bg-white/5 cursor-pointer hover:bg-white/10 transition-all has-[:checked]:border-primary/50 has-[:checked]:bg-primary/10 group">
+                            <input class="hidden" name="teamsize" type="radio" value="solo" />
+                            <span
+                                class="material-symbols-outlined text-white/40 group-has-[:checked]:text-primary mb-1">person</span>
+                            <span
+                                class="text-[10px] font-bold uppercase text-white/40 group-has-[:checked]:text-white">Solo</span>
+                        </label>
+                        <label
+                            class="flex flex-col items-center justify-center p-3 rounded-xl border border-white/5 bg-white/5 cursor-pointer hover:bg-white/10 transition-all has-[:checked]:border-primary/50 has-[:checked]:bg-primary/10 group">
+                            <input class="hidden" name="teamsize" type="radio" value="duo" />
+                            <span
+                                class="material-symbols-outlined text-white/40 group-has-[:checked]:text-primary mb-1">group</span>
+                            <span
+                                class="text-[10px] font-bold uppercase text-white/40 group-has-[:checked]:text-white">Duo</span>
+                        </label>
+                        <label
+                            class="flex flex-col items-center justify-center p-3 rounded-xl border border-white/5 bg-white/5 cursor-pointer hover:bg-white/10 transition-all has-[:checked]:border-primary/50 has-[:checked]:bg-primary/10 group">
+                            <input checked="" class="hidden" name="teamsize" type="radio" value="squad" />
+                            <span
+                                class="material-symbols-outlined text-white/40 group-has-[:checked]:text-primary mb-1">groups</span>
+                            <span
+                                class="text-[10px] font-bold uppercase text-white/40 group-has-[:checked]:text-white">Squad</span>
+                        </label>
+                    </div>
+                </div>
+                <!-- START Button Area -->
+                <div class="mt-auto pt-6">
+                    <button
+                        class="relative w-full h-24 rounded-2xl bg-primary overflow-hidden group transition-all active:scale-95 shadow-[0_0_40px_rgba(54,226,123,0.3)]">
+                        <div
+                            class="absolute inset-0 bg-[linear-gradient(45deg,transparent_25%,rgba(255,255,255,0.2)_50%,transparent_75%)] bg-[length:250%_250%] animate-[shimmer_3s_infinite] hidden group-hover:block">
+                        </div>
+                        <div class="flex flex-col items-center justify-center relative z-10">
+                            <span
+                                class="text-background-dark text-4xl font-black uppercase tracking-[0.2em] italic">Start</span>
+                            <span
+                                class="text-background-dark/60 text-[10px] font-bold uppercase tracking-widest mt-1">Ready
+                                for Battle</span>
+                        </div>
+                        <div class="absolute bottom-0 left-0 w-full h-1 bg-black/20">
+                            <div class="h-full bg-black/40 w-full animate-pulse"></div>
+                        </div>
+                    </button>
+                    <div class="mt-4 flex gap-4">
+                        <div
+                            class="flex-1 glass-panel p-3 rounded-xl border border-white/10 flex items-center justify-center gap-3 cursor-pointer hover:bg-white/5">
+                            <span class="material-symbols-outlined text-primary text-xl">mic</span>
+                            <span class="text-[10px] font-bold uppercase">Team Voice</span>
+                        </div>
+                        <div
+                            class="flex-1 glass-panel p-3 rounded-xl border border-white/10 flex items-center justify-center gap-3 cursor-pointer hover:bg-white/5">
+                            <span class="material-symbols-outlined text-primary text-xl">forum</span>
+                            <span class="text-[10px] font-bold uppercase">Chat</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

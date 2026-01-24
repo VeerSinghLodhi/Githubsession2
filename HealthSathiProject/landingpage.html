@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>User Dashboard - हेल्थ साथी</title>
+    <link href="https://fonts.googleapis.com" rel="preconnect" />
+    <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect" />
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Devanagari:wght@400;500;600;700&display=swap"
+        rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap"
+        rel="stylesheet" />
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <script id="tailwind-config">
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#0058ba",
+                        "primary-dark": "#155a96",
+                        "primary-light": "#e3f2fd",
+                        "text-main": "#1e293b",
+                        "text-secondary": "#64748b",
+                        "border-light": "#e2e8f0",
+                        "surface": "#ffffff",
+                        "background": "#f8fafc",
+                    },
+                    fontFamily: {
+                        "display": ["Noto Sans Devanagari", "sans-serif"],
+                        "hindi": ["Noto Sans Devanagari", "sans-serif"]
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0.75rem",
+                        "xl": "1rem",
+                        "2xl": "1.25rem",
+                        "3xl": "1.5rem"
+                    },
+                    boxShadow: {
+                        'soft': '0 4px 20px -4px rgba(30, 115, 190, 0.1)',
+                        'glow': '0 8px 30px rgba(30, 115, 190, 0.2)',
+                        'card': '0 2px 12px rgba(0, 0, 0, 0.06)',
+                        'hover': '0 8px 25px rgba(30, 115, 190, 0.15)',
+                    }
+                },
+            },
+        }
+    </script>
+    <link rel="stylesheet" th:href="@{/FragmentStyle.css}" />
+</head>
+
+<body class="bg-background antialiased text-text-main">
+    <div class="relative flex min-h-screen w-full flex-col overflow-hidden pb-24">
+        <header class="sticky top-0 z-20 bg-white/90 backdrop-blur-md px-5 py-4 border-b border-slate-100">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center gap-3">
+                    <div class="relative size-12 rounded-full overflow-hidden border-2 border-primary shadow-md">
+                        <span
+                            class="material-symbols-outlined absolute inset-0 flex items-center justify-center bg-slate-100 text-slate-400 text-3xl">person</span>
+                    </div>
+                    <div class="flex flex-col">
+                        <span class="text-sm font-medium text-slate-500">नमस्ते,</span>
+                        <h2 class="text-xl font-bold leading-tight text-slate-900" th:text="${user.fullName}"></h2>
+                    </div>
+                </div>
+                <div class="flex items-center gap-3">
+                    <button
+                        class="flex items-center justify-center size-10 rounded-full bg-slate-50 text-slate-600 hover:bg-slate-100 transition-colors">
+                        <span class="material-symbols-outlined text-[24px]">notifications</span>
+                    </button>
+                    <div class="relative">
+                        <button id="settingsButton" onclick="toggleSettings()"
+                            class="flex items-center justify-center size-10 rounded-full bg-slate-50 text-slate-600 hover:bg-slate-100 transition-colors">
+                            <span class="material-symbols-outlined text-[24px]">settings</span>
+                        </button>
+
+                        <!-- Settings Dropdown -->
+                        <div id="settingsDropdown" class="settings-dropdown">
+                            <div class="p-2">
+                                <div class="settings-item" onclick="navigateTo('profile')">
+                                    <div class="settings-icon bg-blue-50">
+                                        <span class="material-symbols-outlined text-blue-600 text-[22px]">person</span>
+                                    </div>
+                                    <div class="flex-1">
+                                        <div class="font-semibold text-slate-900 text-sm">प्रोफाइल संपादित करें</div>
+                                        <div class="text-xs text-slate-500">Edit Profile</div>
+                                    </div>
+                                </div>
+
+                                <div class="settings-item" onclick="navigateTo('language')">
+                                    <div class="settings-icon bg-green-50">
+                                        <span
+                                            class="material-symbols-outlined text-green-600 text-[22px]">language</span>
+                                    </div>
+                                    <div class="flex-1">
+                                        <div class="font-semibold text-slate-900 text-sm">भाषा बदलें</div>
+                                        <div class="text-xs text-slate-500">Change Language</div>
+                                    </div>
+                                </div>
+
+                                <div class="settings-item" onclick="navigateTo('notifications')">
+                                    <div class="settings-icon bg-purple-50">
+                                        <span
+                                            class="material-symbols-outlined text-purple-600 text-[22px]">notifications_active</span>
+                                    </div>
+                                    <div class="flex-1">
+                                        <div class="font-semibold text-slate-900 text-sm">सूचनाएं</div>
+                                        <div class="text-xs text-slate-500">Notifications</div>
+                                    </div>
+                                </div>
+
+                                <div class="settings-item">
+                                    <div class="settings-icon bg-orange-50">
+                                        <span
+                                            class="material-symbols-outlined text-orange-600 text-[22px]">security</span>
+                                    </div>
+                                    <div class="flex-1">
+                                        <div class="font-semibold text-slate-900 text-sm">गोपनीयता और सुरक्षा</div>
+                                        <div class="text-xs text-slate-500">Privacy & Security</div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="settings-divider"></div>
+
+                            <div class="settings-item cursor-pointer" onclick="logout()">
+                                <div class="settings-icon bg-red-50">
+                                    <span class="material-symbols-outlined text-red-600 text-[22px]">logout</span>
+                                </div>
+                                <div class="flex-1">
+                                    <div class="font-semibold text-red-600 text-sm">लॉग आउट</div>
+                                    <div class="text-xs text-slate-500">Logout</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- Overlay -->
+        <div id="settingsOverlay" class="overlay" onclick="toggleSettings()"></div>
+
+
+        <main class="flex-1 flex flex-col gap-6 p-5">
+
+            <!-- Hospital List Section - FIRST -->
+            <section>
+                <div class="flex items-center justify-between mb-3">
+                    <h3 class="text-base font-bold text-slate-900">अस्पताल सूची</h3>
+                    <button class="text-xs font-semibold text-primary hover:text-primary-dark transition-colors"
+                        onclick="window.location.href='/hospitals/all'">सभी देखें</button>
+                </div>
+                <div class="carousel-container flex gap-4 overflow-x-auto pb-2">
+                    <div th:each="hospital : ${hospitals}"
+                        class="carousel-item flex-shrink-0 w-80 bg-white rounded-2xl p-5 border border-slate-100 shadow-soft hover:shadow-hover transition-all cursor-pointer"
+                        th:onclick="'window.location.href=\'/hospital/' + ${hospital.hospitalId} + '\''">
+                        <div class="flex items-start justify-between mb-3">
+                            <div class="flex items-center gap-2">
+                                <span class="material-symbols-outlined text-primary text-[28px]">local_hospital</span>
+                                <span class="text-xs font-medium px-2 py-1 rounded-full bg-blue-50 text-primary"
+                                    th:text="${hospital.type.typeName}">प्रकार</span>
+                            </div>
+                        </div>
+                        <h4 class="text-base font-bold text-slate-900 mb-2" th:text="${hospital.name}">अस्पताल का नाम
+                        </h4>
+                        <div class="space-y-2 mb-3">
+                            <div class="flex items-start gap-2">
+                                <span class="material-symbols-outlined text-slate-400 text-[18px]">location_on</span>
+                                <p class="text-sm text-slate-600 leading-relaxed flex-1" th:text="${hospital.address}">
+                                    पता</p>
+                            </div>
+                            <div class="flex items-center gap-2">
+                                <span class="material-symbols-outlined text-slate-400 text-[18px]">call</span>
+                                <p class="text-sm text-slate-600" th:text="${hospital.contact}">संपर्क</p>
+                            </div>
+                        </div>
+                        <button
+                            class="w-full py-2 bg-primary hover:bg-primary-dark text-white text-xs font-semibold rounded-xl transition-colors flex items-center justify-center gap-1">
+                            <span class="material-symbols-outlined text-[16px]">info</span>
+                            विवरण देखें
+                        </button>
+                    </div>
+
+                    <div th:if="${#lists.isEmpty(hospitals)}" class="w-full text-center py-8 text-slate-500">
+                        <p>कोई अस्पताल उपलब्ध नहीं है</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Text Health Suggestions - SECOND (Only Text) -->
+            <section>
+                <div class="flex items-center justify-between mb-3">
+                    <h3 class="text-base font-bold text-slate-900">स्वास्थ्य सुझाव</h3>
+                    <button class="text-xs font-semibold text-primary hover:text-primary-dark transition-colors"
+                        onclick="window.location.href='/suggestions/all'">अधिक सुझाव →</button>
+                </div>
+                <div class="carousel-container flex gap-4 overflow-x-auto pb-2">
+                    <div th:each="suggestion : ${textSuggestions}"
+                        class="carousel-item flex-shrink-0 w-80 bg-white rounded-2xl p-5 border border-slate-100 shadow-soft hover:shadow-hover transition-all cursor-pointer"
+                        onclick="openTextModal(this)" th:attr="data-title=${suggestion.title},
+                      data-description=${suggestion.videoDescription},
+                      data-date=${#temporals.format(suggestion.postedDate, 'dd MMM yyyy')}">
+                        <div class="flex items-start justify-between mb-3">
+                            <span class="material-symbols-outlined text-slate-400 text-[20px]">article</span>
+                            <span class="text-xs font-medium px-2 py-1 rounded-full bg-green-50 text-green-600"
+                                th:text="${suggestion.category}">श्रेणी</span>
+                        </div>
+                        <h4 class="text-base font-bold text-slate-900 mb-2" th:text="${suggestion.title}">शीर्षक</h4>
+                        <p class="text-sm text-slate-600 leading-relaxed mb-3 line-clamp-3"
+                            th:text="${suggestion.videoDescription}">विवरण...</p>
+                        <div class="flex items-center justify-between">
+                            <span class="text-xs text-slate-400"
+                                th:text="${#temporals.format(suggestion.postedDate, 'dd MMM yyyy')}">तारीख</span>
+                            <button
+                                class="text-xs font-semibold text-primary hover:text-primary-dark transition-colors">और
+                                पढ़ें →</button>
+                        </div>
+                    </div>
+
+                    <div th:if="${#lists.isEmpty(textSuggestions)}" class="w-full text-center py-8 text-slate-500">
+                        <p>कोई स्वास्थ्य सुझाव उपलब्ध नहीं है</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Advertisements -->
+            <section>
+                <div class="flex items-center justify-between mb-3">
+                    <h3 class="text-base font-bold text-slate-900">विज्ञापन</h3>
+                </div>
+                <div class="carousel-container flex gap-4 overflow-x-auto pb-2">
+                    <!-- Ad 1 -->
+                    <div class="carousel-item flex-shrink-0 w-80 bg-white rounded-2xl overflow-hidden border border-slate-100 shadow-soft hover:shadow-hover transition-all cursor-pointer"
+                        onclick="window.open('https://bansalhospitalsagar.com/')">
+                        <div class="relative h-48 overflow-hidden">
+                            <img src="/bansal.jpg" alt="विज्ञापन 1"
+                                class="w-full h-full object-cover hover:scale-105 transition-transform duration-300">
+                            <div class="absolute top-2 right-2 bg-black/50 text-white text-[10px] px-2 py-1 rounded-md">
+                                विज्ञापन
+                            </div>
+                        </div>
+                        <div class="p-4">
+                            <h4 class="text-sm font-bold text-slate-900 mb-2">Bansal Hospital</h4>
+                            <p class="text-xs text-slate-600 leading-relaxed mb-3 line-clamp-2">
+                                Bansal Hospital in Sagar, Madhya Pradesh, is a modern, 150-200 bed multi-specialty
+                                hospital offering affordable, advanced healthcare with numerous specialized departments.
+                            </p>
+                            <button
+                                class="w-full py-2 bg-primary hover:bg-primary-dark text-white text-xs font-semibold rounded-xl transition-colors flex items-center justify-center gap-1">
+                                <span class="material-symbols-outlined text-[16px]">open_in_new</span>
+                                अधिक जानें
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Ad 2 -->
+                    <div class="carousel-item flex-shrink-0 w-80 bg-white rounded-2xl overflow-hidden border border-slate-100 shadow-soft hover:shadow-hover transition-all cursor-pointer"
+                        onclick="window.open('https://bmcsagar.edu.in/')">
+                        <div class="relative h-48 overflow-hidden">
+                            <img src="/bmc.jpg" alt="विज्ञापन 2"
+                                class="w-full h-full object-cover hover:scale-105 transition-transform duration-300">
+                            <div class="absolute top-2 right-2 bg-black/50 text-white text-[10px] px-2 py-1 rounded-md">
+                                विज्ञापन
+                            </div>
+                        </div>
+                        <div class="p-4">
+                            <h4 class="text-sm font-bold text-slate-900 mb-2">Bundelkhand Medical College</h4>
+                            <p class="text-xs text-slate-600 leading-relaxed mb-3 line-clamp-2">
+                                Bundelkhand Medical College (BMC) is a tertiary government medical college in Sagar,
+                                Madhya Pradesh, India.
+                            </p>
+                            <button
+                                class="w-full py-2 bg-primary hover:bg-primary-dark text-white text-xs font-semibold rounded-xl transition-colors flex items-center justify-center gap-1">
+                                <span class="material-symbols-outlined text-[16px]">open_in_new</span>
+                                अधिक जानें
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Stats Section -->
+            <section class="relative overflow-hidden rounded-3xl bg-primary text-white shadow-lg shadow-blue-500/20">
+                <div class="absolute top-0 right-0 -mr-8 -mt-8 h-32 w-32 rounded-full bg-white/10 blur-xl"></div>
+                <div class="absolute bottom-0 left-0 -ml-8 -mb-8 h-32 w-32 rounded-full bg-white/10 blur-xl"></div>
+                <div class="relative p-6">
+                    <h3 class="text-lg font-bold mb-4">आपका स्वास्थ्य डेटा</h3>
+                    <div class="grid grid-cols-2 gap-4">
+                        <div class="text-center">
+                            <div th:text="${totalPatients}" class="text-3xl font-bold mb-1">5</div>
+                            <div class="text-xs text-blue-100">कुल रोगी</div>
+                        </div>
+                        <div class="text-center">
+                            <div th:text="${totalSuggestions}" class="text-3xl font-bold mb-1">12</div>
+                            <div class="text-xs text-blue-100">कुल सुझाव</div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        <!-- Bottom Navigation -->
+        <div th:insert="~{Fragment/PatientMobileFragment :: NavContent}"></div>
+
+    </div>
+
+    <script th:src="@{/FragmentScript.js}"></script>
+</body>
+
+</html>
