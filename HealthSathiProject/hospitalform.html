@@ -1,0 +1,1477 @@
+<!DOCTYPE html>
+<html lang="hi" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>अस्पताल जोड़ें - हेल्थ साथी</title>
+    <link href="https://fonts.googleapis.com" rel="preconnect" />
+    <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect" />
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Devanagari:wght@400;500;600;700&display=swap"
+        rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap"
+        rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap"
+        rel="stylesheet" />
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <script id="tailwind-config">
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#1e73be",
+                        "primary-dark": "#155a96",
+                        "primary-light": "#e3f2fd",
+                        "text-main": "#1e293b",
+                        "text-secondary": "#64748b",
+                        "border-light": "#e2e8f0",
+                        "surface": "#ffffff",
+                        "background": "#f8fafc",
+                    },
+                    fontFamily: {
+                        "display": ["Poppins", "Noto Sans Devanagari", "sans-serif"],
+                        "hindi": ["Noto Sans Devanagari", "sans-serif"]
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0.75rem",
+                        "xl": "1rem",
+                        "2xl": "1.25rem",
+                        "3xl": "1.5rem"
+                    },
+                    boxShadow: {
+                        'soft': '0 4px 20px -4px rgba(30, 115, 190, 0.1)',
+                        'glow': '0 8px 30px rgba(30, 115, 190, 0.2)',
+                        'card': '0 2px 12px rgba(0, 0, 0, 0.06)',
+                        'hover': '0 8px 25px rgba(30, 115, 190, 0.15)',
+                    }
+                },
+            },
+        }
+    </script>
+    <style>
+        :root {
+            --surface: #ffffff;
+            --border-light: #e2e8f0;
+            --primary: #1e73be;
+            --primary-light: #e3f2fd;
+            --text-main: #1e293b;
+            --text-secondary: #64748b;
+        }
+
+        body {
+            padding-top: env(safe-area-inset-top);
+            padding-bottom: env(safe-area-inset-bottom);
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+
+        .pb-safe {
+            padding-bottom: env(safe-area-inset-bottom);
+        }
+
+        .gradient-text {
+            background: linear-gradient(135deg, #1e73be 0%, #4a9fd8 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        input[type="text"],
+        input[type="number"],
+        input[type="email"],
+        input[type="url"],
+        textarea,
+        select {
+            transition: all 0.3s ease;
+        }
+
+        input[type="text"]:focus,
+        input[type="number"]:focus,
+        input[type="email"]:focus,
+        input[type="url"]:focus,
+        textarea:focus,
+        select:focus {
+            transform: translateY(-1px);
+        }
+
+        .sidebar {
+            position: fixed;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 280px;
+            background: var(--surface);
+            border-right: 1px solid var(--border-light);
+            padding: 24px;
+            overflow-y: auto;
+            z-index: 100;
+            transform: translateX(-100%);
+            transition: transform 0.3s ease-in-out;
+        }
+
+        .sidebar.open {
+            transform: translateX(0);
+        }
+
+        @media (min-width: 1024px) {
+            .sidebar {
+                transform: translateX(0);
+            }
+
+            .main-content {
+                margin-left: 280px;
+            }
+
+            .hamburger-btn {
+                display: none;
+            }
+        }
+
+        .sidebar-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 99;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.3s ease-in-out, visibility 0.3s ease-in-out;
+        }
+
+        .sidebar-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        @media (min-width: 1024px) {
+            .sidebar-overlay {
+                display: none;
+            }
+        }
+
+        .logo-section {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 32px;
+            padding-bottom: 24px;
+            border-bottom: 1px solid var(--border-light);
+        }
+
+        .logo-icon {
+            width: 48px;
+            height: 48px;
+            background: var(--primary);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transform: rotate(3deg);
+            transition: transform 0.3s;
+        }
+
+        .logo-icon:hover {
+            transform: rotate(0deg);
+        }
+
+        .logo-icon .material-symbols-outlined {
+            color: white;
+            font-size: 28px;
+        }
+
+        .logo-text h2 {
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--text-main);
+        }
+
+        .logo-text p {
+            font-size: 12px;
+            color: var(--text-secondary);
+        }
+
+        .nav-menu {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .nav-item {
+            margin-bottom: 8px;
+        }
+
+        .nav-link {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 16px;
+            border-radius: 12px;
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 14px;
+            transition: all 0.3s;
+            cursor: pointer;
+        }
+
+        .nav-link:hover {
+            background: var(--primary-light);
+            color: var(--primary);
+        }
+
+        .nav-link.active {
+            background: var(--primary);
+            color: white;
+        }
+
+        .nav-link .material-symbols-outlined {
+            font-size: 22px;
+        }
+
+        .hamburger-btn {
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            width: 56px;
+            height: 56px;
+            background: linear-gradient(135deg, #1e73be 0%, #4a9fd8 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 8px 24px rgba(30, 115, 190, 0.4);
+            cursor: pointer;
+            z-index: 98;
+            transition: all 0.3s ease;
+            border: none;
+        }
+
+        .hamburger-btn:hover {
+            transform: scale(1.1);
+            box-shadow: 0 12px 32px rgba(30, 115, 190, 0.5);
+        }
+
+        .hamburger-btn:active {
+            transform: scale(0.95);
+        }
+
+        .hamburger-btn .material-symbols-outlined {
+            color: white;
+            font-size: 28px;
+        }
+
+        @media (max-width: 640px) {
+            .hamburger-btn {
+                width: 48px;
+                height: 48px;
+                bottom: 20px;
+                right: 20px;
+            }
+
+            .hamburger-btn .material-symbols-outlined {
+                font-size: 24px;
+            }
+        }
+
+        .main-content {
+            transition: margin-left 0.3s ease-in-out;
+        }
+
+        /* Image Upload Preview */
+        .image-preview-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            gap: 12px;
+            margin-top: 12px;
+        }
+
+        .image-preview {
+            position: relative;
+            aspect-ratio: 1;
+            border-radius: 12px;
+            overflow: hidden;
+            border: 2px solid var(--border-light);
+        }
+
+        .image-preview img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .image-preview-remove {
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            background: rgba(239, 68, 68, 0.9);
+            color: white;
+            border-radius: 50%;
+            width: 28px;
+            height: 28px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .image-preview-remove:hover {
+            background: rgb(239, 68, 68);
+            transform: scale(1.1);
+        }
+
+        .image-preview-primary {
+            position: absolute;
+            bottom: 8px;
+            left: 8px;
+            background: rgba(30, 115, 190, 0.9);
+            color: white;
+            padding: 4px 8px;
+            border-radius: 6px;
+            font-size: 10px;
+            font-weight: 600;
+        }
+
+        .facility-tag {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 12px;
+            background: var(--primary-light);
+            border-radius: 20px;
+            font-size: 13px;
+            color: var(--primary);
+            margin: 4px;
+            font-weight: 500;
+        }
+
+        .facility-tag .remove-facility {
+            cursor: pointer;
+            font-size: 16px;
+            opacity: 0.7;
+            transition: opacity 0.3s;
+        }
+
+        .facility-tag .remove-facility:hover {
+            opacity: 1;
+        }
+    </style>
+</head>
+
+<body class="bg-background font-hindi text-text-main relative overflow-y-auto pb-safe">
+
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+    <aside class="sidebar" id="sidebar">
+        <div class="logo-section">
+            <div class="logo-icon">
+                <span class="material-symbols-outlined">health_and_safety</span>
+            </div>
+            <div class="logo-text">
+                <h2>Health Sathi</h2>
+                <p>Admin Panel</p>
+            </div>
+        </div>
+
+        <ul class="nav-menu">
+            <li class="nav-item">
+                <a class="nav-link" href="/admin/get/dashboard">
+                    <span class="material-symbols-outlined">dashboard</span>
+                    <span>Dashboard</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="/admin/show/all/users">
+                    <span class="material-symbols-outlined">group</span>
+                    <span>Users</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="/admin/getDoctorList">
+                    <span class="material-symbols-outlined">medical_services</span>
+                    <span>Doctors</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link active" href="/admin/list">
+                    <span class="material-symbols-outlined">business</span>
+                    <span>Clinics & Hospitals</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="/admin/health">
+                    <span class="material-symbols-outlined">favorite</span>
+                    <span>Health Suggestions</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="/admin/type-add">
+                    <span class="material-symbols-outlined">category</span>
+                    <span>Add Type</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link">
+                    <span class="material-symbols-outlined">settings</span>
+                    <span>Settings</span>
+                </a>
+            </li>
+        </ul>
+    </aside>
+
+    <button class="hamburger-btn lg:hidden" id="hamburgerBtn" aria-label="Open Menu">
+        <span class="material-symbols-outlined">menu</span>
+    </button>
+
+    <div class="main-content">
+        <header class="bg-white border-b border-border-light sticky top-0 z-20 shadow-sm">
+            <div class="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3 sm:py-4">
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center gap-2 sm:gap-3">
+                        <div
+                            class="w-10 h-10 sm:w-12 sm:h-12 bg-gradient-to-br from-primary to-primary-dark rounded-xl sm:rounded-2xl flex items-center justify-center shadow-soft">
+                            <span
+                                class="material-symbols-outlined text-white text-[24px] sm:text-[28px]">local_hospital</span>
+                        </div>
+                        <div>
+                            <h1 class="text-lg sm:text-xl lg:text-2xl font-bold gradient-text">हेल्थ-साथी</h1>
+                            <p class="text-[10px] sm:text-xs text-text-secondary font-medium hidden xs:block">स्वास्थ्य
+                                सेवा प्रबंधन</p>
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-2 sm:gap-3">
+                        <button
+                            class="w-8 h-8 sm:w-10 sm:h-10 flex items-center justify-center rounded-lg hover:bg-primary-light transition-colors">
+                            <span
+                                class="material-symbols-outlined text-primary text-[20px] sm:text-[24px]">notifications</span>
+                        </button>
+                        <button
+                            class="w-8 h-8 sm:w-10 sm:h-10 flex items-center justify-center rounded-lg hover:bg-primary-light transition-colors">
+                            <span
+                                class="material-symbols-outlined text-primary text-[20px] sm:text-[24px]">account_circle</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <main class="w-full max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 z-10 relative py-4 sm:py-6 lg:py-8 pb-24 sm:pb-28">
+            <div class="mb-4 sm:mb-6">
+                <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-4 mb-4">
+                    <div>
+                        <h1 class="text-xl sm:text-2xl lg:text-3xl font-bold text-text-main mb-1 tracking-tight">अस्पताल
+                            जोड़ें</h1>
+                        <p class="text-xs sm:text-sm text-text-secondary font-medium">अस्पताल की संपूर्ण जानकारी दर्ज
+                            करें</p>
+                    </div>
+                    <a href="/admin/list"
+                        class="flex items-center justify-center sm:justify-start gap-2 bg-gray-100 hover:bg-gray-200 text-text-main font-bold px-4 sm:px-5 py-2.5 sm:py-3 rounded-xl sm:rounded-2xl shadow-soft transition-all active:scale-95 text-sm sm:text-base w-full sm:w-auto">
+                        <span class="material-symbols-outlined text-[18px] sm:text-[20px]">arrow_back</span>
+                        <span>सूची में वापस जाएं</span>
+                    </a>
+                </div>
+            </div>
+
+            <div id="successAlert" th:if="${param.success}"
+                class="flex items-start sm:items-center mb-4 rounded-xl sm:rounded-2xl bg-green-50 border-l-4 border-green-500 text-green-800 px-4 sm:px-5 py-3 sm:py-4 shadow-soft text-sm">
+                <span
+                    class="material-symbols-outlined mr-2 sm:mr-3 text-green-500 text-[20px] sm:text-[24px] flex-shrink-0">check_circle</span>
+                <span>अस्पताल सफलतापूर्वक सहेजा गया</span>
+            </div>
+
+            <div class="bg-white rounded-xl sm:rounded-2xl shadow-card border border-border-light p-4 sm:p-6 lg:p-8">
+                <form th:action="@{/admin/save}" th:object="${hospital}" method="post" enctype="multipart/form-data"
+                    class="space-y-4 sm:space-y-6">
+
+                    <input type="hidden" th:field="*{hospitalId}">
+
+                    <!-- Basic Information Section -->
+                    <div class="border-b border-border-light pb-4">
+                        <h2 class="text-lg font-bold text-text-main mb-4 flex items-center gap-2">
+                            <span class="material-symbols-outlined text-primary">info</span>
+                            बुनियादी जानकारी
+                        </h2>
+
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <!-- Hospital Name -->
+                            <div class="md:col-span-2">
+                                <label
+                                    class="flex items-center gap-2 text-sm sm:text-base font-semibold text-text-main mb-2 sm:mb-3">
+                                    <span
+                                        class="material-symbols-outlined text-primary text-[18px] sm:text-[20px]">business</span>
+                                    <span>अस्पताल का नाम</span>
+                                    <span class="text-red-500">*</span>
+                                </label>
+                                <input type="text" th:field="*{name}" required placeholder="अस्पताल का नाम दर्ज करें"
+                                    class="w-full px-4 py-3 bg-primary-light/50 border-2 border-transparent rounded-xl text-sm sm:text-base outline-none focus:border-primary transition-all" />
+                            </div>
+
+                            <!-- Hospital Type -->
+                            <div>
+                                <label
+                                    class="flex items-center gap-2 text-sm sm:text-base font-semibold text-text-main mb-2 sm:mb-3">
+                                    <span
+                                        class="material-symbols-outlined text-primary text-[18px] sm:text-[20px]">category</span>
+                                    <span>अस्पताल का प्रकार</span>
+                                    <span class="text-red-500">*</span>
+                                </label>
+                                <select th:field="*{type.id}" required
+                                    class="w-full px-4 py-3 bg-primary-light/50 border-2 border-transparent rounded-xl text-sm sm:text-base outline-none focus:border-primary transition-all cursor-pointer">
+                                    <option value="">-- प्रकार चुनें --</option>
+                                    <option th:each="t : ${types}" th:value="${t.id}" th:text="${t.type}"></option>
+                                </select>
+                            </div>
+
+                            <!-- Timings -->
+                            <div>
+                                <label
+                                    class="flex items-center gap-2 text-sm sm:text-base font-semibold text-text-main mb-2 sm:mb-3">
+                                    <span
+                                        class="material-symbols-outlined text-primary text-[18px] sm:text-[20px]">schedule</span>
+                                    <span>समय</span>
+                                </label>
+                                <input type="text" th:field="*{timings}" placeholder="उदा: 24/7 या 9 AM - 9 PM"
+                                    class="w-full px-4 py-3 bg-primary-light/50 border-2 border-transparent rounded-xl text-sm sm:text-base outline-none focus:border-primary transition-all" />
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Contact Information Section -->
+                    <div class="border-b border-border-light pb-4">
+                        <h2 class="text-lg font-bold text-text-main mb-4 flex items-center gap-2">
+                            <span class="material-symbols-outlined text-primary">contact_phone</span>
+                            संपर्क जानकारी
+                        </h2>
+
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <!-- Address -->
+                            <div class="md:col-span-2">
+                                <label
+                                    class="flex items-center gap-2 text-sm sm:text-base font-semibold text-text-main mb-2 sm:mb-3">
+                                    <span
+                                        class="material-symbols-outlined text-primary text-[18px] sm:text-[20px]">location_on</span>
+                                    <span>पता</span>
+                                    <span class="text-red-500">*</span>
+                                </label>
+                                <textarea th:field="*{address}" required rows="2"
+                                    placeholder="अस्पताल का पूरा पता दर्ज करें"
+                                    class="w-full px-4 py-3 bg-primary-light/50 border-2 border-transparent rounded-xl text-sm sm:text-base outline-none focus:border-primary transition-all resize-none"></textarea>
+                            </div>
+
+                            <!-- Contact -->
+                            <div>
+                                <label
+                                    class="flex items-center gap-2 text-sm sm:text-base font-semibold text-text-main mb-2 sm:mb-3">
+                                    <span
+                                        class="material-symbols-outlined text-primary text-[18px] sm:text-[20px]">call</span>
+                                    <span>संपर्क नंबर</span>
+                                    <span class="text-red-500">*</span>
+                                </label>
+                                <input type="number" th:field="*{contact}" required placeholder="संपर्क नंबर दर्ज करें"
+                                    class="w-full px-4 py-3 bg-primary-light/50 border-2 border-transparent rounded-xl text-sm sm:text-base outline-none focus:border-primary transition-all" />
+                            </div>
+
+                            <!-- Email -->
+                            <div>
+                                <label
+                                    class="flex items-center gap-2 text-sm sm:text-base font-semibold text-text-main mb-2 sm:mb-3">
+                                    <span
+                                        class="material-symbols-outlined text-primary text-[18px] sm:text-[20px]">email</span>
+                                    <span>ईमेल</span>
+                                </label>
+                                <input type="email" th:field="*{email}" placeholder="hospital@example.com"
+                                    class="w-full px-4 py-3 bg-primary-light/50 border-2 border-transparent rounded-xl text-sm sm:text-base outline-none focus:border-primary transition-all" />
+                            </div>
+
+                            <!-- Website -->
+                            <div class="md:col-span-2">
+                                <label
+                                    class="flex items-center gap-2 text-sm sm:text-base font-semibold text-text-main mb-2 sm:mb-3">
+                                    <span
+                                        class="material-symbols-outlined text-primary text-[18px] sm:text-[20px]">language</span>
+                                    <span>वेबसाइट</span>
+                                </label>
+                                <input type="url" th:field="*{website}" placeholder="https://www.hospital.com"
+                                    class="w-full px-4 py-3 bg-primary-light/50 border-2 border-transparent rounded-xl text-sm sm:text-base outline-none focus:border-primary transition-all" />
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Description & Facilities Section -->
+                    <div class="border-b border-border-light pb-4">
+                        <h2 class="text-lg font-bold text-text-main mb-4 flex items-center gap-2">
+                            <span class="material-symbols-outlined text-primary">description</span>
+                            विवरण और सुविधाएं
+                        </h2>
+
+                        <!-- Description -->
+                        <div class="mb-4">
+                            <label
+                                class="flex items-center gap-2 text-sm sm:text-base font-semibold text-text-main mb-2 sm:mb-3">
+                                <span
+                                    class="material-symbols-outlined text-primary text-[18px] sm:text-[20px]">article</span>
+                                <span>विवरण</span>
+                            </label>
+                            <textarea th:field="*{description}" rows="4"
+                                placeholder="अस्पताल के बारे में विस्तृत जानकारी (अधिकतम 1000 अक्षर)" maxlength="1000"
+                                class="w-full px-4 py-3 bg-primary-light/50 border-2 border-transparent rounded-xl text-sm sm:text-base outline-none focus:border-primary transition-all resize-none"></textarea>
+                            <p class="text-xs text-text-secondary mt-1">शेष अक्षर: <span id="charCount">1000</span></p>
+                        </div>
+
+                        <!-- Facilities -->
+                        <div>
+                            <label
+                                class="flex items-center gap-2 text-sm sm:text-base font-semibold text-text-main mb-2 sm:mb-3">
+                                <span
+                                    class="material-symbols-outlined text-primary text-[18px] sm:text-[20px]">medical_services</span>
+                                <span>सुविधाएं</span>
+                            </label>
+                            <div class="flex gap-2 mb-2">
+                                <input type="text" id="facilityInput" placeholder="सुविधा जोड़ें और Enter दबाएं"
+                                    class="flex-1 px-4 py-3 bg-primary-light/50 border-2 border-transparent rounded-xl text-sm sm:text-base outline-none focus:border-primary transition-all" />
+                                <button type="button" onclick="addFacility()"
+                                    class="px-4 py-3 bg-primary hover:bg-primary-dark text-white rounded-xl transition-all">
+                                    <span class="material-symbols-outlined">add</span>
+                                </button>
+                            </div>
+                            <input type="hidden" th:field="*{facilities}" id="facilitiesHidden" />
+                            <div id="facilitiesTags" class="flex flex-wrap"></div>
+                        </div>
+                    </div>
+
+                    <!-- Images Section -->
+                    <div class="border-b border-border-light pb-4">
+                        <h2 class="text-lg font-bold text-text-main mb-4 flex items-center gap-2">
+                            <span class="material-symbols-outlined text-primary">photo_library</span>
+                            अस्पताल की तस्वीरें
+                        </h2>
+
+                        <div>
+                            <label
+                                class="flex items-center gap-2 text-sm sm:text-base font-semibold text-text-main mb-2 sm:mb-3">
+                                <span
+                                    class="material-symbols-outlined text-primary text-[18px] sm:text-[20px]">add_photo_alternate</span>
+                                <span>तस्वीरें अपलोड करें</span>
+                            </label>
+                            <input type="file" name="images" id="imageInput" accept="image/*"
+                                class="w-full px-4 py-3 bg-primary-light/50 border-2 border-transparent rounded-xl text-sm sm:text-base outline-none focus:border-primary transition-all"
+                                multiple="false" />
+                            <p class="text-xs text-text-secondary mt-2">एकाधिक तस्वीरें चुन सकते हैं। पहली तस्वीर मुख्य
+                                तस्वीर होगी।</p>
+                            <div id="imagePreviewContainer" class="image-preview-container"></div>
+                        </div>
+                    </div>
+
+                    <!-- Action Buttons -->
+                    <div class="flex flex-col sm:flex-row gap-3 sm:gap-4 pt-2 sm:pt-4">
+                        <button type="submit"
+                            class="flex-1 flex items-center justify-center gap-2 bg-gradient-to-r from-primary to-primary-dark hover:shadow-glow text-white font-bold px-5 py-4 rounded-2xl shadow-soft transition-all active:scale-95">
+                            <span class="material-symbols-outlined">save</span>
+                            <span>अस्पताल सहेजें</span>
+                        </button>
+                        <a href="/admin/list"
+                            class="flex-1 flex items-center justify-center gap-2 bg-gray-100 hover:bg-gray-200 text-text-main font-bold px-5 py-4 rounded-2xl shadow-soft transition-all active:scale-95">
+                            <span class="material-symbols-outlined">cancel</span>
+                            <span>रद्द करें</span>
+                        </a>
+                    </div>
+                </form>
+            </div>
+
+            <div class="mt-6 bg-primary-light/30 border-l-4 border-primary rounded-2xl p-5">
+                <div class="flex gap-3">
+                    <span class="material-symbols-outlined text-primary text-[24px] flex-shrink-0">info</span>
+                    <div>
+                        <h3 class="font-bold text-text-main mb-1">जानकारी</h3>
+                        <ul class="text-sm text-text-secondary leading-relaxed space-y-1">
+                            <li>• सभी आवश्यक फ़ील्ड (*) को भरना अनिवार्य है</li>
+                            <li>• सुविधाएं जोड़ने के लिए टेक्स्ट बॉक्स में लिखें और Enter दबाएं</li>
+                            <li>• पहली अपलोड की गई तस्वीर मुख्य/कवर इमेज होगी</li>
+                            <li>• अस्पताल की जानकारी सहेजने के बाद, यह तुरंत सिस्टम में उपलब्ध होगी</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        const hamburgerBtn = document.getElementById('hamburgerBtn');
+        const sidebar = document.getElementById('sidebar');
+        const sidebarOverlay = document.getElementById('sidebarOverlay');
+
+        function toggleSidebar() {
+            sidebar.classList.toggle('open');
+            sidebarOverlay.classList.toggle('active');
+        }
+
+        if (hamburgerBtn) {
+            hamburgerBtn.addEventListener('click', toggleSidebar);
+        }
+
+        if (sidebarOverlay) {
+            sidebarOverlay.addEventListener('click', toggleSidebar);
+        }
+
+        const navLinks = document.querySelectorAll('.nav-link');
+        navLinks.forEach(link => {
+            link.addEventListener('click', () => {
+                if (window.innerWidth < 1024) {
+                    toggleSidebar();
+                }
+            });
+        });
+
+        // Character counter for description
+        const descriptionField = document.querySelector('textarea[th\\:field="*{description}"]');
+        if (descriptionField) {
+            const charCount = document.getElementById('charCount');
+            descriptionField.addEventListener('input', function () {
+                const remaining = 1000 - this.value.length;
+                charCount.textContent = remaining;
+            });
+        }
+
+        // Facilities Management
+        let facilities = [];
+
+        function addFacility() {
+            const input = document.getElementById('facilityInput');
+            const value = input.value.trim();
+
+            if (value && !facilities.includes(value)) {
+                facilities.push(value);
+                updateFacilitiesDisplay();
+                input.value = '';
+            }
+        }
+
+        function removeFacility(index) {
+            facilities.splice(index, 1);
+            updateFacilitiesDisplay();
+        }
+
+        function updateFacilitiesDisplay() {
+            const container = document.getElementById('facilitiesTags');
+            const hidden = document.getElementById('facilitiesHidden');
+
+            container.innerHTML = facilities.map((facility, index) => `
+      <div class="facility-tag">
+        <span>${facility}</span>
+        <span class="material-symbols-outlined remove-facility" onclick="removeFacility(${index})">close</span>
+      </div>
+    `).join('');
+
+            hidden.value = facilities.join(',');
+        }
+
+        // Enter key for adding facilities
+        document.getElementById('facilityInput').addEventListener('keypress', function (e) {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                addFacility();
+            }
+        });
+
+        // Load existing facilities if editing
+        window.addEventListener('DOMContentLoaded', () => {
+            const existingFacilities = document.getElementById('facilitiesHidden').value;
+            if (existingFacilities) {
+                facilities = existingFacilities.split(',').filter(f => f.trim());
+                updateFacilitiesDisplay();
+            }
+        });
+
+        // Image Preview
+        let selectedFiles = [];
+
+        function previewImages(event) {
+            const files = Array.from(event.target.files);
+            selectedFiles = files;
+
+            const container = document.getElementById('imagePreviewContainer');
+            container.innerHTML = '';
+
+            files.forEach((file, index) => {
+                const reader = new FileReader();
+
+                reader.onload = function (e) {
+                    const div = document.createElement('div');
+                    div.className = 'image-preview';
+                    div.innerHTML = `
+          <img src="${e.target.result}" alt="Preview ${index + 1}">
+          ${index === 0 ? '<div class="image-preview-primary">मुख्य तस्वीर</div>' : ''}
+          <div class="image-preview-remove" onclick="removeImage(${index})">
+            <span class="material-symbols-outlined" style="font-size: 18px;">close</span>
+          </div>
+        `;
+                    container.appendChild(div);
+                };
+
+                reader.readAsDataURL(file);
+            });
+        }
+
+        function removeImage(index) {
+            selectedFiles.splice(index, 1);
+
+            const dataTransfer = new DataTransfer();
+            selectedFiles.forEach(file => dataTransfer.items.add(file));
+
+            document.getElementById('imageInput').files = dataTransfer.files;
+
+            const event = new Event('change', { bubbles: true });
+            document.getElementById('imageInput').dispatchEvent(event);
+        }
+
+        // Auto-hide success alert
+        window.addEventListener('DOMContentLoaded', () => {
+            const successElement = document.getElementById('successAlert');
+
+            if (successElement && !successElement.classList.contains('hidden')) {
+                setTimeout(() => {
+                    successElement.style.opacity = '0';
+                    successElement.style.transition = 'opacity 0.5s ease';
+                    setTimeout(() => {
+                        successElement.style.display = 'none';
+                    }, 500);
+                }, 3000);
+            }
+        });
+
+        // Form validation
+        const form = document.querySelector('form');
+        if (form) {
+            form.addEventListener('submit', function (e) {
+                const inputs = form.querySelectorAll('input[required], select[required], textarea[required]');
+                let isValid = true;
+
+                inputs.forEach(input => {
+                    if (!input.value.trim()) {
+                        isValid = false;
+                        input.classList.add('border-red-500');
+                    } else {
+                        input.classList.remove('border-red-500');
+                    }
+                });
+
+                if (!isValid) {
+                    e.preventDefault();
+                    alert('कृपया सभी आवश्यक फ़ील्ड भरें');
+                }
+            });
+        }
+
+        // Trim whitespace
+        document.addEventListener("DOMContentLoaded", function () {
+            const textInputs = document.querySelectorAll('input[type="text"], input[type="email"], input[type="url"], textarea');
+
+            textInputs.forEach(input => {
+                input.addEventListener('input', function () {
+                    this.value = this.value.replace(/^\s+/g, '');
+                });
+
+                input.addEventListener('blur', function () {
+                    this.value = this.value.trim();
+                });
+            });
+        });
+    </script>
+
+</body>
+
+</html>
+
+
+
+<!--<!DOCTYPE html>-->
+<!--<html lang="hi" xmlns:th="http://www.thymeleaf.org">-->
+<!--<head>-->
+<!--  <meta charset="utf-8"/>-->
+<!--  <meta content="width=device-width, initial-scale=1.0" name="viewport"/>-->
+<!--  <title>अस्पताल जोड़ें - हेल्थ साथी</title>-->
+<!--  <link href="https://fonts.googleapis.com" rel="preconnect"/>-->
+<!--  <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>-->
+<!--  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Devanagari:wght@400;500;600;700&display=swap" rel="stylesheet"/>-->
+<!--  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet"/>-->
+<!--  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>-->
+<!--  <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>-->
+<!--  <script id="tailwind-config">-->
+<!--    tailwind.config = {-->
+<!--        theme: {-->
+<!--            extend: {-->
+<!--                colors: {-->
+<!--                    "primary": "#1e73be",-->
+<!--                    "primary-dark": "#155a96",-->
+<!--                    "primary-light": "#e3f2fd",-->
+<!--                    "text-main": "#1e293b",-->
+<!--                    "text-secondary": "#64748b",-->
+<!--                    "border-light": "#e2e8f0",-->
+<!--                    "surface": "#ffffff",-->
+<!--                    "background": "#f8fafc",-->
+<!--                },-->
+<!--                fontFamily: {-->
+<!--                    "display": ["Poppins", "Noto Sans Devanagari", "sans-serif"],-->
+<!--                    "hindi": ["Noto Sans Devanagari", "sans-serif"]-->
+<!--                },-->
+<!--                borderRadius: {-->
+<!--                    "DEFAULT": "0.75rem",-->
+<!--                    "xl": "1rem",-->
+<!--                    "2xl": "1.25rem",-->
+<!--                    "3xl": "1.5rem"-->
+<!--                },-->
+<!--                boxShadow: {-->
+<!--                    'soft': '0 4px 20px -4px rgba(30, 115, 190, 0.1)',-->
+<!--                    'glow': '0 8px 30px rgba(30, 115, 190, 0.2)',-->
+<!--                    'card': '0 2px 12px rgba(0, 0, 0, 0.06)',-->
+<!--                    'hover': '0 8px 25px rgba(30, 115, 190, 0.15)',-->
+<!--                }-->
+<!--            },-->
+<!--        },-->
+<!--    }-->
+<!--  </script>-->
+<!--  <style>-->
+<!--    :root {-->
+<!--        &#45;&#45;surface: #ffffff;-->
+<!--        &#45;&#45;border-light: #e2e8f0;-->
+<!--        &#45;&#45;primary: #1e73be;-->
+<!--        &#45;&#45;primary-light: #e3f2fd;-->
+<!--        &#45;&#45;text-main: #1e293b;-->
+<!--        &#45;&#45;text-secondary: #64748b;-->
+<!--    }-->
+
+<!--    body {-->
+<!--        padding-top: env(safe-area-inset-top);-->
+<!--        padding-bottom: env(safe-area-inset-bottom);-->
+<!--        -webkit-font-smoothing: antialiased;-->
+<!--        -moz-osx-font-smoothing: grayscale;-->
+<!--    }-->
+<!--    .pb-safe {-->
+<!--        padding-bottom: env(safe-area-inset-bottom);-->
+<!--    }-->
+
+<!--    /* Gradient text */-->
+<!--    .gradient-text {-->
+<!--        background: linear-gradient(135deg, #1e73be 0%, #4a9fd8 100%);-->
+<!--        -webkit-background-clip: text;-->
+<!--        -webkit-text-fill-color: transparent;-->
+<!--        background-clip: text;-->
+<!--    }-->
+
+<!--    /* Form inputs custom styling */-->
+<!--    input[type="text"],-->
+<!--    input[type="number"],-->
+<!--    select {-->
+<!--        transition: all 0.3s ease;-->
+<!--    }-->
+
+<!--    input[type="text"]:focus,-->
+<!--    input[type="number"]:focus,-->
+<!--    select:focus {-->
+<!--        transform: translateY(-1px);-->
+<!--    }-->
+
+<!--    /* Sidebar Navigation Styles */-->
+<!--    .sidebar {-->
+<!--        position: fixed;-->
+<!--        left: 0;-->
+<!--        top: 0;-->
+<!--        bottom: 0;-->
+<!--        width: 280px;-->
+<!--        background: var(&#45;&#45;surface);-->
+<!--        border-right: 1px solid var(&#45;&#45;border-light);-->
+<!--        padding: 24px;-->
+<!--        overflow-y: auto;-->
+<!--        z-index: 100;-->
+<!--        transform: translateX(-100%);-->
+<!--        transition: transform 0.3s ease-in-out;-->
+<!--    }-->
+
+<!--    .sidebar.open {-->
+<!--        transform: translateX(0);-->
+<!--    }-->
+
+<!--    /* Desktop sidebar always visible */-->
+<!--    @media (min-width: 1024px) {-->
+<!--        .sidebar {-->
+<!--            transform: translateX(0);-->
+<!--        }-->
+
+<!--        .main-content {-->
+<!--            margin-left: 280px;-->
+<!--        }-->
+
+<!--        .hamburger-btn {-->
+<!--            display: none;-->
+<!--        }-->
+<!--    }-->
+
+<!--    /* Mobile overlay */-->
+<!--    .sidebar-overlay {-->
+<!--        position: fixed;-->
+<!--        inset: 0;-->
+<!--        background: rgba(0, 0, 0, 0.5);-->
+<!--        z-index: 99;-->
+<!--        opacity: 0;-->
+<!--        visibility: hidden;-->
+<!--        transition: opacity 0.3s ease-in-out, visibility 0.3s ease-in-out;-->
+<!--    }-->
+
+<!--    .sidebar-overlay.active {-->
+<!--        opacity: 1;-->
+<!--        visibility: visible;-->
+<!--    }-->
+
+<!--    @media (min-width: 1024px) {-->
+<!--        .sidebar-overlay {-->
+<!--            display: none;-->
+<!--        }-->
+<!--    }-->
+
+<!--    .logo-section {-->
+<!--        display: flex;-->
+<!--        align-items: center;-->
+<!--        gap: 12px;-->
+<!--        margin-bottom: 32px;-->
+<!--        padding-bottom: 24px;-->
+<!--        border-bottom: 1px solid var(&#45;&#45;border-light);-->
+<!--    }-->
+
+<!--    .logo-icon {-->
+<!--        width: 48px;-->
+<!--        height: 48px;-->
+<!--        background: var(&#45;&#45;primary);-->
+<!--        border-radius: 12px;-->
+<!--        display: flex;-->
+<!--        align-items: center;-->
+<!--        justify-content: center;-->
+<!--        transform: rotate(3deg);-->
+<!--        transition: transform 0.3s;-->
+<!--    }-->
+
+<!--    .logo-icon:hover {-->
+<!--        transform: rotate(0deg);-->
+<!--    }-->
+
+<!--    .logo-icon .material-symbols-outlined {-->
+<!--        color: white;-->
+<!--        font-size: 28px;-->
+<!--    }-->
+
+<!--    .logo-text h2 {-->
+<!--        font-size: 20px;-->
+<!--        font-weight: 700;-->
+<!--        color: var(&#45;&#45;text-main);-->
+<!--    }-->
+
+<!--    .logo-text p {-->
+<!--        font-size: 12px;-->
+<!--        color: var(&#45;&#45;text-secondary);-->
+<!--    }-->
+
+<!--    .nav-menu {-->
+<!--        list-style: none;-->
+<!--        padding: 0;-->
+<!--        margin: 0;-->
+<!--    }-->
+
+<!--    .nav-item {-->
+<!--        margin-bottom: 8px;-->
+<!--    }-->
+
+<!--    .nav-link {-->
+<!--        display: flex;-->
+<!--        align-items: center;-->
+<!--        gap: 12px;-->
+<!--        padding: 12px 16px;-->
+<!--        border-radius: 12px;-->
+<!--        color: var(&#45;&#45;text-secondary);-->
+<!--        text-decoration: none;-->
+<!--        font-weight: 500;-->
+<!--        font-size: 14px;-->
+<!--        transition: all 0.3s;-->
+<!--        cursor: pointer;-->
+<!--    }-->
+
+<!--    .nav-link:hover {-->
+<!--        background: var(&#45;&#45;primary-light);-->
+<!--        color: var(&#45;&#45;primary);-->
+<!--    }-->
+
+<!--    .nav-link.active {-->
+<!--        background: var(&#45;&#45;primary);-->
+<!--        color: white;-->
+<!--    }-->
+
+<!--    .nav-link .material-symbols-outlined {-->
+<!--        font-size: 22px;-->
+<!--    }-->
+
+<!--    /* Hamburger Button */-->
+<!--    .hamburger-btn {-->
+<!--        position: fixed;-->
+<!--        bottom: 24px;-->
+<!--        right: 24px;-->
+<!--        width: 56px;-->
+<!--        height: 56px;-->
+<!--        background: linear-gradient(135deg, #1e73be 0%, #4a9fd8 100%);-->
+<!--        border-radius: 50%;-->
+<!--        display: flex;-->
+<!--        align-items: center;-->
+<!--        justify-content: center;-->
+<!--        box-shadow: 0 8px 24px rgba(30, 115, 190, 0.4);-->
+<!--        cursor: pointer;-->
+<!--        z-index: 98;-->
+<!--        transition: all 0.3s ease;-->
+<!--        border: none;-->
+<!--    }-->
+
+<!--    .hamburger-btn:hover {-->
+<!--        transform: scale(1.1);-->
+<!--        box-shadow: 0 12px 32px rgba(30, 115, 190, 0.5);-->
+<!--    }-->
+
+<!--    .hamburger-btn:active {-->
+<!--        transform: scale(0.95);-->
+<!--    }-->
+
+<!--    .hamburger-btn .material-symbols-outlined {-->
+<!--        color: white;-->
+<!--        font-size: 28px;-->
+<!--    }-->
+
+<!--    /* Mobile adjustments */-->
+<!--    @media (max-width: 640px) {-->
+<!--        .hamburger-btn {-->
+<!--            width: 48px;-->
+<!--            height: 48px;-->
+<!--            bottom: 20px;-->
+<!--            right: 20px;-->
+<!--        }-->
+
+<!--        .hamburger-btn .material-symbols-outlined {-->
+<!--            font-size: 24px;-->
+<!--        }-->
+<!--    }-->
+
+<!--    /* Main content responsive */-->
+<!--    .main-content {-->
+<!--        transition: margin-left 0.3s ease-in-out;-->
+<!--    }-->
+<!--  </style>-->
+<!--</head>-->
+<!--<body class="bg-background font-hindi text-text-main relative overflow-y-auto pb-safe">-->
+
+<!--&lt;!&ndash; Sidebar Overlay for Mobile &ndash;&gt;-->
+<!--<div class="sidebar-overlay" id="sidebarOverlay"></div>-->
+
+<!--&lt;!&ndash; Sidebar Navigation &ndash;&gt;-->
+<!--<aside class="sidebar" id="sidebar">-->
+<!--  <div class="logo-section">-->
+<!--    <div class="logo-icon">-->
+<!--      <span class="material-symbols-outlined">health_and_safety</span>-->
+<!--    </div>-->
+<!--    <div class="logo-text">-->
+<!--      <h2>Health Sathi</h2>-->
+<!--      <p>Admin Panel</p>-->
+<!--    </div>-->
+<!--  </div>-->
+
+<!--  <ul class="nav-menu">-->
+<!--    <li class="nav-item">-->
+<!--      <a class="nav-link" href="/admin/get/dashboard">-->
+<!--        <span class="material-symbols-outlined">dashboard</span>-->
+<!--        <span>Dashboard</span>-->
+<!--      </a>-->
+<!--    </li>-->
+
+<!--    <li class="nav-item">-->
+<!--      <a class="nav-link" href="/admin/show/all/users">-->
+<!--        <span class="material-symbols-outlined">group</span>-->
+<!--        <span>Users</span>-->
+<!--      </a>-->
+<!--    </li>-->
+
+<!--    <li class="nav-item">-->
+<!--      <a class="nav-link" href="/admin/getDoctorList">-->
+<!--        <span class="material-symbols-outlined">medical_services</span>-->
+<!--        <span>Doctors</span>-->
+<!--      </a>-->
+<!--    </li>-->
+
+<!--    <li class="nav-item">-->
+<!--      <a class="nav-link active" href="/admin/list">-->
+<!--        <span class="material-symbols-outlined">business</span>-->
+<!--        <span>Clinics & Hospitals</span>-->
+<!--      </a>-->
+<!--    </li>-->
+
+<!--    <li class="nav-item">-->
+<!--      <a class="nav-link" href="/admin/health">-->
+<!--        <span class="material-symbols-outlined">favorite</span>-->
+<!--        <span>Health Suggestions</span>-->
+<!--      </a>-->
+<!--    </li>-->
+
+<!--    <li class="nav-item">-->
+<!--      <a class="nav-link" href="/admin/type-add">-->
+<!--        <span class="material-symbols-outlined">category</span>-->
+<!--        <span>Add Type</span>-->
+<!--      </a>-->
+<!--    </li>-->
+
+<!--    <li class="nav-item">-->
+<!--      <a class="nav-link">-->
+<!--        <span class="material-symbols-outlined">settings</span>-->
+<!--        <span>Settings</span>-->
+<!--      </a>-->
+<!--    </li>-->
+<!--  </ul>-->
+<!--</aside>-->
+
+<!--&lt;!&ndash; Hamburger Menu Button (Mobile Only) &ndash;&gt;-->
+<!--<button class="hamburger-btn lg:hidden" id="hamburgerBtn" aria-label="Open Menu">-->
+<!--  <span class="material-symbols-outlined">menu</span>-->
+<!--</button>-->
+
+<!--&lt;!&ndash; Main Content Wrapper &ndash;&gt;&lt;!&ndash; Main Content Wrapper &ndash;&gt;-->
+<!--<div class="main-content">-->
+<!--  &lt;!&ndash; Header with Logo &ndash;&gt;-->
+<!--  <header class="bg-white border-b border-border-light sticky top-0 z-20 shadow-sm">-->
+<!--    <div class="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3 sm:py-4">-->
+<!--      <div class="flex items-center justify-between">-->
+<!--        <div class="flex items-center gap-2 sm:gap-3">-->
+<!--          &lt;!&ndash; Logo &ndash;&gt;-->
+<!--          <div class="w-10 h-10 sm:w-12 sm:h-12 bg-gradient-to-br from-primary to-primary-dark rounded-xl sm:rounded-2xl flex items-center justify-center shadow-soft">-->
+<!--            <span class="material-symbols-outlined text-white text-[24px] sm:text-[28px]">local_hospital</span>-->
+<!--          </div>-->
+<!--          <div>-->
+<!--            <h1 class="text-lg sm:text-xl lg:text-2xl font-bold gradient-text">हेल्थ-साथी</h1>-->
+<!--            <p class="text-[10px] sm:text-xs text-text-secondary font-medium hidden xs:block">स्वास्थ्य सेवा प्रबंधन</p>-->
+<!--          </div>-->
+<!--        </div>-->
+<!--        <div class="flex items-center gap-2 sm:gap-3">-->
+<!--          <button class="w-8 h-8 sm:w-10 sm:h-10 flex items-center justify-center rounded-lg hover:bg-primary-light transition-colors">-->
+<!--            <span class="material-symbols-outlined text-primary text-[20px] sm:text-[24px]">notifications</span>-->
+<!--          </button>-->
+<!--          <button class="w-8 h-8 sm:w-10 sm:h-10 flex items-center justify-center rounded-lg hover:bg-primary-light transition-colors">-->
+<!--            <span class="material-symbols-outlined text-primary text-[20px] sm:text-[24px]">account_circle</span>-->
+<!--          </button>-->
+<!--        </div>-->
+<!--      </div>-->
+<!--    </div>-->
+<!--  </header>-->
+
+<!--  <main class="w-full max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 z-10 relative py-4 sm:py-6 lg:py-8 pb-24 sm:pb-28">-->
+<!--    &lt;!&ndash; Page Header &ndash;&gt;-->
+<!--    <div class="mb-4 sm:mb-6">-->
+<!--      <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-4 mb-4">-->
+<!--        <div>-->
+<!--          <h1 class="text-xl sm:text-2xl lg:text-3xl font-bold text-text-main mb-1 tracking-tight">अस्पताल जोड़ें</h1>-->
+<!--          <p class="text-xs sm:text-sm text-text-secondary font-medium">अस्पताल की जानकारी दर्ज करें</p>-->
+<!--        </div>-->
+<!--        <a href="/admin/list" class="flex items-center justify-center sm:justify-start gap-2 bg-gray-100 hover:bg-gray-200 text-text-main font-bold px-4 sm:px-5 py-2.5 sm:py-3 rounded-xl sm:rounded-2xl shadow-soft transition-all active:scale-95 text-sm sm:text-base w-full sm:w-auto">-->
+<!--          <span class="material-symbols-outlined text-[18px] sm:text-[20px]">arrow_back</span>-->
+<!--          <span>सूची में वापस जाएं</span>-->
+<!--        </a>-->
+<!--      </div>-->
+<!--    </div>-->
+
+<!--    &lt;!&ndash; Success Alert &ndash;&gt;-->
+<!--    <div id="successAlert" th:if="${param.success}" class="flex items-start sm:items-center mb-4 rounded-xl sm:rounded-2xl bg-green-50 border-l-4 border-green-500 text-green-800 px-4 sm:px-5 py-3 sm:py-4 shadow-soft text-sm">-->
+<!--      <span class="material-symbols-outlined mr-2 sm:mr-3 text-green-500 text-[20px] sm:text-[24px] flex-shrink-0">check_circle</span>-->
+<!--      <span>सफलतापूर्वक सहेजा गया</span>-->
+<!--    </div>-->
+
+<!--    &lt;!&ndash; Form Card &ndash;&gt;-->
+<!--    <div class="bg-white rounded-xl sm:rounded-2xl shadow-card border border-border-light p-4 sm:p-6 lg:p-8">-->
+<!--      <form th:action="@{/admin/save}" th:object="${hospital}" method="post" class="space-y-4 sm:space-y-6">-->
+
+<!--        <input type="hidden" th:field="*{hospitalId}">-->
+
+<!--        &lt;!&ndash; Hospital Name &ndash;&gt;-->
+<!--        <div>-->
+<!--          <label class="flex items-center gap-2 text-sm sm:text-base font-semibold text-text-main mb-2 sm:mb-3">-->
+<!--            <span class="material-symbols-outlined text-primary text-[18px] sm:text-[20px] lg:text-[22px]">business</span>-->
+<!--            <span>अस्पताल का नाम</span>-->
+<!--            <span class="text-red-500">*</span>-->
+<!--          </label>-->
+<!--          <input-->
+<!--                  type="text"-->
+<!--                  th:field="*{name}"-->
+<!--                  required-->
+<!--                  placeholder="अस्पताल का नाम दर्ज करें"-->
+<!--                  class="w-full px-3 sm:px-4 lg:px-5 py-2.5 sm:py-3 lg:py-4 bg-primary-light/50 border-2 border-transparent rounded-lg sm:rounded-xl text-sm sm:text-base outline-none focus:ring-0 focus:border-primary transition-all"-->
+<!--          />-->
+<!--        </div>-->
+
+<!--        &lt;!&ndash; Address &ndash;&gt;-->
+<!--        <div>-->
+<!--          <label class="flex items-center gap-2 text-sm sm:text-base font-semibold text-text-main mb-2 sm:mb-3">-->
+<!--            <span class="material-symbols-outlined text-primary text-[18px] sm:text-[20px] lg:text-[22px]">location_on</span>-->
+<!--            <span>पता</span>-->
+<!--            <span class="text-red-500">*</span>-->
+<!--          </label>-->
+<!--          <input-->
+<!--                  type="text"-->
+<!--                  th:field="*{address}"-->
+<!--                  required-->
+<!--                  placeholder="अस्पताल का पता दर्ज करें"-->
+<!--                  class="w-full px-3 sm:px-4 lg:px-5 py-2.5 sm:py-3 lg:py-4 bg-primary-light/50 border-2 border-transparent rounded-lg sm:rounded-xl text-sm sm:text-base outline-none focus:ring-0 focus:border-primary transition-all"-->
+<!--          />-->
+<!--        </div>-->
+
+<!--        &lt;!&ndash; Contact &ndash;&gt;-->
+<!--        <div>-->
+<!--          <label class="flex items-center gap-2 text-sm sm:text-base font-semibold text-text-main mb-2 sm:mb-3">-->
+<!--            <span class="material-symbols-outlined text-primary text-[18px] sm:text-[20px] lg:text-[22px]">call</span>-->
+<!--            <span>संपर्क नंबर</span>-->
+<!--            <span class="text-red-500">*</span>-->
+<!--          </label>-->
+<!--          <input-->
+<!--                  type="number"-->
+<!--                  th:field="*{contact}"-->
+<!--                  required-->
+<!--                  placeholder="संपर्क नंबर दर्ज करें"-->
+<!--                  class="w-full px-3 sm:px-4 lg:px-5 py-2.5 sm:py-3 lg:py-4 bg-primary-light/50 border-2 border-transparent rounded-lg sm:rounded-xl text-sm sm:text-base outline-none focus:ring-0 focus:border-primary transition-all"-->
+<!--          />-->
+<!--        </div>-->
+
+<!--        &lt;!&ndash; Hospital Type &ndash;&gt;-->
+<!--        <div>-->
+<!--          <label class="flex items-center gap-2 text-sm sm:text-base font-semibold text-text-main mb-2 sm:mb-3">-->
+<!--            <span class="material-symbols-outlined text-primary text-[18px] sm:text-[20px] lg:text-[22px]">category</span>-->
+<!--            <span>अस्पताल का प्रकार</span>-->
+<!--            <span class="text-red-500">*</span>-->
+<!--          </label>-->
+<!--          <select-->
+<!--                  th:field="*{type.id}"-->
+<!--                  required-->
+<!--                  class="w-full px-3 sm:px-4 lg:px-5 py-2.5 sm:py-3 lg:py-4 bg-primary-light/50 border-2 border-transparent rounded-lg sm:rounded-xl text-sm sm:text-base outline-none focus:ring-0 focus:border-primary transition-all cursor-pointer"-->
+<!--          >-->
+<!--            <option value="">&#45;&#45; प्रकार चुनें &#45;&#45;</option>-->
+<!--            <option th:each="t : ${types}"-->
+<!--                    th:value="${t.id}"-->
+<!--                    th:text="${t.type}">-->
+<!--            </option>-->
+<!--          </select>-->
+<!--        </div>-->
+
+<!--        &lt;!&ndash; Action Buttons &ndash;&gt;-->
+<!--        <div class="flex flex-col sm:flex-row gap-3 sm:gap-4 pt-2 sm:pt-4">-->
+<!--          <button-->
+<!--                  type="submit"-->
+<!--                  class="flex-1 flex items-center justify-center gap-2 bg-gradient-to-r from-primary to-primary-dark hover:shadow-glow text-white font-bold px-4 sm:px-5 lg:px-6 py-3 sm:py-3.5 lg:py-4 rounded-xl sm:rounded-2xl shadow-soft transition-all active:scale-95 text-sm sm:text-base"-->
+<!--          >-->
+<!--            <span class="material-symbols-outlined text-[18px] sm:text-[20px] lg:text-[22px]">save</span>-->
+<!--            <span>अस्पताल सहेजें</span>-->
+<!--          </button>-->
+<!--          <a-->
+<!--                  href="/admin/list"-->
+<!--                  class="flex-1 flex items-center justify-center gap-2 bg-gray-100 hover:bg-gray-200 text-text-main font-bold px-4 sm:px-5 lg:px-6 py-3 sm:py-3.5 lg:py-4 rounded-xl sm:rounded-2xl shadow-soft transition-all active:scale-95 text-sm sm:text-base"-->
+<!--          >-->
+<!--            <span class="material-symbols-outlined text-[18px] sm:text-[20px] lg:text-[22px]">cancel</span>-->
+<!--            <span>रद्द करें</span>-->
+<!--          </a>-->
+<!--        </div>-->
+<!--      </form>-->
+<!--    </div>-->
+
+<!--    &lt;!&ndash; Info Card &ndash;&gt;-->
+<!--    <div class="mt-4 sm:mt-6 bg-primary-light/30 border-l-4 border-primary rounded-xl sm:rounded-2xl p-4 sm:p-5">-->
+<!--      <div class="flex gap-3">-->
+<!--        <span class="material-symbols-outlined text-primary text-[20px] sm:text-[24px] flex-shrink-0">info</span>-->
+<!--        <div>-->
+<!--          <h3 class="font-bold text-text-main mb-1 text-sm sm:text-base">जानकारी</h3>-->
+<!--          <p class="text-xs sm:text-sm text-text-secondary leading-relaxed">-->
+<!--            कृपया सभी आवश्यक फ़ील्ड (*) को सही जानकारी के साथ भरें। अस्पताल की जानकारी सहेजने के बाद, यह सिस्टम में उपलब्ध हो जाएगी।-->
+<!--          </p>-->
+<!--        </div>-->
+<!--      </div>-->
+<!--    </div>-->
+<!--  </main>-->
+<!--</div>-->
+
+<!--<script>-->
+<!--  // Sidebar Toggle Functionality-->
+<!--  const hamburgerBtn = document.getElementById('hamburgerBtn');-->
+<!--  const sidebar = document.getElementById('sidebar');-->
+<!--  const sidebarOverlay = document.getElementById('sidebarOverlay');-->
+
+<!--  function toggleSidebar() {-->
+<!--    sidebar.classList.toggle('open');-->
+<!--    sidebarOverlay.classList.toggle('active');-->
+<!--  }-->
+
+<!--  if (hamburgerBtn) {-->
+<!--    hamburgerBtn.addEventListener('click', toggleSidebar);-->
+<!--  }-->
+
+<!--  if (sidebarOverlay) {-->
+<!--    sidebarOverlay.addEventListener('click', toggleSidebar);-->
+<!--  }-->
+
+<!--  // Close sidebar when clicking on a nav link (mobile only)-->
+<!--  const navLinks = document.querySelectorAll('.nav-link');-->
+<!--  navLinks.forEach(link => {-->
+<!--    link.addEventListener('click', () => {-->
+<!--      if (window.innerWidth < 1024) {-->
+<!--        toggleSidebar();-->
+<!--      }-->
+<!--    });-->
+<!--  });-->
+
+<!--  // Auto-hide success alert-->
+<!--  window.addEventListener('DOMContentLoaded', () => {-->
+<!--    const successElement = document.getElementById('successAlert');-->
+
+<!--    if (successElement && !successElement.classList.contains('hidden')) {-->
+<!--      setTimeout(() => {-->
+<!--        successElement.style.opacity = '0';-->
+<!--        successElement.style.transition = 'opacity 0.5s ease';-->
+<!--        setTimeout(() => {-->
+<!--          successElement.style.display = 'none';-->
+<!--        }, 500);-->
+<!--      }, 3000);-->
+<!--    }-->
+<!--  });-->
+
+<!--  // Form validation feedback-->
+<!--  const form = document.querySelector('form');-->
+<!--  if (form) {-->
+<!--    form.addEventListener('submit', function(e) {-->
+<!--      const inputs = form.querySelectorAll('input[required], select[required]');-->
+<!--      let isValid = true;-->
+
+<!--      inputs.forEach(input => {-->
+<!--        if (!input.value.trim()) {-->
+<!--          isValid = false;-->
+<!--          input.classList.add('border-red-500');-->
+<!--        } else {-->
+<!--          input.classList.remove('border-red-500');-->
+<!--        }-->
+<!--      });-->
+
+<!--      if (!isValid) {-->
+<!--        e.preventDefault();-->
+<!--      }-->
+<!--    });-->
+<!--  }-->
+
+<!--  // Trim whitespace from text inputs-->
+<!--  document.addEventListener("DOMContentLoaded", function () {-->
+<!--    const textInputs = document.querySelectorAll('input[type="text"]');-->
+
+<!--    textInputs.forEach(input => {-->
+<!--      input.addEventListener('input', function () {-->
+<!--        this.value = this.value.replace(/^\s+/g, '');-->
+<!--      });-->
+
+<!--      input.addEventListener('blur', function () {-->
+<!--        this.value = this.value.trim();-->
+<!--      });-->
+<!--    });-->
+<!--  });-->
+<!--</script>-->
+
+<!--</body>-->
+<!--</html>-->
