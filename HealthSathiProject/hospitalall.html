@@ -1,0 +1,820 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>सभी अस्पताल - हेल्थ साथी</title>
+    <meta name="_csrf" th:content="${_csrf.token}">
+    <meta name="_csrf_header" th:content="${_csrf.headerName}">
+
+    <link href="https://fonts.googleapis.com" rel="preconnect" />
+    <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect" />
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Devanagari:wght@400;500;600;700&display=swap"
+        rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap"
+        rel="stylesheet" />
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <script id="tailwind-config">
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#0058ba",
+                        "primary-dark": "#155a96",
+                        "primary-light": "#e3f2fd",
+                        "text-main": "#1e293b",
+                        "text-secondary": "#64748b",
+                        "border-light": "#e2e8f0",
+                        "surface": "#ffffff",
+                        "background": "#f8fafc",
+                    },
+                    fontFamily: {
+                        "display": ["Noto Sans Devanagari", "sans-serif"],
+                        "hindi": ["Noto Sans Devanagari", "sans-serif"]
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0.75rem",
+                        "xl": "1rem",
+                        "2xl": "1.25rem",
+                        "3xl": "1.5rem"
+                    },
+                    boxShadow: {
+                        'soft': '0 4px 20px -4px rgba(30, 115, 190, 0.1)',
+                        'glow': '0 8px 30px rgba(30, 115, 190, 0.2)',
+                        'card': '0 2px 12px rgba(0, 0, 0, 0.06)',
+                        'hover': '0 8px 25px rgba(30, 115, 190, 0.15)',
+                    }
+                },
+            },
+        }
+    </script>
+    <link rel="stylesheet" th:href="@{/FragmentStyle.css}" />
+    <style>
+        /* Hospital Card Image Carousel */
+        .hospital-image-carousel {
+            position: relative;
+            width: 100%;
+            height: 200px;
+            overflow: hidden;
+            border-radius: 1.25rem 1.25rem 0 0;
+        }
+
+        .carousel-track {
+            display: flex;
+            transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            height: 100%;
+        }
+
+        .carousel-slide {
+            min-width: 100%;
+            height: 100%;
+            position: relative;
+        }
+
+        .carousel-slide img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .carousel-placeholder {
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #e3f2fd 0%, #f8fafc 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .carousel-nav {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(8px);
+            border-radius: 50%;
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            z-index: 10;
+            opacity: 0;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+        }
+
+        .hospital-card:hover .carousel-nav {
+            opacity: 1;
+        }
+
+        .carousel-nav:hover {
+            background: white;
+            transform: translateY(-50%) scale(1.1);
+        }
+
+        .carousel-nav:active {
+            transform: translateY(-50%) scale(0.95);
+        }
+
+        .carousel-prev {
+            left: 8px;
+        }
+
+        .carousel-next {
+            right: 8px;
+        }
+
+        .carousel-indicators {
+            position: absolute;
+            bottom: 12px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 6px;
+            z-index: 10;
+        }
+
+        .carousel-dot {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.6);
+            transition: all 0.3s;
+            cursor: pointer;
+        }
+
+        .carousel-dot.active {
+            width: 20px;
+            border-radius: 3px;
+            background: white;
+        }
+
+        .hospital-card {
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .hospital-card:hover {
+            transform: translateY(-4px);
+        }
+
+        .facility-tag {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            padding: 4px 12px;
+            background: #f1f5f9;
+            border-radius: 16px;
+            font-size: 12px;
+            color: #64748b;
+            margin: 4px;
+            transition: all 0.2s;
+        }
+
+        .facility-tag:hover {
+            background: #e2e8f0;
+        }
+
+        .search-box {
+            position: relative;
+        }
+
+        .search-icon {
+            position: absolute;
+            left: 16px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #64748b;
+        }
+
+        .search-input {
+            padding-left: 48px;
+        }
+
+        .filter-chip {
+            padding: 8px 16px;
+            border-radius: 20px;
+            border: 2px solid #e2e8f0;
+            background: white;
+            font-size: 14px;
+            font-weight: 500;
+            color: #64748b;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            white-space: nowrap;
+        }
+
+        .filter-chip.active {
+            background: #0058ba;
+            color: white;
+            border-color: #0058ba;
+        }
+
+        .filter-chip:hover:not(.active) {
+            border-color: #0058ba;
+            color: #0058ba;
+        }
+
+        .image-counter {
+            position: absolute;
+            top: 12px;
+            right: 12px;
+            background: rgba(0, 0, 0, 0.7);
+            backdrop-filter: blur(8px);
+            color: white;
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: 600;
+            z-index: 10;
+        }
+
+        .type-badge {
+            position: absolute;
+            top: 12px;
+            left: 12px;
+            z-index: 10;
+        }
+
+        .badge-24-7 {
+            position: absolute;
+            top: 12px;
+            left: auto;
+            right: auto;
+            z-index: 10;
+        }
+
+        .info-row {
+            display: flex;
+            align-items: start;
+            gap: 8px;
+            margin-bottom: 8px;
+        }
+
+        .info-row:last-child {
+            margin-bottom: 0;
+        }
+
+        /* Hide scrollbar for filter chips */
+        .filter-chips-container::-webkit-scrollbar {
+            display: none;
+        }
+
+        .filter-chips-container {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+
+        /* Loading skeleton */
+        .skeleton {
+            background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+            background-size: 200% 100%;
+            animation: loading 1.5s infinite;
+        }
+
+        @keyframes loading {
+            0% {
+                background-position: 200% 0;
+            }
+
+            100% {
+                background-position: -200% 0;
+            }
+        }
+
+        /* Smooth scroll */
+        html {
+            scroll-behavior: smooth;
+        }
+    </style>
+</head>
+
+<body class="bg-background antialiased text-text-main">
+    <div class="relative flex min-h-screen w-full flex-col overflow-hidden pb-24">
+
+        <!-- Header -->
+        <header class="sticky top-0 z-20 bg-white/90 backdrop-blur-md px-5 py-4 border-b border-slate-100">
+            <div class="flex items-center gap-4">
+                <button id="backBtn"
+                    class="flex items-center justify-center size-10 rounded-full bg-slate-50 text-slate-600 hover:bg-slate-100 transition-colors">
+                    <span class="material-symbols-outlined text-[24px]">arrow_back</span>
+                </button>
+                <div class="flex-1">
+                    <h1 class="text-xl font-bold text-slate-900">सभी अस्पताल</h1>
+                    <p class="text-xs text-slate-500">All Hospitals</p>
+                </div>
+                <div class="flex items-center gap-2">
+                    <span class="material-symbols-outlined text-primary text-[24px]">local_hospital</span>
+                    <span class="text-sm font-semibold text-slate-900" id="hospitalCount"
+                        th:text="${hospitals != null ? #lists.size(hospitals) : 0}">0</span>
+                </div>
+            </div>
+        </header>
+
+        <main class="flex-1 flex flex-col gap-6 p-5">
+
+            <!-- Search Bar -->
+            <div class="search-box">
+                <span class="material-symbols-outlined search-icon text-[20px]">search</span>
+                <input type="text" id="searchInput"
+                    class="search-input w-full px-4 py-3 bg-white border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all"
+                    placeholder="अस्पताल खोजें... (Search hospitals)">
+            </div>
+
+            <!-- Filter Chips -->
+            <div class="filter-chips-container flex gap-2 overflow-x-auto pb-2">
+                <button class="filter-chip active" id="filter-all" data-type-id="ALL">
+                    सभी (All)
+                </button>
+                <button class="filter-chip" th:each="type : ${hospitalTypes}"
+                    th:if="${type != null && type.typeId != null}" th:id="'filter-' + ${type.typeId}"
+                    th:data-type-id="${type.typeId}"
+                    th:text="${type.typeName != null && !#strings.isEmpty(type.typeName) ? type.typeName : 'Unknown'}">
+                    प्रकार
+                </button>
+            </div>
+
+            <!-- Hospital Stats -->
+            <div class="grid grid-cols-3 gap-3">
+                <div class="bg-blue-50 rounded-xl p-4 text-center">
+                    <div class="text-2xl font-bold text-blue-600"
+                        th:text="${totalHospitals != null ? totalHospitals : 0}">0</div>
+                    <div class="text-xs text-blue-800">कुल अस्पताल</div>
+                </div>
+                <div class="bg-green-50 rounded-xl p-4 text-center">
+                    <div class="text-2xl font-bold text-green-600" th:text="${availableNow != null ? availableNow : 0}">
+                        0</div>
+                    <div class="text-xs text-green-800">24/7 उपलब्ध</div>
+                </div>
+                <div class="bg-purple-50 rounded-xl p-4 text-center">
+                    <div class="text-2xl font-bold text-purple-600"
+                        th:text="${emergencyReady != null ? emergencyReady : 0}">0</div>
+                    <div class="text-xs text-purple-800">आपातकालीन</div>
+                </div>
+            </div>
+
+            <!-- Hospitals Grid -->
+            <div id="hospitals-container" class="grid grid-cols-1 gap-4">
+
+                <!-- Hospital Card -->
+                <div th:each="hospital : ${hospitals}" th:if="${hospital != null && hospital.hospitalId != null}"
+                    class="hospital-card bg-white rounded-2xl overflow-hidden border border-slate-100 shadow-soft hover:shadow-hover cursor-pointer"
+                    th:attr="data-hospital-id=${hospital.hospitalId},
+                    data-hospital-name=${hospital.name != null && !#strings.isEmpty(hospital.name) ? hospital.name : 'Unknown Hospital'},
+                    data-hospital-type=${hospital.type != null && hospital.type.typeId != null ? hospital.type.typeId : 'unknown'},
+                    data-hospital-address=${hospital.address != null && !#strings.isEmpty(hospital.address) ? hospital.address : ''}">
+
+                    <!-- Hospital Image Carousel -->
+                    <div class="hospital-image-carousel">
+                        <!-- Check if hospital has images -->
+                        <div th:if="${hospital.images != null && !#lists.isEmpty(hospital.images)}"
+                            class="carousel-wrapper" th:data-hospital-id="${hospital.hospitalId}">
+
+                            <!-- Image Counter -->
+                            <div class="image-counter">
+                                <span class="current-slide">1</span> / <span
+                                    th:text="${#lists.size(hospital.images)}">1</span>
+                            </div>
+
+                            <!-- Carousel Track -->
+                            <div class="carousel-track">
+                                <div th:each="image : ${hospital.images}"
+                                    th:if="${image != null && image.imageId != null}" class="carousel-slide">
+                                    <img th:src="@{'/user/api/hospital/image/' + ${image.imageId}}"
+                                        th:alt="${hospital.name != null ? hospital.name : 'Hospital Image'}"
+                                        onerror="this.parentElement.parentElement.parentElement.querySelector('.carousel-placeholder').style.display='flex'; this.parentElement.parentElement.style.display='none';">
+                                </div>
+                            </div>
+
+                            <!-- Navigation Buttons (only if more than 1 image) -->
+                            <div th:if="${#lists.size(hospital.images) > 1}">
+                                <div class="carousel-nav carousel-prev">
+                                    <span
+                                        class="material-symbols-outlined text-slate-700 text-[20px]">chevron_left</span>
+                                </div>
+                                <div class="carousel-nav carousel-next">
+                                    <span
+                                        class="material-symbols-outlined text-slate-700 text-[20px]">chevron_right</span>
+                                </div>
+
+                                <!-- Indicators -->
+                                <div class="carousel-indicators">
+                                    <div th:each="image, iterStat : ${hospital.images}" class="carousel-dot"
+                                        th:classappend="${iterStat.index == 0} ? 'active' : ''"></div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Placeholder if no images -->
+                        <div th:unless="${hospital.images != null && !#lists.isEmpty(hospital.images)}"
+                            class="carousel-placeholder" style="display: flex;">
+                            <span class="material-symbols-outlined text-slate-300 text-[64px]">local_hospital</span>
+                            <span class="text-xs text-slate-400">कोई चित्र नहीं</span>
+                        </div>
+
+                        <!-- Type Badge -->
+                        <div class="type-badge"
+                            th:if="${hospital.type != null && hospital.type.type != null && !#strings.isEmpty(hospital.type.type)}">
+                            <span
+                                class="px-3 py-1 bg-white/90 backdrop-blur-sm rounded-full text-xs font-semibold text-primary"
+                                th:text="${hospital.type.type}">प्रकार</span>
+                        </div>
+
+                        <!-- 24/7 Badge -->
+                        <div th:if="${hospital.timings != null && hospital.timings == '24/7'}"
+                            th:style="${hospital.type != null && hospital.type.type != null && !#strings.isEmpty(hospital.type.type) ? 'left: 120px;' : 'left: 12px;'}"
+                            class="badge-24-7 absolute top-3">
+                            <span
+                                class="px-3 py-1 bg-green-500/90 backdrop-blur-sm rounded-full text-xs font-semibold text-white">
+                                24/7
+                            </span>
+                        </div>
+                    </div>
+
+                    <!-- Hospital Info -->
+                    <div class="p-5">
+                        <h3 class="text-lg font-bold text-slate-900 mb-2 line-clamp-2"
+                            th:text="${hospital.name != null && !#strings.isEmpty(hospital.name) ? hospital.name : 'नाम उपलब्ध नहीं'}">
+                            अस्पताल का नाम
+                        </h3>
+
+                        <!-- Description -->
+                        <p th:if="${hospital.description != null && !#strings.isEmpty(hospital.description)}"
+                            class="text-sm text-slate-600 leading-relaxed mb-3 line-clamp-2"
+                            th:text="${hospital.description}">विवरण</p>
+
+                        <!-- Contact Info -->
+                        <div class="space-y-2 mb-4">
+                            <!-- Address -->
+                            <div class="info-row"
+                                th:if="${hospital.address != null && !#strings.isEmpty(hospital.address)}">
+                                <span
+                                    class="material-symbols-outlined text-slate-400 text-[18px] mt-0.5 flex-shrink-0">location_on</span>
+                                <p class="text-sm text-slate-600 flex-1 line-clamp-2" th:text="${hospital.address}">पता
+                                </p>
+                            </div>
+
+                            <!-- Phone -->
+                            <div class="info-row" th:if="${hospital.contact != null}">
+                                <span
+                                    class="material-symbols-outlined text-slate-400 text-[18px] flex-shrink-0">call</span>
+                                <p class="text-sm text-slate-600" th:text="${hospital.contact}">संपर्क</p>
+                            </div>
+
+                            <!-- Email -->
+                            <div class="info-row"
+                                th:if="${hospital.email != null && !#strings.isEmpty(hospital.email)}">
+                                <span
+                                    class="material-symbols-outlined text-slate-400 text-[18px] flex-shrink-0">email</span>
+                                <p class="text-sm text-slate-600 line-clamp-1" th:text="${hospital.email}">ईमेल</p>
+                            </div>
+
+                            <!-- Timings (only if not 24/7) -->
+                            <div class="info-row"
+                                th:if="${hospital.timings != null && !#strings.isEmpty(hospital.timings) && hospital.timings != '24/7'}">
+                                <span
+                                    class="material-symbols-outlined text-slate-400 text-[18px] flex-shrink-0">schedule</span>
+                                <p class="text-sm text-slate-600" th:text="${hospital.timings}">समय</p>
+                            </div>
+                        </div>
+
+                        <!-- Facilities Tags -->
+                        <div th:if="${hospital.facilities != null && !#strings.isEmpty(hospital.facilities)}"
+                            class="mb-4">
+                            <div class="flex flex-wrap -m-1">
+                                <span th:each="facility : ${#strings.listSplit(hospital.facilities, ',')}"
+                                    th:if="${!#strings.isEmpty(#strings.trim(facility))}" class="facility-tag"
+                                    th:text="${#strings.trim(facility)}">
+                                    सुविधा
+                                </span>
+                            </div>
+                        </div>
+
+                        <!-- Action Buttons -->
+                        <div class="flex gap-2">
+                            <button
+                                class="view-details-btn flex-1 py-2 bg-primary hover:bg-primary-dark text-white text-sm font-semibold rounded-xl transition-colors flex items-center justify-center gap-1">
+                                <span class="material-symbols-outlined text-[16px]">info</span>
+                                विवरण देखें
+                            </button>
+                            <a th:if="${hospital.contact != null}" th:href="'tel:' + ${hospital.contact}"
+                                class="call-btn px-4 py-2 bg-green-500 hover:bg-green-600 text-white rounded-xl transition-colors flex items-center justify-center">
+                                <span class="material-symbols-outlined text-[20px]">call</span>
+                            </a>
+                            <a th:if="${hospital.website != null && !#strings.isEmpty(hospital.website)}"
+                                th:href="${hospital.website}" target="_blank" rel="noopener noreferrer"
+                                class="website-btn px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-xl transition-colors flex items-center justify-center">
+                                <span class="material-symbols-outlined text-[20px]">language</span>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- Empty State -->
+            <div id="empty-state" class="hidden text-center py-16">
+                <span class="material-symbols-outlined text-slate-300 text-[80px] mb-4">search_off</span>
+                <h3 class="text-lg font-bold text-slate-900 mb-2">कोई अस्पताल नहीं मिला</h3>
+                <p class="text-slate-500 text-sm mb-6">कृपया अपनी खोज बदलें या फ़िल्टर साफ़ करें</p>
+                <button id="clearFiltersBtn"
+                    class="px-6 py-3 bg-primary hover:bg-primary-dark text-white text-sm font-semibold rounded-xl transition-colors">
+                    फ़िल्टर साफ़ करें
+                </button>
+            </div>
+
+            <!-- No Hospitals at All State -->
+            <div th:if="${hospitals == null || #lists.isEmpty(hospitals)}" class="text-center py-16">
+                <span class="material-symbols-outlined text-slate-300 text-[80px] mb-4">local_hospital</span>
+                <h3 class="text-lg font-bold text-slate-900 mb-2">कोई अस्पताल उपलब्ध नहीं</h3>
+                <p class="text-slate-500 text-sm">वर्तमान में कोई अस्पताल पंजीकृत नहीं है</p>
+            </div>
+
+        </main>
+
+        <div th:insert="~{Fragment/PatientMobileFragment :: NavContent}"></div>
+
+    </div>
+
+    <script th:src="@{/FragmentScript.js}"></script>
+    <script>
+        let currentTypeFilter = 'ALL';
+        const carouselStates = new Map(); // Store carousel states for each hospital
+
+        // Initialize all carousels
+        function initCarousels() {
+            document.querySelectorAll('.carousel-wrapper').forEach(wrapper => {
+                const hospitalId = wrapper.getAttribute('data-hospital-id');
+                const track = wrapper.querySelector('.carousel-track');
+                const slides = wrapper.querySelectorAll('.carousel-slide');
+                const dots = wrapper.querySelectorAll('.carousel-dot');
+                const prevBtn = wrapper.querySelector('.carousel-prev');
+                const nextBtn = wrapper.querySelector('.carousel-next');
+                const counter = wrapper.querySelector('.current-slide');
+
+                if (!slides.length) return;
+
+                // Initialize state
+                carouselStates.set(hospitalId, {
+                    currentIndex: 0,
+                    totalSlides: slides.length,
+                    track: track,
+                    dots: dots,
+                    counter: counter
+                });
+
+                // Add event listeners
+                if (prevBtn) {
+                    prevBtn.addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        changeSlide(hospitalId, -1);
+                    });
+                }
+
+                if (nextBtn) {
+                    nextBtn.addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        changeSlide(hospitalId, 1);
+                    });
+                }
+
+                // Dot navigation
+                dots.forEach((dot, index) => {
+                    dot.addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        goToSlide(hospitalId, index);
+                    });
+                });
+
+                // Touch swipe support
+                let touchStartX = 0;
+                let touchEndX = 0;
+
+                wrapper.addEventListener('touchstart', (e) => {
+                    touchStartX = e.changedTouches[0].screenX;
+                }, { passive: true });
+
+                wrapper.addEventListener('touchend', (e) => {
+                    touchEndX = e.changedTouches[0].screenX;
+                    handleSwipe(hospitalId, touchStartX, touchEndX);
+                }, { passive: true });
+            });
+        }
+
+        function changeSlide(hospitalId, direction) {
+            const state = carouselStates.get(hospitalId);
+            if (!state) return;
+
+            state.currentIndex += direction;
+
+            if (state.currentIndex >= state.totalSlides) {
+                state.currentIndex = 0;
+            } else if (state.currentIndex < 0) {
+                state.currentIndex = state.totalSlides - 1;
+            }
+
+            updateCarousel(hospitalId);
+        }
+
+        function goToSlide(hospitalId, index) {
+            const state = carouselStates.get(hospitalId);
+            if (!state) return;
+
+            state.currentIndex = index;
+            updateCarousel(hospitalId);
+        }
+
+        function updateCarousel(hospitalId) {
+            const state = carouselStates.get(hospitalId);
+            if (!state) return;
+
+            // Update track position
+            state.track.style.transform = `translateX(-${state.currentIndex * 100}%)`;
+
+            // Update dots
+            state.dots.forEach((dot, index) => {
+                dot.classList.toggle('active', index === state.currentIndex);
+            });
+
+            // Update counter
+            if (state.counter) {
+                state.counter.textContent = state.currentIndex + 1;
+            }
+        }
+
+        function handleSwipe(hospitalId, startX, endX) {
+            const swipeThreshold = 50;
+            const diff = startX - endX;
+
+            if (Math.abs(diff) > swipeThreshold) {
+                if (diff > 0) {
+                    // Swipe left - next slide
+                    changeSlide(hospitalId, 1);
+                } else {
+                    // Swipe right - previous slide
+                    changeSlide(hospitalId, -1);
+                }
+            }
+        }
+
+        // Filter functions
+        function filterHospitals() {
+            const searchTerm = document.getElementById('searchInput').value.toLowerCase().trim();
+            const hospitals = document.querySelectorAll('.hospital-card');
+            const emptyState = document.getElementById('empty-state');
+            const hospitalCount = document.getElementById('hospitalCount');
+            let visibleCount = 0;
+
+            hospitals.forEach(hospital => {
+                const name = (hospital.getAttribute('data-hospital-name') || '').toLowerCase();
+                const address = (hospital.getAttribute('data-hospital-address') || '').toLowerCase();
+                const typeId = hospital.getAttribute('data-hospital-type') || '';
+
+                const matchesSearch = !searchTerm || name.includes(searchTerm) || address.includes(searchTerm);
+                const matchesType = currentTypeFilter === 'ALL' || typeId === currentTypeFilter;
+
+                if (matchesSearch && matchesType) {
+                    hospital.style.display = 'block';
+                    visibleCount++;
+                } else {
+                    hospital.style.display = 'none';
+                }
+            });
+
+            // Update count
+            if (hospitalCount) {
+                hospitalCount.textContent = visibleCount;
+            }
+
+            // Show/hide empty state
+            if (visibleCount === 0 && hospitals.length > 0) {
+                emptyState.classList.remove('hidden');
+            } else {
+                emptyState.classList.add('hidden');
+            }
+        }
+
+        function filterByType(typeId) {
+            currentTypeFilter = typeId;
+
+            // Update active filter chip
+            document.querySelectorAll('.filter-chip').forEach(chip => {
+                chip.classList.remove('active');
+            });
+
+            const activeChip = typeId === 'ALL'
+                ? document.getElementById('filter-all')
+                : document.getElementById('filter-' + typeId);
+
+            if (activeChip) {
+                activeChip.classList.add('active');
+            }
+
+            filterHospitals();
+        }
+
+        function clearFilters() {
+            const searchInput = document.getElementById('searchInput');
+            if (searchInput) {
+                searchInput.value = '';
+            }
+            filterByType('ALL');
+        }
+
+        // Navigation to hospital details
+        function navigateToHospital(hospitalId) {
+            if (hospitalId) {
+                window.location.href = '/user/hospital/' + hospitalId;
+            }
+        }
+
+        // Initialize on page load
+        document.addEventListener('DOMContentLoaded', function () {
+            initCarousels();
+
+            // Back button
+            const backBtn = document.getElementById('backBtn');
+            if (backBtn) {
+                backBtn.addEventListener('click', () => {
+                    if (window.history.length > 1) {
+                        window.history.back();
+                    } else {
+                        window.location.href = '/user/dashboard';
+                    }
+                });
+            }
+
+            // Search input
+            const searchInput = document.getElementById('searchInput');
+            if (searchInput) {
+                searchInput.addEventListener('input', filterHospitals);
+                searchInput.addEventListener('keyup', function (e) {
+                    if (e.key === 'Escape') {
+                        this.value = '';
+                        filterHospitals();
+                    }
+                });
+            }
+
+            // Filter chips
+            const filterAll = document.getElementById('filter-all');
+            if (filterAll) {
+                filterAll.addEventListener('click', () => filterByType('ALL'));
+            }
+
+            document.querySelectorAll('.filter-chip[data-type-id]').forEach(chip => {
+                chip.addEventListener('click', function () {
+                    const typeId = this.getAttribute('data-type-id');
+                    if (typeId && typeId !== 'ALL') {
+                        filterByType(typeId);
+                    }
+                });
+            });
+
+            // Clear filters button
+            const clearFiltersBtn = document.getElementById('clearFiltersBtn');
+            if (clearFiltersBtn) {
+                clearFiltersBtn.addEventListener('click', clearFilters);
+            }
+
+            // Hospital card navigation (click to view details)
+            document.querySelectorAll('.hospital-card').forEach(card => {
+                const hospitalId = card.getAttribute('data-hospital-id');
+
+                // Main card click
+                card.addEventListener('click', (e) => {
+                    // Don't navigate if clicking on action buttons
+                    if (!e.target.closest('.call-btn') &&
+                        !e.target.closest('.website-btn') &&
+                        !e.target.closest('.carousel-nav') &&
+                        !e.target.closest('.carousel-dot')) {
+                        navigateToHospital(hospitalId);
+                    }
+                });
+
+                // View details button
+                const viewDetailsBtn = card.querySelector('.view-details-btn');
+                if (viewDetailsBtn) {
+                    viewDetailsBtn.addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        navigateToHospital(hospitalId);
+                    });
+                }
+            });
+
+            // Prevent action button clicks from triggering card navigation
+            document.querySelectorAll('.call-btn, .website-btn').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                });
+            });
+        });
+    </script>
+</body>
+
+</html>

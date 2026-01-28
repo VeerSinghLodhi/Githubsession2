@@ -1,0 +1,843 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title th:text="${hospital.name} + ' - हेल्थ साथी'">अस्पताल विवरण - हेल्थ साथी</title>
+    <meta name="_csrf" th:content="${_csrf.token}">
+    <meta name="_csrf_header" th:content="${_csrf.headerName}">
+
+    <link href="https://fonts.googleapis.com" rel="preconnect" />
+    <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect" />
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Devanagari:wght@400;500;600;700&display=swap"
+        rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap"
+        rel="stylesheet" />
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <script id="tailwind-config">
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#0058ba",
+                        "primary-dark": "#155a96",
+                        "primary-light": "#e3f2fd",
+                        "text-main": "#1e293b",
+                        "text-secondary": "#64748b",
+                        "border-light": "#e2e8f0",
+                        "surface": "#ffffff",
+                        "background": "#f8fafc",
+                    },
+                    fontFamily: {
+                        "display": ["Noto Sans Devanagari", "sans-serif"],
+                        "hindi": ["Noto Sans Devanagari", "sans-serif"]
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0.75rem",
+                        "xl": "1rem",
+                        "2xl": "1.25rem",
+                        "3xl": "1.5rem"
+                    },
+                    boxShadow: {
+                        'soft': '0 4px 20px -4px rgba(30, 115, 190, 0.1)',
+                        'glow': '0 8px 30px rgba(30, 115, 190, 0.2)',
+                        'card': '0 2px 12px rgba(0, 0, 0, 0.06)',
+                        'hover': '0 8px 25px rgba(30, 115, 190, 0.15)',
+                    }
+                },
+            },
+        }
+    </script>
+    <link rel="stylesheet" th:href="@{/FragmentStyle.css}" />
+    <style>
+        /* Hero Image Carousel */
+        .hero-carousel {
+            position: relative;
+            width: 100%;
+            height: 300px;
+            overflow: hidden;
+        }
+
+        .hero-track {
+            display: flex;
+            transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+            height: 100%;
+        }
+
+        .hero-slide {
+            min-width: 100%;
+            height: 100%;
+            position: relative;
+        }
+
+        .hero-slide img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .hero-placeholder {
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #0058ba 0%, #155a96 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .hero-nav {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(8px);
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            z-index: 10;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        .hero-nav:hover {
+            background: white;
+            transform: translateY(-50%) scale(1.1);
+        }
+
+        .hero-nav:active {
+            transform: translateY(-50%) scale(0.95);
+        }
+
+        .hero-prev {
+            left: 16px;
+        }
+
+        .hero-next {
+            right: 16px;
+        }
+
+        .hero-indicators {
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 8px;
+            z-index: 10;
+        }
+
+        .hero-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.5);
+            transition: all 0.3s;
+            cursor: pointer;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+        }
+
+        .hero-dot.active {
+            width: 24px;
+            border-radius: 4px;
+            background: white;
+        }
+
+        .hero-overlay {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: linear-gradient(to top, rgba(0, 0, 0, 0.7), transparent);
+            padding: 24px 20px;
+            z-index: 5;
+        }
+
+        /* Facility Badge */
+        .facility-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 8px 16px;
+            background: #f1f5f9;
+            border-radius: 20px;
+            font-size: 13px;
+            color: #475569;
+            font-weight: 500;
+            margin: 4px;
+            transition: all 0.2s;
+        }
+
+        .facility-badge:hover {
+            background: #e2e8f0;
+            transform: translateY(-1px);
+        }
+
+        /* Section Headers */
+        .section-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding-bottom: 12px;
+            margin-bottom: 20px;
+            border-bottom: 2px solid #e2e8f0;
+        }
+
+        .section-header h2 {
+            font-size: 18px;
+            font-weight: 700;
+            color: #1e293b;
+        }
+
+        /* Info Row */
+        .info-row {
+            display: flex;
+            align-items: start;
+            gap: 12px;
+            padding: 12px 0;
+            border-bottom: 1px solid #f1f5f9;
+        }
+
+        .info-row:last-child {
+            border-bottom: none;
+        }
+
+        .info-icon {
+            flex-shrink: 0;
+            width: 40px;
+            height: 40px;
+            background: #f8fafc;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* Doctor Card */
+        .doctor-card {
+            background: white;
+            border: 1px solid #e2e8f0;
+            border-radius: 16px;
+            padding: 16px;
+            transition: all 0.3s;
+            cursor: pointer;
+        }
+
+        .doctor-card:hover {
+            border-color: #0058ba;
+            box-shadow: 0 4px 12px rgba(0, 88, 186, 0.1);
+            transform: translateY(-2px);
+        }
+
+        /* Action Buttons */
+        .action-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            padding: 14px 24px;
+            border-radius: 12px;
+            font-weight: 600;
+            font-size: 15px;
+            transition: all 0.3s;
+            cursor: pointer;
+            border: none;
+        }
+
+        .action-btn-primary {
+            background: #0058ba;
+            color: white;
+        }
+
+        .action-btn-primary:hover {
+            background: #155a96;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(0, 88, 186, 0.3);
+        }
+
+        .action-btn-secondary {
+            background: white;
+            color: #0058ba;
+            border: 2px solid #0058ba;
+        }
+
+        .action-btn-secondary:hover {
+            background: #f8fafc;
+        }
+
+        .action-btn-success {
+            background: #10b981;
+            color: white;
+        }
+
+        .action-btn-success:hover {
+            background: #059669;
+        }
+
+        /* Sticky Footer */
+        .sticky-footer {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: white;
+            border-top: 1px solid #e2e8f0;
+            padding: 12px 20px;
+            display: flex;
+            gap: 10px;
+            z-index: 30;
+            box-shadow: 0 -4px 12px rgba(0, 0, 0, 0.05);
+        }
+
+        /* Stats Grid */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+        }
+
+        .stat-card {
+            background: linear-gradient(135deg, #f8fafc 0%, #ffffff 100%);
+            border: 1px solid #e2e8f0;
+            border-radius: 12px;
+            padding: 16px;
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 24px;
+            font-weight: 700;
+            color: #0058ba;
+            margin-bottom: 4px;
+        }
+
+        .stat-label {
+            font-size: 12px;
+            color: #64748b;
+            font-weight: 500;
+        }
+
+        /* Badge Styles */
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            padding: 6px 12px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .badge-24-7 {
+            background: #dcfce7;
+            color: #166534;
+        }
+
+        .badge-emergency {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+        .badge-type {
+            background: #dbeafe;
+            color: #1e40af;
+        }
+
+        /* Empty State */
+        .empty-state {
+            text-align: center;
+            padding: 40px 20px;
+        }
+
+        .empty-state-icon {
+            color: #cbd5e1;
+            font-size: 64px;
+            margin-bottom: 16px;
+        }
+
+        /* Smooth Scrolling */
+        html {
+            scroll-behavior: smooth;
+        }
+
+        /* Image Counter */
+        .image-counter {
+            position: absolute;
+            top: 16px;
+            right: 16px;
+            background: rgba(0, 0, 0, 0.75);
+            backdrop-filter: blur(8px);
+            color: white;
+            padding: 6px 12px;
+            border-radius: 16px;
+            font-size: 12px;
+            font-weight: 600;
+            z-index: 10;
+        }
+    </style>
+</head>
+
+<body class="bg-background antialiased text-text-main">
+    <div class="relative flex min-h-screen w-full flex-col pb-20">
+
+        <!-- Header -->
+        <header class="sticky top-0 z-20 bg-white/90 backdrop-blur-md px-5 py-4 border-b border-slate-100">
+            <div class="flex items-center gap-4">
+                <button id="backBtn"
+                    class="flex items-center justify-center size-10 rounded-full bg-slate-50 text-slate-600 hover:bg-slate-100 transition-colors">
+                    <span class="material-symbols-outlined text-[24px]">arrow_back</span>
+                </button>
+                <div class="flex-1">
+                    <h1 class="text-lg font-bold text-slate-900 line-clamp-1" th:text="${hospital.name}">अस्पताल का नाम
+                    </h1>
+                    <p class="text-xs text-slate-500">Hospital Details</p>
+                </div>
+                <button id="shareBtn"
+                    class="flex items-center justify-center size-10 rounded-full bg-slate-50 text-slate-600 hover:bg-slate-100 transition-colors">
+                    <span class="material-symbols-outlined text-[24px]">share</span>
+                </button>
+            </div>
+        </header>
+
+        <main class="flex-1 flex flex-col">
+
+            <!-- Hero Image Carousel -->
+            <div class="hero-carousel">
+                <!-- Check if hospital has images -->
+                <div th:if="${hospital.images != null && !hospital.images.isEmpty()}">
+
+                    <!-- Image Counter -->
+                    <div class="image-counter">
+                        <span class="current-slide">1</span> / <span th:text="${#lists.size(hospital.images)}">1</span>
+                    </div>
+
+                    <!-- Carousel Track -->
+                    <div class="hero-track" id="heroTrack">
+                        <div th:each="image : ${hospital.images}" class="hero-slide">
+                            <img th:src="@{'/user/api/hospital/image/' + ${image.imageId}}" th:alt="${hospital.name}">
+                        </div>
+                    </div>
+
+                    <!-- Navigation Buttons (only if more than 1 image) -->
+                    <div th:if="${#lists.size(hospital.images) > 1}">
+                        <div class="hero-nav hero-prev" id="heroPrev">
+                            <span class="material-symbols-outlined text-slate-700 text-[24px]">chevron_left</span>
+                        </div>
+                        <div class="hero-nav hero-next" id="heroNext">
+                            <span class="material-symbols-outlined text-slate-700 text-[24px]">chevron_right</span>
+                        </div>
+
+                        <!-- Indicators -->
+                        <div class="hero-indicators" id="heroIndicators">
+                            <div th:each="image, iterStat : ${hospital.images}" class="hero-dot"
+                                th:classappend="${iterStat.index == 0} ? 'active' : ''"
+                                th:data-index="${iterStat.index}"></div>
+                        </div>
+                    </div>
+
+                    <!-- Overlay with Hospital Name -->
+                    <div class="hero-overlay">
+                        <h2 class="text-2xl font-bold text-white mb-1" th:text="${hospital.name}">अस्पताल का नाम</h2>
+                        <div class="flex items-center gap-2 flex-wrap">
+                            <span class="badge badge-type"
+                                th:if="${hospital.type != null && hospital.type.type != null && !hospital.type.type.isEmpty()}"
+                                th:text="${hospital.type.type}">प्रकार</span>
+                            <span class="badge badge-24-7"
+                                th:if="${hospital.timings != null && hospital.timings == '24/7'}">24/7 उपलब्ध</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Placeholder if no images -->
+                <div th:unless="${hospital.images != null && !hospital.images.isEmpty()}" class="hero-placeholder">
+                    <span class="material-symbols-outlined text-white/50 text-[120px]">local_hospital</span>
+                    <div class="hero-overlay">
+                        <h2 class="text-2xl font-bold text-white mb-1" th:text="${hospital.name}">अस्पताल का नाम</h2>
+                        <div class="flex items-center gap-2 flex-wrap">
+                            <span class="badge badge-type"
+                                th:if="${hospital.type != null && hospital.type.type != null && !hospital.type.type.isEmpty()}"
+                                th:text="${hospital.type.type}">प्रकार</span>
+                            <span class="badge badge-24-7"
+                                th:if="${hospital.timings != null && hospital.timings == '24/7'}">24/7 उपलब्ध</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Content -->
+            <div class="flex flex-col gap-5 p-5">
+
+                <!-- Description Section -->
+                <div th:if="${hospital.description != null && !hospital.description.isEmpty()}"
+                    class="bg-white rounded-2xl p-5 border border-slate-100 shadow-soft">
+                    <div class="section-header">
+                        <span class="material-symbols-outlined text-primary text-[24px]">description</span>
+                        <h2>विवरण / About</h2>
+                    </div>
+                    <p class="text-sm text-slate-700 leading-relaxed" th:text="${hospital.description}">
+                        अस्पताल का विवरण यहाँ आएगा।
+                    </p>
+                </div>
+
+                <!-- Quick Stats -->
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-value"
+                            th:text="${hospital.doctors != null ? #lists.size(hospital.doctors) : 0}">0</div>
+                        <div class="stat-label">डॉक्टर्स</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value"
+                            th:text="${hospital.facilities != null && !hospital.facilities.isEmpty() ? #lists.size(#strings.listSplit(hospital.facilities, ',')) : 0}">
+                            0</div>
+                        <div class="stat-label">सुविधाएं</div>
+                    </div>
+                </div>
+
+                <!-- Contact Information -->
+                <div class="bg-white rounded-2xl p-5 border border-slate-100 shadow-soft">
+                    <div class="section-header">
+                        <span class="material-symbols-outlined text-primary text-[24px]">contact_phone</span>
+                        <h2>संपर्क जानकारी / Contact Info</h2>
+                    </div>
+
+                    <div class="space-y-0">
+                        <!-- Address -->
+                        <div class="info-row" th:if="${hospital.address != null && !hospital.address.isEmpty()}">
+                            <div class="info-icon">
+                                <span class="material-symbols-outlined text-primary text-[20px]">location_on</span>
+                            </div>
+                            <div class="flex-1">
+                                <div class="text-xs text-slate-500 mb-1">पता / Address</div>
+                                <div class="text-sm text-slate-900 font-medium" th:text="${hospital.address}">पता</div>
+                            </div>
+                        </div>
+
+                        <!-- Phone -->
+                        <div class="info-row" th:if="${hospital.contact != null}">
+                            <div class="info-icon">
+                                <span class="material-symbols-outlined text-green-600 text-[20px]">call</span>
+                            </div>
+                            <div class="flex-1">
+                                <div class="text-xs text-slate-500 mb-1">फ़ोन / Phone</div>
+                                <a th:href="'tel:' + ${hospital.contact}"
+                                    class="text-sm text-slate-900 font-medium hover:text-primary"
+                                    th:text="${hospital.contact}">संपर्क नंबर</a>
+                            </div>
+                        </div>
+
+                        <!-- Email -->
+                        <div class="info-row" th:if="${hospital.email != null && !hospital.email.isEmpty()}">
+                            <div class="info-icon">
+                                <span class="material-symbols-outlined text-blue-600 text-[20px]">email</span>
+                            </div>
+                            <div class="flex-1">
+                                <div class="text-xs text-slate-500 mb-1">ईमेल / Email</div>
+                                <a th:href="'mailto:' + ${hospital.email}"
+                                    class="text-sm text-slate-900 font-medium hover:text-primary"
+                                    th:text="${hospital.email}">ईमेल पता</a>
+                            </div>
+                        </div>
+
+                        <!-- Website -->
+                        <div class="info-row" th:if="${hospital.website != null && !hospital.website.isEmpty()}">
+                            <div class="info-icon">
+                                <span class="material-symbols-outlined text-purple-600 text-[20px]">language</span>
+                            </div>
+                            <div class="flex-1">
+                                <div class="text-xs text-slate-500 mb-1">वेबसाइट / Website</div>
+                                <a th:href="${hospital.website}" target="_blank"
+                                    class="text-sm text-primary font-medium hover:underline"
+                                    th:text="${hospital.website}">वेबसाइट लिंक</a>
+                            </div>
+                        </div>
+
+                        <!-- Timings -->
+                        <div class="info-row" th:if="${hospital.timings != null && !hospital.timings.isEmpty()}">
+                            <div class="info-icon">
+                                <span class="material-symbols-outlined text-orange-600 text-[20px]">schedule</span>
+                            </div>
+                            <div class="flex-1">
+                                <div class="text-xs text-slate-500 mb-1">समय / Timings</div>
+                                <div class="text-sm text-slate-900 font-medium">
+                                    <span th:text="${hospital.timings}">समय</span>
+                                    <span th:if="${hospital.timings == '24/7'}" class="ml-2 text-green-600">
+                                        <span
+                                            class="material-symbols-outlined text-[16px] align-middle">check_circle</span>
+                                        हमेशा खुला
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Facilities Section -->
+                <div th:if="${hospital.facilities != null && !hospital.facilities.isEmpty()}"
+                    class="bg-white rounded-2xl p-5 border border-slate-100 shadow-soft">
+                    <div class="section-header">
+                        <span class="material-symbols-outlined text-primary text-[24px]">medical_services</span>
+                        <h2>सुविधाएं / Facilities</h2>
+                    </div>
+
+                    <div class="flex flex-wrap -m-1">
+                        <span th:each="facility : ${#strings.listSplit(hospital.facilities, ',')}"
+                            class="facility-badge" th:if="${!#strings.isEmpty(#strings.trim(facility))}">
+                            <span class="material-symbols-outlined text-[16px]">check_circle</span>
+                            <span th:text="${#strings.trim(facility)}">सुविधा</span>
+                        </span>
+                    </div>
+                </div>
+
+                <!-- Doctors Section -->
+                <div th:if="${hospital.doctors != null && !hospital.doctors.isEmpty()}"
+                    class="bg-white rounded-2xl p-5 border border-slate-100 shadow-soft">
+                    <div class="section-header">
+                        <span class="material-symbols-outlined text-primary text-[24px]">stethoscope</span>
+                        <h2>डॉक्टर्स / Doctors</h2>
+                    </div>
+
+                    <div class="space-y-3">
+                        <div th:each="doctor : ${hospital.doctors}" class="doctor-card"
+                            th:attr="data-doctor-id=${doctor.doctorId}"
+                            onclick="viewDoctorDetails(this.getAttribute('data-doctor-id'))">
+                            <div class="flex items-start gap-3">
+                                <!-- Doctor Avatar -->
+                                <div
+                                    class="flex-shrink-0 w-12 h-12 bg-primary-light rounded-full flex items-center justify-center">
+                                    <span class="material-symbols-outlined text-primary text-[24px]">person</span>
+                                </div>
+
+                                <!-- Doctor Info -->
+                                <div class="flex-1 min-w-0">
+                                    <h3 class="text-base font-bold text-slate-900 mb-1" th:text="${doctor.name}">डॉक्टर
+                                        का नाम</h3>
+                                    <p th:if="${doctor.specialization != null && !doctor.specialization.isEmpty()}"
+                                        class="text-sm text-primary font-medium mb-1"
+                                        th:text="${doctor.specialization}">विशेषज्ञता</p>
+                                    <div class="flex items-center gap-3 text-xs text-slate-500">
+                                        <span th:if="${doctor.experience != null}">
+                                            <span
+                                                class="material-symbols-outlined text-[14px] align-middle">work_history</span>
+                                            <span th:text="${doctor.experience} + ' वर्ष'">अनुभव</span>
+                                        </span>
+                                        <span th:if="${doctor.contact != null}">
+                                            <span class="material-symbols-outlined text-[14px] align-middle">call</span>
+                                            <span th:text="${doctor.contact}">संपर्क</span>
+                                        </span>
+                                    </div>
+                                </div>
+
+                                <!-- Arrow -->
+                                <div class="flex-shrink-0">
+                                    <span
+                                        class="material-symbols-outlined text-slate-400 text-[24px]">chevron_right</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Empty State for Doctors -->
+                <div th:unless="${hospital.doctors != null && !hospital.doctors.isEmpty()}"
+                    class="bg-white rounded-2xl p-5 border border-slate-100 shadow-soft">
+                    <div class="section-header">
+                        <span class="material-symbols-outlined text-primary text-[24px]">stethoscope</span>
+                        <h2>डॉक्टर्स / Doctors</h2>
+                    </div>
+                    <div class="empty-state">
+                        <span class="material-symbols-outlined empty-state-icon">person_off</span>
+                        <p class="text-slate-500 text-sm">इस अस्पताल में कोई डॉक्टर उपलब्ध नहीं है</p>
+                    </div>
+                </div>
+
+                <!-- Map Section (Placeholder) -->
+                <div class="bg-white rounded-2xl p-5 border border-slate-100 shadow-soft">
+                    <div class="section-header">
+                        <span class="material-symbols-outlined text-primary text-[24px]">map</span>
+                        <h2>स्थान / Location</h2>
+                    </div>
+                    <div class="bg-slate-100 rounded-xl h-48 flex items-center justify-center">
+                        <div class="text-center">
+                            <span class="material-symbols-outlined text-slate-400 text-[48px] mb-2">location_on</span>
+                            <p class="text-sm text-slate-600" th:text="${hospital.address}">पता</p>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+        </main>
+
+        <!-- Sticky Footer Actions -->
+        <div class="sticky-footer">
+            <a th:if="${hospital.contact != null}" th:href="'tel:' + ${hospital.contact}"
+                class="action-btn action-btn-success flex-1">
+                <span class="material-symbols-outlined text-[20px]">call</span>
+                कॉल करें
+            </a>
+            <button class="action-btn action-btn-primary flex-1" onclick="bookAppointment()">
+                <span class="material-symbols-outlined text-[20px]">calendar_month</span>
+                अपॉइंटमेंट बुक करें
+            </button>
+        </div>
+
+    </div>
+
+    <script th:src="@{/FragmentScript.js}"></script>
+    <script th:inline="javascript">
+        /*<![CDATA[*/
+        const hospitalId = /*[[${hospital.hospitalId}]]*/ null;
+        const hospitalName = /*[[${hospital.name}]]*/ '';
+        const hospitalAddress = /*[[${hospital.address}]]*/ '';
+        const totalImages = /*[[${hospital.images != null ? #lists.size(hospital.images) : 0}]]*/ 0;
+        /*]]>*/
+
+        let currentSlide = 0;
+
+        // Hero Carousel Functions
+        function initHeroCarousel() {
+            if (totalImages <= 1) return;
+
+            const track = document.getElementById('heroTrack');
+            const prevBtn = document.getElementById('heroPrev');
+            const nextBtn = document.getElementById('heroNext');
+            const indicators = document.querySelectorAll('.hero-dot');
+            const counter = document.querySelector('.current-slide');
+
+            if (!track) return;
+
+            // Previous button
+            if (prevBtn) {
+                prevBtn.addEventListener('click', () => {
+                    currentSlide = currentSlide > 0 ? currentSlide - 1 : totalImages - 1;
+                    updateHeroCarousel();
+                });
+            }
+
+            // Next button
+            if (nextBtn) {
+                nextBtn.addEventListener('click', () => {
+                    currentSlide = currentSlide < totalImages - 1 ? currentSlide + 1 : 0;
+                    updateHeroCarousel();
+                });
+            }
+
+            // Indicator dots
+            indicators.forEach((dot, index) => {
+                dot.addEventListener('click', () => {
+                    currentSlide = index;
+                    updateHeroCarousel();
+                });
+            });
+
+            // Touch swipe support
+            let touchStartX = 0;
+            let touchEndX = 0;
+
+            track.addEventListener('touchstart', (e) => {
+                touchStartX = e.changedTouches[0].screenX;
+            }, { passive: true });
+
+            track.addEventListener('touchend', (e) => {
+                touchEndX = e.changedTouches[0].screenX;
+                handleSwipe(touchStartX, touchEndX);
+            }, { passive: true });
+
+            // Auto-play (optional)
+            // setInterval(() => {
+            //     currentSlide = currentSlide < totalImages - 1 ? currentSlide + 1 : 0;
+            //     updateHeroCarousel();
+            // }, 5000);
+        }
+
+        function updateHeroCarousel() {
+            const track = document.getElementById('heroTrack');
+            const indicators = document.querySelectorAll('.hero-dot');
+            const counter = document.querySelector('.current-slide');
+
+            if (!track) return;
+
+            // Update track position
+            track.style.transform = `translateX(-${currentSlide * 100}%)`;
+
+            // Update indicators
+            indicators.forEach((dot, index) => {
+                dot.classList.toggle('active', index === currentSlide);
+            });
+
+            // Update counter
+            if (counter) {
+                counter.textContent = currentSlide + 1;
+            }
+        }
+
+        function handleSwipe(startX, endX) {
+            const swipeThreshold = 50;
+            const diff = startX - endX;
+
+            if (Math.abs(diff) > swipeThreshold) {
+                if (diff > 0) {
+                    // Swipe left - next slide
+                    currentSlide = currentSlide < totalImages - 1 ? currentSlide + 1 : 0;
+                } else {
+                    // Swipe right - previous slide
+                    currentSlide = currentSlide > 0 ? currentSlide - 1 : totalImages - 1;
+                }
+                updateHeroCarousel();
+            }
+        }
+
+        // Navigation Functions
+        function viewDoctorDetails(doctorId) {
+            if (doctorId) {
+                window.location.href = '/user/doctor/' + doctorId;
+            }
+        }
+
+        function bookAppointment() {
+            // Navigate to appointment booking page
+            window.location.href = '/user/appointment/book/' + hospitalId;
+        }
+
+        // Share Function
+        function shareHospital() {
+            if (navigator.share) {
+                navigator.share({
+                    title: hospitalName,
+                    text: 'Check out this hospital: ' + hospitalName,
+                    url: window.location.href
+                }).catch(err => console.log('Error sharing:', err));
+            } else {
+                // Fallback: Copy to clipboard
+                const url = window.location.href;
+                navigator.clipboard.writeText(url).then(() => {
+                    alert('लिंक कॉपी हो गया है!');
+                });
+            }
+        }
+
+        // Initialize on page load
+        document.addEventListener('DOMContentLoaded', function () {
+            initHeroCarousel();
+
+            // Back button
+            const backBtn = document.getElementById('backBtn');
+            if (backBtn) {
+                backBtn.addEventListener('click', () => window.history.back());
+            }
+
+            // Share button
+            const shareBtn = document.getElementById('shareBtn');
+            if (shareBtn) {
+                shareBtn.addEventListener('click', shareHospital);
+            }
+        });
+    </script>
+</body>
+
+</html>
