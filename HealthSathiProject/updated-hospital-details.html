@@ -1,0 +1,799 @@
+<!DOCTYPE html>
+<html lang="hi" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title th:text="${hospital.name} + ' - हेल्थ साथी'">Hospital Details</title>
+    <meta name="_csrf" th:content="${_csrf.token}">
+    <meta name="_csrf_header" th:content="${_csrf.headerName}">
+
+    <link href="https://fonts.googleapis.com" rel="preconnect" />
+    <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect" />
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Devanagari:wght@400;500;600;700&display=swap"
+        rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap"
+        rel="stylesheet" />
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <script id="tailwind-config">
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#0058ba",
+                        "primary-dark": "#155a96",
+                        "primary-light": "#e3f2fd",
+                        "text-main": "#1e293b",
+                        "text-secondary": "#64748b",
+                        "border-light": "#e2e8f0",
+                        "surface": "#ffffff",
+                        "background": "#f8fafc",
+                    },
+                    fontFamily: {
+                        "display": ["Noto Sans Devanagari", "sans-serif"],
+                        "hindi": ["Noto Sans Devanagari", "sans-serif"]
+                    },
+                }
+            },
+        }
+    </script>
+    <link rel="stylesheet" th:href="@{/FragmentStyle.css}" />
+    <style>
+        /* Carousel Styles */
+        .carousel-container {
+            position: relative;
+            width: 100%;
+            height: 400px;
+            overflow: hidden;
+            border-radius: 0 0 20px 20px;
+            background: #1e293b;
+        }
+
+        @media (max-width: 640px) {
+            .carousel-container {
+                height: 280px;
+                border-radius: 0;
+            }
+        }
+
+        .carousel-track {
+            display: flex;
+            transition: transform 0.5s ease-in-out;
+            height: 100%;
+        }
+
+        .carousel-slide {
+            min-width: 100%;
+            height: 100%;
+            position: relative;
+        }
+
+        .carousel-slide img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .carousel-nav-btn {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(8px);
+            border-radius: 50%;
+            width: 48px;
+            height: 48px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            z-index: 10;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        .carousel-nav-btn:hover {
+            background: white;
+            transform: translateY(-50%) scale(1.1);
+        }
+
+        .carousel-nav-btn:active {
+            transform: translateY(-50%) scale(0.95);
+        }
+
+        .carousel-prev {
+            left: 16px;
+        }
+
+        .carousel-next {
+            right: 16px;
+        }
+
+        @media (max-width: 640px) {
+            .carousel-nav-btn {
+                width: 40px;
+                height: 40px;
+            }
+
+            .carousel-prev {
+                left: 12px;
+            }
+
+            .carousel-next {
+                right: 12px;
+            }
+        }
+
+        .carousel-indicators {
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 8px;
+            z-index: 10;
+        }
+
+        .carousel-indicator {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.5);
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .carousel-indicator.active {
+            width: 24px;
+            border-radius: 4px;
+            background: white;
+        }
+
+        .carousel-counter {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: rgba(0, 0, 0, 0.7);
+            backdrop-filter: blur(8px);
+            color: white;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 600;
+            z-index: 10;
+        }
+
+        .carousel-zoom-btn {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(8px);
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            z-index: 10;
+        }
+
+        .carousel-zoom-btn:hover {
+            background: white;
+            transform: scale(1.1);
+        }
+
+        .lightbox {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.95);
+            z-index: 9999;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .lightbox.active {
+            display: flex;
+        }
+
+        .lightbox-content {
+            max-width: 90%;
+            max-height: 90vh;
+            position: relative;
+        }
+
+        .lightbox-content img {
+            max-width: 100%;
+            max-height: 90vh;
+            border-radius: 8px;
+        }
+
+        .lightbox-close {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: white;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            z-index: 10000;
+        }
+
+        .lightbox-nav {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .lightbox-nav:hover {
+            background: white;
+            transform: translateY(-50%) scale(1.1);
+        }
+
+        .lightbox-prev {
+            left: 20px;
+        }
+
+        .lightbox-next {
+            right: 20px;
+        }
+
+        .facility-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 8px 16px;
+            background: #e3f2fd;
+            border-radius: 20px;
+            font-size: 14px;
+            color: #0058ba;
+            margin: 6px;
+            font-weight: 500;
+        }
+
+        .info-card {
+            background: white;
+            border-radius: 16px;
+            padding: 24px;
+            box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
+            border: 1px solid #e2e8f0;
+        }
+
+        .info-row {
+            display: flex;
+            align-items: flex-start;
+            gap: 16px;
+            padding: 16px 0;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        .info-row:last-child {
+            border-bottom: none;
+            padding-bottom: 0;
+        }
+
+        .info-icon {
+            width: 40px;
+            height: 40px;
+            background: #e3f2fd;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .action-btn {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+            padding: 16px;
+            border-radius: 16px;
+            transition: all 0.3s;
+            cursor: pointer;
+            text-decoration: none;
+        }
+
+        @media (max-width: 640px) {
+            .action-btn {
+                padding: 12px;
+            }
+        }
+
+        /* Touch swipe support */
+        .carousel-container {
+            touch-action: pan-y;
+        }
+    </style>
+</head>
+
+<body class="bg-background font-hindi text-text-main">
+
+    <div class="min-h-screen pb-24">
+        <!-- Header -->
+        <header class="bg-white border-b border-border-light sticky top-0 z-20 shadow-sm">
+            <div class="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+                <div class="flex items-center gap-4">
+                    <button onclick="window.history.back()"
+                        class="flex items-center justify-center size-10 rounded-full bg-slate-50 text-slate-600 hover:bg-slate-100 transition-colors">
+                        <span class="material-symbols-outlined text-[24px]">arrow_back</span>
+                    </button>
+                    <div class="flex-1">
+                        <h1 class="text-xl font-bold text-slate-900">अस्पताल विवरण</h1>
+                        <p class="text-xs text-slate-500">Hospital Details</p>
+                    </div>
+                    <button onclick="toggleBookmark()" id="bookmarkBtn"
+                        class="flex items-center justify-center size-10 rounded-full bg-slate-50 text-slate-600 hover:bg-slate-100 transition-colors">
+                        <span class="material-symbols-outlined text-[24px]">bookmark_border</span>
+                    </button>
+                </div>
+            </div>
+        </header>
+
+        <!-- Photo Carousel -->
+        <div class="carousel-container" th:if="${images != null && !images.isEmpty()}">
+            <div class="carousel-track" id="carouselTrack">
+                <div th:each="image, iterStat : ${images}" class="carousel-slide">
+                    <img th:src="@{'/user/api/hospital/image/' + ${image.imageId}}"
+                        th:alt="'Hospital Image ' + ${iterStat.index + 1}">
+                </div>
+            </div>
+
+            <!-- Zoom Button -->
+            <div class="carousel-zoom-btn" onclick="openLightbox(currentSlide)">
+                <span class="material-symbols-outlined text-slate-700">zoom_in</span>
+            </div>
+
+            <!-- Counter -->
+            <div class="carousel-counter">
+                <span id="currentSlideNumber">1</span> / <span id="totalSlides"
+                    th:text="${#lists.size(images)}">1</span>
+            </div>
+
+            <!-- Navigation Buttons -->
+            <div class="carousel-nav-btn carousel-prev" onclick="changeSlide(-1)">
+                <span class="material-symbols-outlined text-slate-900 text-[28px]">chevron_left</span>
+            </div>
+            <div class="carousel-nav-btn carousel-next" onclick="changeSlide(1)">
+                <span class="material-symbols-outlined text-slate-900 text-[28px]">chevron_right</span>
+            </div>
+
+            <!-- Indicators -->
+            <div class="carousel-indicators" id="carouselIndicators"></div>
+        </div>
+
+        <main class="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+
+            <!-- Hospital Name & Type -->
+            <div class="mb-6">
+                <div class="flex flex-wrap items-center gap-3 mb-3">
+                    <h1 class="text-3xl sm:text-4xl font-bold text-slate-900" th:text="${hospital.name}">Hospital Name
+                    </h1>
+                    <span class="px-4 py-2 bg-primary text-white rounded-full text-sm font-semibold"
+                        th:text="${hospital.type.type}">Type</span>
+                    <span th:if="${hospital.timings == '24/7'}"
+                        class="px-4 py-2 bg-green-500 text-white rounded-full text-sm font-semibold flex items-center gap-1">
+                        <span class="material-symbols-outlined text-[18px]">schedule</span>
+                        24/7 उपलब्ध
+                    </span>
+                </div>
+                <p th:if="${hospital.description != null}" class="text-slate-600 leading-relaxed text-lg"
+                    th:text="${hospital.description}">Description</p>
+            </div>
+
+            <!-- Quick Action Buttons -->
+            <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-6">
+                <a th:if="${hospital.contact != null}" th:href="'tel:' + ${hospital.contact}"
+                    class="action-btn bg-green-50 hover:bg-green-100">
+                    <span class="material-symbols-outlined text-green-600 text-[32px]">call</span>
+                    <span class="text-sm font-semibold text-green-800">कॉल करें</span>
+                </a>
+
+                <button onclick="getDirections()" class="action-btn bg-blue-50 hover:bg-blue-100">
+                    <span class="material-symbols-outlined text-blue-600 text-[32px]">directions</span>
+                    <span class="text-sm font-semibold text-blue-800">दिशा-निर्देश</span>
+                </button>
+
+                <a th:if="${hospital.website != null}" th:href="${hospital.website}" target="_blank"
+                    class="action-btn bg-purple-50 hover:bg-purple-100">
+                    <span class="material-symbols-outlined text-purple-600 text-[32px]">language</span>
+                    <span class="text-sm font-semibold text-purple-800">वेबसाइट</span>
+                </a>
+
+                <button onclick="shareHospital()" class="action-btn bg-orange-50 hover:bg-orange-100">
+                    <span class="material-symbols-outlined text-orange-600 text-[32px]">share</span>
+                    <span class="text-sm font-semibold text-orange-800">शेयर करें</span>
+                </button>
+            </div>
+
+            <!-- Information Cards -->
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+
+                <!-- Contact Information -->
+                <div class="info-card">
+                    <h2 class="text-xl font-bold text-slate-900 mb-4 flex items-center gap-2">
+                        <span class="material-symbols-outlined text-primary">contact_phone</span>
+                        संपर्क जानकारी
+                    </h2>
+
+                    <div class="info-row">
+                        <div class="info-icon">
+                            <span class="material-symbols-outlined text-primary">location_on</span>
+                        </div>
+                        <div class="flex-1">
+                            <h3 class="font-semibold text-slate-900 mb-1">पता</h3>
+                            <p class="text-slate-600" th:text="${hospital.address}">Address</p>
+                        </div>
+                    </div>
+
+                    <div class="info-row" th:if="${hospital.contact != null}">
+                        <div class="info-icon">
+                            <span class="material-symbols-outlined text-primary">call</span>
+                        </div>
+                        <div class="flex-1">
+                            <h3 class="font-semibold text-slate-900 mb-1">फोन नंबर</h3>
+                            <a th:href="'tel:' + ${hospital.contact}" class="text-primary hover:underline font-medium"
+                                th:text="${hospital.contact}">Contact</a>
+                        </div>
+                    </div>
+
+                    <div class="info-row" th:if="${hospital.email != null}">
+                        <div class="info-icon">
+                            <span class="material-symbols-outlined text-primary">email</span>
+                        </div>
+                        <div class="flex-1">
+                            <h3 class="font-semibold text-slate-900 mb-1">ईमेल</h3>
+                            <a th:href="'mailto:' + ${hospital.email}" class="text-primary hover:underline font-medium"
+                                th:text="${hospital.email}">Email</a>
+                        </div>
+                    </div>
+
+                    <div class="info-row" th:if="${hospital.website != null}">
+                        <div class="info-icon">
+                            <span class="material-symbols-outlined text-primary">language</span>
+                        </div>
+                        <div class="flex-1">
+                            <h3 class="font-semibold text-slate-900 mb-1">वेबसाइट</h3>
+                            <a th:href="${hospital.website}" target="_blank"
+                                class="text-primary hover:underline font-medium break-all"
+                                th:text="${hospital.website}">Website</a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Hospital Information -->
+                <div class="info-card">
+                    <h2 class="text-xl font-bold text-slate-900 mb-4 flex items-center gap-2">
+                        <span class="material-symbols-outlined text-primary">info</span>
+                        अस्पताल की जानकारी
+                    </h2>
+
+                    <div class="info-row">
+                        <div class="info-icon">
+                            <span class="material-symbols-outlined text-primary">category</span>
+                        </div>
+                        <div class="flex-1">
+                            <h3 class="font-semibold text-slate-900 mb-1">अस्पताल का प्रकार</h3>
+                            <p class="text-slate-600" th:text="${hospital.type.type}">Type</p>
+                        </div>
+                    </div>
+
+                    <div class="info-row" th:if="${hospital.timings != null}">
+                        <div class="info-icon">
+                            <span class="material-symbols-outlined text-primary">schedule</span>
+                        </div>
+                        <div class="flex-1">
+                            <h3 class="font-semibold text-slate-900 mb-1">समय</h3>
+                            <p class="text-slate-600" th:text="${hospital.timings}">Timings</p>
+                        </div>
+                    </div>
+
+                    <div class="info-row" th:if="${hospital.doctors != null && !hospital.doctors.isEmpty()}">
+                        <div class="info-icon">
+                            <span class="material-symbols-outlined text-primary">medical_services</span>
+                        </div>
+                        <div class="flex-1">
+                            <h3 class="font-semibold text-slate-900 mb-1">डॉक्टर</h3>
+                            <p class="text-slate-600" th:text="${#lists.size(hospital.doctors)} + ' डॉक्टर उपलब्ध'">
+                                Doctors</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Facilities Section -->
+            <div class="info-card mb-6" th:if="${hospital.facilities != null && hospital.facilities != ''}">
+                <h2 class="text-xl font-bold text-slate-900 mb-4 flex items-center gap-2">
+                    <span class="material-symbols-outlined text-primary">local_hospital</span>
+                    उपलब्ध सुविधाएं
+                </h2>
+                <div class="flex flex-wrap -m-2">
+                    <span th:each="facility : ${hospital.facilities.split(',')}" class="facility-badge">
+                        <span class="material-symbols-outlined text-[16px]">check_circle</span>
+                        <span th:text="${facility.trim()}">Facility</span>
+                    </span>
+                </div>
+            </div>
+
+            <!-- Emergency Notice -->
+            <div class="bg-red-50 border-l-4 border-red-500 rounded-xl p-5">
+                <div class="flex gap-3">
+                    <span class="material-symbols-outlined text-red-500 text-[28px] flex-shrink-0">emergency</span>
+                    <div>
+                        <h3 class="font-bold text-red-900 mb-1 text-lg">आपातकालीन सेवाएं</h3>
+                        <p class="text-sm text-red-800 leading-relaxed mb-2">
+                            किसी भी आपातकालीन स्थिति के लिए, कृपया सीधे अस्पताल से संपर्क करें या 108 पर कॉल करें।
+                        </p>
+                        <div class="flex gap-2">
+                            <a th:if="${hospital.contact != null}" th:href="'tel:' + ${hospital.contact}"
+                                class="px-4 py-2 bg-red-500 hover:bg-red-600 text-white rounded-lg font-semibold text-sm transition-colors inline-flex items-center gap-2">
+                                <span class="material-symbols-outlined text-[18px]">call</span>
+                                अस्पताल को कॉल करें
+                            </a>
+                            <a href="tel:108"
+                                class="px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg font-semibold text-sm transition-colors inline-flex items-center gap-2">
+                                <span class="material-symbols-outlined text-[18px]">ambulance</span>
+                                एम्बुलेंस 108
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </main>
+
+        <!-- Bottom Navigation -->
+        <div th:insert="~{Fragment/PatientMobileFragment :: NavContent}"></div>
+    </div>
+
+    <!-- Lightbox -->
+    <div id="lightbox" class="lightbox" onclick="closeLightbox()">
+        <div class="lightbox-close">
+            <span class="material-symbols-outlined text-slate-900">close</span>
+        </div>
+        <div class="lightbox-nav lightbox-prev" onclick="event.stopPropagation(); prevLightboxImage()">
+            <span class="material-symbols-outlined text-slate-900 text-[32px]">chevron_left</span>
+        </div>
+        <div class="lightbox-content" onclick="event.stopPropagation()">
+            <img id="lightboxImage" src="" alt="Hospital Image">
+        </div>
+        <div class="lightbox-nav lightbox-next" onclick="event.stopPropagation(); nextLightboxImage()">
+            <span class="material-symbols-outlined text-slate-900 text-[32px]">chevron_right</span>
+        </div>
+    </div>
+
+    <script th:inline="javascript">
+        /*<![CDATA[*/
+        const images = /*[[${images}]]*/[];
+        const hospitalId = /*[[${hospital.hospitalId}]]*/ 0;
+        const hospitalName = /*[[${hospital.name}]]*/ '';
+        const hospitalAddress = /*[[${hospital.address}]]*/ '';
+        /*]]>*/
+
+        let currentSlide = 0;
+        let lightboxIndex = 0;
+        let touchStartX = 0;
+        let touchEndX = 0;
+
+        // Initialize carousel
+        function initCarousel() {
+            if (!images || images.length === 0) return;
+
+            // Create indicators
+            const indicatorsContainer = document.getElementById('carouselIndicators');
+            if (indicatorsContainer) {
+                images.forEach((_, index) => {
+                    const indicator = document.createElement('div');
+                    indicator.className = 'carousel-indicator' + (index === 0 ? ' active' : '');
+                    indicator.onclick = () => goToSlide(index);
+                    indicatorsContainer.appendChild(indicator);
+                });
+            }
+
+            updateCarousel();
+
+            // Auto-play (optional)
+            // setInterval(() => changeSlide(1), 5000);
+        }
+
+        function changeSlide(direction) {
+            if (!images || images.length === 0) return;
+
+            currentSlide += direction;
+
+            if (currentSlide >= images.length) {
+                currentSlide = 0;
+            } else if (currentSlide < 0) {
+                currentSlide = images.length - 1;
+            }
+
+            updateCarousel();
+        }
+
+        function goToSlide(index) {
+            currentSlide = index;
+            updateCarousel();
+        }
+
+        function updateCarousel() {
+            const track = document.getElementById('carouselTrack');
+            const indicators = document.querySelectorAll('.carousel-indicator');
+            const slideNumber = document.getElementById('currentSlideNumber');
+
+            if (track) {
+                track.style.transform = `translateX(-${currentSlide * 100}%)`;
+            }
+
+            indicators.forEach((indicator, index) => {
+                indicator.classList.toggle('active', index === currentSlide);
+            });
+
+            if (slideNumber) {
+                slideNumber.textContent = currentSlide + 1;
+            }
+        }
+
+        // Touch swipe support
+        const carouselContainer = document.querySelector('.carousel-container');
+        if (carouselContainer) {
+            carouselContainer.addEventListener('touchstart', (e) => {
+                touchStartX = e.changedTouches[0].screenX;
+            });
+
+            carouselContainer.addEventListener('touchend', (e) => {
+                touchEndX = e.changedTouches[0].screenX;
+                handleSwipe();
+            });
+        }
+
+        function handleSwipe() {
+            const swipeThreshold = 50;
+            const diff = touchStartX - touchEndX;
+
+            if (Math.abs(diff) > swipeThreshold) {
+                if (diff > 0) {
+                    // Swipe left
+                    changeSlide(1);
+                } else {
+                    // Swipe right
+                    changeSlide(-1);
+                }
+            }
+        }
+
+        // Keyboard navigation for carousel
+        document.addEventListener('keydown', function (e) {
+            const lightbox = document.getElementById('lightbox');
+            if (!lightbox.classList.contains('active')) {
+                if (e.key === 'ArrowRight') {
+                    changeSlide(1);
+                } else if (e.key === 'ArrowLeft') {
+                    changeSlide(-1);
+                }
+            }
+        });
+
+        // Lightbox functions
+        function openLightbox(index) {
+            lightboxIndex = index;
+            updateLightboxImage();
+            document.getElementById('lightbox').classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeLightbox() {
+            document.getElementById('lightbox').classList.remove('active');
+            document.body.style.overflow = 'auto';
+        }
+
+        function updateLightboxImage() {
+            if (images && images.length > 0) {
+                const image = images[lightboxIndex];
+                document.getElementById('lightboxImage').src = `/user/api/hospital/image/${image.imageId}`;
+            }
+        }
+
+        function nextLightboxImage() {
+            if (images && images.length > 0) {
+                lightboxIndex = (lightboxIndex + 1) % images.length;
+                updateLightboxImage();
+            }
+        }
+
+        function prevLightboxImage() {
+            if (images && images.length > 0) {
+                lightboxIndex = (lightboxIndex - 1 + images.length) % images.length;
+                updateLightboxImage();
+            }
+        }
+
+        // Keyboard navigation for lightbox
+        document.addEventListener('keydown', function (e) {
+            const lightbox = document.getElementById('lightbox');
+            if (lightbox.classList.contains('active')) {
+                if (e.key === 'Escape') {
+                    closeLightbox();
+                } else if (e.key === 'ArrowRight') {
+                    nextLightboxImage();
+                } else if (e.key === 'ArrowLeft') {
+                    prevLightboxImage();
+                }
+            }
+        });
+
+        function shareHospital() {
+            if (navigator.share) {
+                navigator.share({
+                    title: hospitalName,
+                    text: `${hospitalName} पर जाएं - Health Sathi`,
+                    url: window.location.href
+                }).catch(err => console.log('Error sharing:', err));
+            } else {
+                navigator.clipboard.writeText(window.location.href).then(() => {
+                    alert('लिंक कॉपी किया गया! आप इसे किसी के साथ शेयर कर सकते हैं।');
+                });
+            }
+        }
+
+        function getDirections() {
+            const address = encodeURIComponent(hospitalAddress);
+            const mapsUrl = `https://www.google.com/maps/search/?api=1&query=${address}`;
+            window.open(mapsUrl, '_blank');
+        }
+
+        function toggleBookmark() {
+            const btn = document.getElementById('bookmarkBtn');
+            const icon = btn.querySelector('.material-symbols-outlined');
+
+            if (icon.textContent === 'bookmark_border') {
+                icon.textContent = 'bookmark';
+                btn.classList.add('text-primary');
+                showToast('अस्पताल सहेजा गया');
+            } else {
+                icon.textContent = 'bookmark_border';
+                btn.classList.remove('text-primary');
+                showToast('अस्पताल हटाया गया');
+            }
+        }
+
+        function showToast(message) {
+            const toast = document.createElement('div');
+            toast.className = 'fixed bottom-24 left-1/2 transform -translate-x-1/2 bg-slate-900 text-white px-6 py-3 rounded-xl shadow-lg z-50 text-sm font-medium';
+            toast.textContent = message;
+            document.body.appendChild(toast);
+
+            setTimeout(() => {
+                toast.style.opacity = '0';
+                toast.style.transition = 'opacity 0.3s';
+                setTimeout(() => toast.remove(), 300);
+            }, 2000);
+        }
+
+        // Initialize carousel on page load
+        document.addEventListener('DOMContentLoaded', initCarousel);
+    </script>
+
+</body>
+
+</html>
