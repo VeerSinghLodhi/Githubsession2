@@ -1,0 +1,682 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title th:text="${doctor.name} + ' - हेल्थ साथी'">डॉक्टर विवरण - हेल्थ साथी</title>
+    <meta name="_csrf" th:content="${_csrf.token}">
+    <meta name="_csrf_header" th:content="${_csrf.headerName}">
+
+    <link href="https://fonts.googleapis.com" rel="preconnect" />
+    <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect" />
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Devanagari:wght@400;500;600;700&display=swap"
+        rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap"
+        rel="stylesheet" />
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <script id="tailwind-config">
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#0058ba",
+                        "primary-dark": "#155a96",
+                        "primary-light": "#e3f2fd",
+                        "text-main": "#1e293b",
+                        "text-secondary": "#64748b",
+                        "border-light": "#e2e8f0",
+                        "surface": "#ffffff",
+                        "background": "#f8fafc",
+                    },
+                    fontFamily: {
+                        "display": ["Noto Sans Devanagari", "sans-serif"],
+                        "hindi": ["Noto Sans Devanagari", "sans-serif"]
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0.75rem",
+                        "xl": "1rem",
+                        "2xl": "1.25rem",
+                        "3xl": "1.5rem"
+                    },
+                    boxShadow: {
+                        'soft': '0 4px 20px -4px rgba(30, 115, 190, 0.1)',
+                        'glow': '0 8px 30px rgba(30, 115, 190, 0.2)',
+                        'card': '0 2px 12px rgba(0, 0, 0, 0.06)',
+                        'hover': '0 8px 25px rgba(30, 115, 190, 0.15)',
+                    }
+                },
+            },
+        }
+    </script>
+    <link rel="stylesheet" th:href="@{/FragmentStyle.css}" />
+    <style>
+        /* Profile Header Section */
+        .profile-header {
+            background: linear-gradient(135deg, #0058ba 0%, #155a96 100%);
+            padding: 40px 20px 80px;
+            position: relative;
+        }
+
+        .profile-header::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 60px;
+            background: #f8fafc;
+            border-radius: 30px 30px 0 0;
+        }
+
+        .profile-container {
+            position: relative;
+            z-index: 10;
+            margin-top: -60px;
+            padding: 0 20px;
+        }
+
+        .profile-card {
+            background: white;
+            border-radius: 24px;
+            padding: 24px;
+            box-shadow: 0 8px 30px rgba(0, 88, 186, 0.15);
+            text-align: center;
+        }
+
+        .profile-image-wrapper {
+            position: relative;
+            width: 120px;
+            height: 120px;
+            margin: 0 auto 16px;
+        }
+
+        .profile-image {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 5px solid white;
+            box-shadow: 0 4px 20px rgba(0, 88, 186, 0.2);
+        }
+
+        .profile-placeholder {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #e3f2fd 0%, #dbeafe 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 5px solid white;
+            box-shadow: 0 4px 20px rgba(0, 88, 186, 0.2);
+        }
+
+        .verified-badge {
+            position: absolute;
+            bottom: 5px;
+            right: 5px;
+            width: 32px;
+            height: 32px;
+            background: #10b981;
+            border-radius: 50%;
+            border: 3px solid white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 2px 8px rgba(16, 185, 129, 0.4);
+        }
+
+        /* Section Styles */
+        .section-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding-bottom: 12px;
+            margin-bottom: 16px;
+            border-bottom: 2px solid #e2e8f0;
+        }
+
+        .section-header h2 {
+            font-size: 18px;
+            font-weight: 700;
+            color: #1e293b;
+        }
+
+        /* Info Card */
+        .info-card {
+            background: white;
+            border: 1px solid #e2e8f0;
+            border-radius: 16px;
+            padding: 20px;
+            margin-bottom: 16px;
+        }
+
+        .info-row {
+            display: flex;
+            align-items: start;
+            gap: 12px;
+            padding: 12px 0;
+            border-bottom: 1px solid #f1f5f9;
+        }
+
+        .info-row:last-child {
+            border-bottom: none;
+            padding-bottom: 0;
+        }
+
+        .info-icon {
+            flex-shrink: 0;
+            width: 40px;
+            height: 40px;
+            background: #f8fafc;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* Specialization Badge */
+        .specialization-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 8px 16px;
+            background: linear-gradient(135deg, #dbeafe 0%, #e0f2fe 100%);
+            border: 1px solid #bae6fd;
+            border-radius: 20px;
+            font-size: 14px;
+            color: #0369a1;
+            font-weight: 600;
+            margin: 4px;
+        }
+
+        /* Qualification Badge */
+        .qualification-badge {
+            display: inline-block;
+            padding: 6px 14px;
+            background: #f1f5f9;
+            border-radius: 16px;
+            font-size: 13px;
+            color: #475569;
+            font-weight: 500;
+            margin: 4px;
+        }
+
+        /* Hospital Card */
+        .hospital-card {
+            background: linear-gradient(135deg, #f8fafc 0%, #ffffff 100%);
+            border: 1px solid #e2e8f0;
+            border-radius: 16px;
+            padding: 16px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .hospital-card:hover {
+            border-color: #0058ba;
+            box-shadow: 0 4px 12px rgba(0, 88, 186, 0.1);
+            transform: translateY(-2px);
+        }
+
+        /* Action Buttons */
+        .action-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            padding: 14px 24px;
+            border-radius: 12px;
+            font-weight: 600;
+            font-size: 15px;
+            transition: all 0.3s;
+            cursor: pointer;
+            border: none;
+        }
+
+        .action-btn-primary {
+            background: #0058ba;
+            color: white;
+        }
+
+        .action-btn-primary:hover {
+            background: #155a96;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(0, 88, 186, 0.3);
+        }
+
+        .action-btn-success {
+            background: #10b981;
+            color: white;
+        }
+
+        .action-btn-success:hover {
+            background: #059669;
+        }
+
+        .action-btn-outline {
+            background: white;
+            color: #0058ba;
+            border: 2px solid #0058ba;
+        }
+
+        .action-btn-outline:hover {
+            background: #f8fafc;
+        }
+
+        /* Sticky Footer */
+        .sticky-footer {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: white;
+            border-top: 1px solid #e2e8f0;
+            padding: 12px 20px;
+            display: flex;
+            gap: 10px;
+            z-index: 30;
+            box-shadow: 0 -4px 12px rgba(0, 0, 0, 0.05);
+        }
+
+        /* Stats */
+        .stat-item {
+            text-align: center;
+            padding: 12px;
+        }
+
+        .stat-value {
+            font-size: 20px;
+            font-weight: 700;
+            color: #0058ba;
+            margin-bottom: 4px;
+        }
+
+        .stat-label {
+            font-size: 12px;
+            color: #64748b;
+            font-weight: 500;
+        }
+
+        /* Badge */
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            padding: 6px 12px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .badge-primary {
+            background: #dbeafe;
+            color: #1e40af;
+        }
+
+        .badge-success {
+            background: #dcfce7;
+            color: #166534;
+        }
+
+        /* Empty State */
+        .empty-state {
+            text-align: center;
+            padding: 40px 20px;
+        }
+    </style>
+</head>
+
+<body class="bg-background antialiased text-text-main">
+    <div class="relative flex min-h-screen w-full flex-col pb-20">
+
+        <!-- Header -->
+        <header class="sticky top-0 z-20 bg-primary/95 backdrop-blur-md px-5 py-4">
+            <div class="flex items-center gap-4">
+                <button id="backBtn"
+                    class="flex items-center justify-center size-10 rounded-full bg-white/20 text-white hover:bg-white/30 transition-colors">
+                    <span class="material-symbols-outlined text-[24px]">arrow_back</span>
+                </button>
+                <div class="flex-1">
+                    <h1 class="text-lg font-bold text-white">डॉक्टर प्रोफाइल</h1>
+                    <p class="text-xs text-white/80">Doctor Profile</p>
+                </div>
+                <button id="shareBtn"
+                    class="flex items-center justify-center size-10 rounded-full bg-white/20 text-white hover:bg-white/30 transition-colors">
+                    <span class="material-symbols-outlined text-[24px]">share</span>
+                </button>
+            </div>
+        </header>
+
+        <!-- Profile Header Background -->
+        <div class="profile-header"></div>
+
+        <main class="flex-1 flex flex-col">
+
+            <!-- Profile Card -->
+            <div class="profile-container">
+                <div class="profile-card">
+                    <!-- Profile Image -->
+                    <div class="profile-image-wrapper">
+                        <!-- Check if profile picture exists -->
+                        <div th:if="${doctor.profilePicture != null && doctor.profilePicture.length > 0}">
+                            <img th:src="@{'/user/api/doctor/profile-picture/' + ${doctor.doctorId}}"
+                                th:alt="${doctor.name}" class="profile-image"
+                                onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                            <div class="profile-placeholder" style="display: none;">
+                                <span class="material-symbols-outlined text-primary text-[48px]">person</span>
+                            </div>
+                        </div>
+
+                        <!-- Placeholder if no profile picture -->
+                        <div th:unless="${doctor.profilePicture != null && doctor.profilePicture.length > 0}"
+                            class="profile-placeholder">
+                            <span class="material-symbols-outlined text-primary text-[48px]">person</span>
+                        </div>
+
+                        <!-- Verified Badge -->
+                        <div class="verified-badge">
+                            <span class="material-symbols-outlined text-white text-[16px]">verified</span>
+                        </div>
+                    </div>
+
+                    <!-- Doctor Name -->
+                    <h2 class="text-2xl font-bold text-slate-900 mb-2"
+                        th:text="${doctor.name != null && !#strings.isEmpty(doctor.name) ? doctor.name : 'नाम उपलब्ध नहीं'}">
+                        डॉ. नाम
+                    </h2>
+
+                    <!-- Specialization -->
+                    <div th:if="${doctor.specialization != null && !#strings.isEmpty(doctor.specialization)}"
+                        class="mb-3">
+                        <span class="specialization-badge">
+                            <span class="material-symbols-outlined text-[18px]">medical_services</span>
+                            <span th:text="${doctor.specialization}">विशेषज्ञता</span>
+                        </span>
+                    </div>
+
+                    <!-- Qualifications -->
+                    <div th:if="${doctor.qualification != null && !#strings.isEmpty(doctor.qualification)}"
+                        class="flex flex-wrap justify-center gap-1 mb-4">
+                        <span th:each="qual : ${#strings.listSplit(doctor.qualification, ',')}"
+                            th:if="${!#strings.isEmpty(#strings.trim(qual))}" class="qualification-badge"
+                            th:text="${#strings.trim(qual)}">
+                            योग्यता
+                        </span>
+                    </div>
+
+                    <!-- Quick Stats -->
+                    <div class="grid grid-cols-2 gap-4 pt-4 border-t border-slate-100">
+                        <div class="stat-item">
+                            <div class="stat-value">
+                                <span class="material-symbols-outlined text-primary text-[28px]">clinical_notes</span>
+                            </div>
+                            <div class="stat-label">विशेषज्ञ डॉक्टर</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-value">
+                                <span class="material-symbols-outlined text-green-600 text-[28px]">verified_user</span>
+                            </div>
+                            <div class="stat-label">सत्यापित</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Content Sections -->
+            <div class="flex flex-col gap-5 p-5">
+
+                <!-- Contact Information -->
+                <div class="info-card">
+                    <div class="section-header">
+                        <span class="material-symbols-outlined text-primary text-[24px]">contact_phone</span>
+                        <h2>संपर्क जानकारी / Contact Info</h2>
+                    </div>
+
+                    <div class="space-y-0">
+                        <!-- Phone -->
+                        <div class="info-row" th:if="${doctor.contact != null}">
+                            <div class="info-icon">
+                                <span class="material-symbols-outlined text-green-600 text-[20px]">call</span>
+                            </div>
+                            <div class="flex-1">
+                                <div class="text-xs text-slate-500 mb-1">फ़ोन / Phone</div>
+                                <a th:href="'tel:' + ${doctor.contact}"
+                                    class="text-sm text-slate-900 font-medium hover:text-primary"
+                                    th:text="${doctor.contact}">संपर्क नंबर</a>
+                            </div>
+                            <a th:href="'tel:' + ${doctor.contact}"
+                                class="flex-shrink-0 w-10 h-10 bg-green-50 rounded-full flex items-center justify-center hover:bg-green-100 transition-colors">
+                                <span class="material-symbols-outlined text-green-600 text-[20px]">call</span>
+                            </a>
+                        </div>
+
+                        <!-- No Contact Available -->
+                        <div th:unless="${doctor.contact != null}" class="empty-state py-8">
+                            <span
+                                class="material-symbols-outlined text-slate-300 text-[48px] mb-2">phone_disabled</span>
+                            <p class="text-sm text-slate-500">संपर्क जानकारी उपलब्ध नहीं है</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Professional Details -->
+                <div class="info-card">
+                    <div class="section-header">
+                        <span class="material-symbols-outlined text-primary text-[24px]">badge</span>
+                        <h2>व्यावसायिक विवरण / Professional Details</h2>
+                    </div>
+
+                    <div class="space-y-0">
+                        <!-- Specialization -->
+                        <div class="info-row"
+                            th:if="${doctor.specialization != null && !#strings.isEmpty(doctor.specialization)}">
+                            <div class="info-icon">
+                                <span
+                                    class="material-symbols-outlined text-blue-600 text-[20px]">medical_services</span>
+                            </div>
+                            <div class="flex-1">
+                                <div class="text-xs text-slate-500 mb-1">विशेषज्ञता / Specialization</div>
+                                <div class="text-sm text-slate-900 font-medium" th:text="${doctor.specialization}">
+                                    विशेषज्ञता</div>
+                            </div>
+                        </div>
+
+                        <!-- Qualification -->
+                        <div class="info-row"
+                            th:if="${doctor.qualification != null && !#strings.isEmpty(doctor.qualification)}">
+                            <div class="info-icon">
+                                <span class="material-symbols-outlined text-purple-600 text-[20px]">school</span>
+                            </div>
+                            <div class="flex-1">
+                                <div class="text-xs text-slate-500 mb-1">योग्यता / Qualification</div>
+                                <div class="text-sm text-slate-900 font-medium" th:text="${doctor.qualification}">
+                                    योग्यता</div>
+                            </div>
+                        </div>
+
+                        <!-- Doctor ID -->
+                        <div class="info-row">
+                            <div class="info-icon">
+                                <span class="material-symbols-outlined text-orange-600 text-[20px]">badge</span>
+                            </div>
+                            <div class="flex-1">
+                                <div class="text-xs text-slate-500 mb-1">डॉक्टर ID / Doctor ID</div>
+                                <div class="text-sm text-slate-900 font-medium font-mono"
+                                    th:text="'#' + ${doctor.doctorId}">ID</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Hospital Information -->
+                <div th:if="${doctor.hospital != null && doctor.hospital.hospitalId != null}" class="info-card">
+                    <div class="section-header">
+                        <span class="material-symbols-outlined text-primary text-[24px]">local_hospital</span>
+                        <h2>अस्पताल / Hospital</h2>
+                    </div>
+
+                    <div class="hospital-card" th:attr="data-hospital-id=${doctor.hospital.hospitalId}"
+                        onclick="navigateToHospital(this.getAttribute('data-hospital-id'))">
+                        <div class="flex items-start gap-3">
+                            <!-- Hospital Icon -->
+                            <div
+                                class="flex-shrink-0 w-12 h-12 bg-primary-light rounded-xl flex items-center justify-center">
+                                <span class="material-symbols-outlined text-primary text-[28px]">local_hospital</span>
+                            </div>
+
+                            <!-- Hospital Info -->
+                            <div class="flex-1 min-w-0">
+                                <h3 class="text-base font-bold text-slate-900 mb-1"
+                                    th:text="${doctor.hospital.name != null && !#strings.isEmpty(doctor.hospital.name) ? doctor.hospital.name : 'Unknown Hospital'}">
+                                    अस्पताल का नाम
+                                </h3>
+
+                                <p th:if="${doctor.hospital.address != null && !#strings.isEmpty(doctor.hospital.address)}"
+                                    class="text-sm text-slate-600 mb-2 line-clamp-2"
+                                    th:text="${doctor.hospital.address}">पता</p>
+
+                                <div class="flex items-center gap-2 flex-wrap">
+                                    <span
+                                        th:if="${doctor.hospital.type != null && doctor.hospital.type.type != null && !#strings.isEmpty(doctor.hospital.type.type)}"
+                                        class="badge badge-primary">
+                                        <span class="material-symbols-outlined text-[14px]">category</span>
+                                        <span th:text="${doctor.hospital.type.type}">प्रकार</span>
+                                    </span>
+                                    <span
+                                        th:if="${doctor.hospital.timings != null && doctor.hospital.timings == '24/7'}"
+                                        class="badge badge-success">
+                                        <span class="material-symbols-outlined text-[14px]">schedule</span>
+                                        24/7
+                                    </span>
+                                </div>
+                            </div>
+
+                            <!-- Arrow -->
+                            <div class="flex-shrink-0">
+                                <span class="material-symbols-outlined text-slate-400 text-[24px]">chevron_right</span>
+                            </div>
+                        </div>
+
+                        <!-- Hospital Contact -->
+                        <div th:if="${doctor.hospital.contact != null}" class="mt-3 pt-3 border-t border-slate-100">
+                            <div class="flex items-center gap-2">
+                                <span class="material-symbols-outlined text-slate-400 text-[18px]">call</span>
+                                <span class="text-sm text-slate-600" th:text="${doctor.hospital.contact}">संपर्क</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- No Hospital Info -->
+                <div th:unless="${doctor.hospital != null && doctor.hospital.hospitalId != null}" class="info-card">
+                    <div class="section-header">
+                        <span class="material-symbols-outlined text-primary text-[24px]">local_hospital</span>
+                        <h2>अस्पताल / Hospital</h2>
+                    </div>
+                    <div class="empty-state py-8">
+                        <span class="material-symbols-outlined text-slate-300 text-[48px] mb-2">domain_disabled</span>
+                        <p class="text-sm text-slate-500">अस्पताल की जानकारी उपलब्ध नहीं है</p>
+                    </div>
+                </div>
+
+                <!-- Additional Info Section -->
+                <div class="bg-primary-light rounded-2xl p-5 border border-primary/20">
+                    <div class="flex items-start gap-3">
+                        <span class="material-symbols-outlined text-primary text-[24px]">info</span>
+                        <div>
+                            <h3 class="text-sm font-semibold text-slate-900 mb-1">नोट / Note</h3>
+                            <p class="text-xs text-slate-600 leading-relaxed">
+                                अपॉइंटमेंट बुक करने से पहले कृपया अस्पताल से संपर्क करके उपलब्धता की जांच करें।
+                                Please check availability with the hospital before booking an appointment.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+        </main>
+
+        <!-- Sticky Footer Actions -->
+        <div class="sticky-footer">
+            <a th:if="${doctor.contact != null}" th:href="'tel:' + ${doctor.contact}"
+                class="action-btn action-btn-success flex-1">
+                <span class="material-symbols-outlined text-[20px]">call</span>
+                कॉल करें
+            </a>
+            <button class="action-btn action-btn-primary flex-1" onclick="bookAppointment()">
+                <span class="material-symbols-outlined text-[20px]">calendar_month</span>
+                अपॉइंटमेंट बुक करें
+            </button>
+        </div>
+
+    </div>
+
+    <script th:src="@{/FragmentScript.js}"></script>
+    <script th:inline="javascript">
+        /*<![CDATA[*/
+        const doctorId = /*[[${doctor.doctorId}]]*/ null;
+        const doctorName = /*[[${doctor.name}]]*/ '';
+        const hospitalId = /*[[${doctor.hospital != null ? doctor.hospital.hospitalId : null}]]*/ null;
+        /*]]>*/
+
+        // Navigation Functions
+        function navigateToHospital(hospitalId) {
+            if (hospitalId) {
+                window.location.href = '/user/hospital/' + hospitalId;
+            }
+        }
+
+        function bookAppointment() {
+            // Navigate to appointment booking page
+            if (hospitalId) {
+                window.location.href = '/user/appointment/book?doctorId=' + doctorId + '&hospitalId=' + hospitalId;
+            } else {
+                window.location.href = '/user/appointment/book?doctorId=' + doctorId;
+            }
+        }
+
+        // Share Function
+        function shareDoctor() {
+            if (navigator.share) {
+                navigator.share({
+                    title: doctorName,
+                    text: 'Check out this doctor: ' + doctorName,
+                    url: window.location.href
+                }).catch(err => console.log('Error sharing:', err));
+            } else {
+                // Fallback: Copy to clipboard
+                const url = window.location.href;
+                navigator.clipboard.writeText(url).then(() => {
+                    alert('लिंक कॉपी हो गया है!');
+                }).catch(err => {
+                    console.error('Failed to copy:', err);
+                });
+            }
+        }
+
+        // Initialize on page load
+        document.addEventListener('DOMContentLoaded', function () {
+            // Back button
+            const backBtn = document.getElementById('backBtn');
+            if (backBtn) {
+                backBtn.addEventListener('click', () => {
+                    if (window.history.length > 1) {
+                        window.history.back();
+                    } else {
+                        window.location.href = '/user/dashboard';
+                    }
+                });
+            }
+
+            // Share button
+            const shareBtn = document.getElementById('shareBtn');
+            if (shareBtn) {
+                shareBtn.addEventListener('click', shareDoctor);
+            }
+        });
+    </script>
+</body>
+
+</html>
