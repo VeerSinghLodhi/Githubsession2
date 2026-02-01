@@ -1,0 +1,584 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title th:text="${academyInfo.academyName} + ' | About Us'">Bahubali Academy | About Us</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;500;600;700&amp;family=Teko:wght@400;500;600;700&amp;display=swap"
+        rel="stylesheet" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+        rel="stylesheet" />
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "bronze": "#CD7F32",
+                        "charcoal": "#2C2416",
+                        "cream": "#FDFBF7",
+                        "gold": "#D4AF37",
+                        "athletic-orange": "#FF5722",
+                        "soft-grey": "#F2F2F2"
+                    },
+                    fontFamily: {
+                        "display": ["Teko", "sans-serif"],
+                        "body": ["Rajdhani", "sans-serif"]
+                    },
+                },
+            },
+        }
+    </script>
+    <style type="text/tailwindcss">
+        @layer base {
+    body {
+        @apply font-body bg-cream text-charcoal;
+    }
+    h1, h2, h3, h4 {
+        @apply font-display uppercase tracking-wider;
+    }
+}
+.clip-warrior {
+    clip-path: polygon(10% 0, 100% 0, 90% 100%, 0% 100%);
+}
+.clip-card {
+    clip-path: polygon(0 0, 90% 0, 100% 15%, 100% 100%, 10% 100%, 0 85%);
+}
+.clip-button {
+    clip-path: polygon(15% 0, 100% 0, 85% 100%, 0 100%);
+}
+.bg-grid {
+    background-image: radial-gradient(rgba(44, 36, 22, 0.05) 1px, transparent 1px);
+    background-size: 30px 30px;
+}
+.bg-diagonal {
+    background: repeating-linear-gradient(45deg, transparent, transparent 10px, rgba(44, 36, 22, 0.03) 10px, rgba(44, 36, 22, 0.03) 20px);
+}
+.warrior-border {
+    border-left: 4px solid #CD7F32;
+    border-right: 4px solid #CD7F32;
+}
+
+/* Mobile menu styles */
+.mobile-menu {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.3s ease-in-out;
+}
+.mobile-menu.active {
+    max-height: 500px;
+}
+  </style>
+</head>
+
+<body class="bg-cream text-charcoal selection:bg-bronze selection:text-white">
+    <!-- Header -->
+    <header class="sticky top-0 z-50 w-full bg-white/95 border-b border-charcoal/10 backdrop-blur-sm shadow-sm">
+        <div class="max-w-[1280px] mx-auto px-6 py-4">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center gap-4 text-bronze">
+                    <!-- Logo -->
+                    <img src="../images/logo.png" alt="Academy Logo" class="size-10 object-contain" />
+                    <h2 class="text-charcoal text-xl md:text-2xl font-bold leading-tight tracking-widest uppercase"
+                        th:text="${academyInfo.academyName}">
+                        Bahubali Academy Sagar
+                    </h2>
+                </div>
+
+                <div class="flex items-center gap-4">
+                    <!-- Desktop Navigation -->
+                    <nav class="hidden md:flex items-center gap-8">
+                        <a class="text-charcoal/70 text-lg font-semibold hover:text-bronze transition-colors uppercase tracking-widest"
+                            href="/">Home</a>
+                        <a class="text-bronze text-lg font-semibold transition-colors uppercase tracking-widest border-b-2 border-bronze"
+                            href="/about">About</a>
+                        <a class="text-charcoal/70 text-lg font-semibold hover:text-bronze transition-colors uppercase tracking-widest"
+                            href="/members">Members</a>
+                        <a class="text-charcoal/70 text-lg font-semibold hover:text-bronze transition-colors uppercase tracking-widest"
+                            href="/gallery">Gallery</a>
+                        <a class="text-charcoal/70 text-lg font-semibold hover:text-bronze transition-colors uppercase tracking-widest"
+                            href="/contact">Contact</a>
+                    </nav>
+
+                    <!-- Desktop Join Button -->
+                    <a href="/contact">
+                        <button
+                            class="hidden md:block clip-button bg-athletic-orange hover:bg-charcoal px-8 py-2 text-white font-black uppercase transition-all duration-300">
+                            Join Now
+                        </button>
+                    </a>
+
+                    <!-- Mobile Menu Toggle Button -->
+                    <button id="mobile-menu-toggle"
+                        class="md:hidden flex items-center justify-center w-10 h-10 text-charcoal hover:text-bronze transition-colors">
+                        <span class="material-symbols-outlined text-3xl">menu</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Mobile Navigation Menu -->
+            <div id="mobile-menu" class="mobile-menu md:hidden">
+                <nav class="flex flex-col gap-4 pt-4 pb-2">
+                    <a class="text-charcoal/70 text-base font-semibold hover:text-bronze transition-colors uppercase tracking-widest py-2 border-b border-charcoal/10"
+                        href="/">Home</a>
+                    <a class="text-bronze text-base font-semibold transition-colors uppercase tracking-widest py-2 border-b-2 border-bronze"
+                        href="/about">About</a>
+                    <a class="text-charcoal/70 text-base font-semibold hover:text-bronze transition-colors uppercase tracking-widest py-2 border-b border-charcoal/10"
+                        href="/members">Members</a>
+                    <a class="text-charcoal/70 text-base font-semibold hover:text-bronze transition-colors uppercase tracking-widest py-2 border-b border-charcoal/10"
+                        href="/gallery">Gallery</a>
+                    <a class="text-charcoal/70 text-base font-semibold hover:text-bronze transition-colors uppercase tracking-widest py-2 border-b border-charcoal/10"
+                        href="/contact">Contact</a>
+                    <a href="/contact">
+                        <button
+                            class="clip-button bg-athletic-orange hover:bg-charcoal px-8 py-2 text-white font-black uppercase transition-all duration-300 mt-2">
+                            Join Now
+                        </button>
+                    </a>
+                </nav>
+            </div>
+        </div>
+    </header>
+
+    <main>
+        <!-- Hero Section -->
+        <section class="relative w-full overflow-hidden bg-charcoal min-h-[50vh] flex items-center">
+            <div class="absolute inset-0 bg-diagonal opacity-10"></div>
+            <div class="max-w-[1280px] mx-auto px-6 relative z-20 w-full py-16 md:py-20">
+                <div class="flex flex-col gap-4 md:gap-6 max-w-[800px]">
+                    <div
+                        class="inline-block px-4 py-1 bg-bronze text-white font-bold text-sm tracking-[0.2em] clip-warrior w-fit">
+                        ABOUT THE ACADEMY
+                    </div>
+                    <h1 class="text-white text-4xl md:text-6xl lg:text-8xl font-black leading-[0.9] tracking-tighter"
+                        th:text="${academyInfo.academyName}">
+                        BAHUBALI ACADEMY SAGAR
+                    </h1>
+                    <h2 class="text-white/80 text-lg md:text-xl lg:text-2xl font-medium border-l-4 border-bronze pl-4 md:pl-6 italic"
+                        th:text="${academyInfo.tagline}">
+                        Forging Champions Through Discipline and Excellence
+                    </h2>
+                </div>
+            </div>
+        </section>
+
+        <!-- About Content Section -->
+        <section class="bg-cream py-16 md:py-24 relative overflow-hidden">
+            <div class="absolute inset-0 bg-grid opacity-60"></div>
+            <div class="max-w-[1280px] mx-auto px-6 relative z-10">
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16 items-start">
+                    <!-- Left Column - About Text -->
+                    <div>
+                        <div class="flex items-center gap-4 mb-6">
+                            <div class="h-1 w-12 bg-bronze"></div>
+                            <span class="text-bronze uppercase tracking-[0.3em] font-bold text-sm">Our Story</span>
+                        </div>
+                        <h2
+                            class="text-charcoal text-3xl md:text-4xl lg:text-5xl font-black leading-tight mb-6 md:mb-8">
+                            WHO WE ARE</h2>
+                        <div class="prose prose-lg max-w-none">
+                            <p class="text-charcoal/80 text-base md:text-lg leading-relaxed mb-6 font-medium whitespace-pre-line"
+                                th:text="${academyInfo.aboutText}">
+                                At Bahubali Academy Sagar, we don't just train athletes; we forge legends. Rooted in
+                                ancient
+                                principles of physical mastery and tempered by modern sports science, our academy is a
+                                sanctuary for those who seek the extraordinary.
+
+                                Founded with a vision to create world-class athletes from the heart of Madhya Pradesh,
+                                we have
+                                become a beacon of excellence in sports training. Our state-of-the-art facilities
+                                combined
+                                with expert coaching create an environment where champions are born.
+                            </p>
+                        </div>
+
+                        <!-- Stats -->
+                        <div class="grid grid-cols-2 gap-4 md:gap-6 lg:gap-8 mt-8 md:mt-12 mb-8">
+                            <div class="clip-card bg-white p-4 md:p-6 shadow-md border border-bronze/20">
+                                <div class="text-bronze text-3xl md:text-4xl lg:text-5xl font-black mb-2">500+</div>
+                                <div class="text-charcoal/60 uppercase tracking-widest text-xs md:text-sm font-bold">
+                                    Warriors
+                                    Trained</div>
+                            </div>
+                            <div class="clip-card bg-white p-4 md:p-6 shadow-md border border-bronze/20">
+                                <div class="text-bronze text-3xl md:text-4xl lg:text-5xl font-black mb-2">50+</div>
+                                <div class="text-charcoal/60 uppercase tracking-widest text-xs md:text-sm font-bold">
+                                    National
+                                    Titles</div>
+                            </div>
+                            <div class="clip-card bg-white p-4 md:p-6 shadow-md border border-bronze/20">
+                                <div class="text-bronze text-3xl md:text-4xl lg:text-5xl font-black mb-2">15+</div>
+                                <div class="text-charcoal/60 uppercase tracking-widest text-xs md:text-sm font-bold">
+                                    Years Legacy
+                                </div>
+                            </div>
+                            <div class="clip-card bg-white p-4 md:p-6 shadow-md border border-bronze/20">
+                                <div class="text-bronze text-3xl md:text-4xl lg:text-5xl font-black mb-2">20+</div>
+                                <div class="text-charcoal/60 uppercase tracking-widest text-xs md:text-sm font-bold">
+                                    Expert Coaches
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Right Column - Vision & Image -->
+                    <div class="space-y-6 md:space-y-8">
+                        <!-- Academy Image -->
+                        <div class="relative">
+                            <div class="absolute -inset-4 border-2 border-bronze/20 clip-card z-0"></div>
+                            <div class="w-full h-[300px] md:h-[400px] bg-center bg-cover clip-card shadow-2xl relative z-10"
+                                style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuAvwsJaDRSTuodp8Dhz9PQddSWpAzuTNU0I27UjjEnO-9oWm3fj7eYQm4AweTVlLJP3erDejjjW3vMsyvxcutP0jSTR2JaEfOc7KFanXYG41MhZIaI7bDdPQU0OpOjl4WxaV5XadiDjxyyc6S-u-C2eZvxpo93N8HJBtHD7aKJvZYHc3C2XlCgizVaFt6lgiievAH8fiCRSyKmx5JvXs8YrvyPi8jNAPjE5WD_Our7DbT1IkoTrLHENp7_mZXnX9IBz1ftvPbMM1cSk");'>
+                            </div>
+                        </div>
+
+                        <!-- Vision Box -->
+                        <div class="clip-card bg-athletic-orange p-6 md:p-8 lg:p-10 shadow-xl">
+                            <div class="flex items-center gap-4 mb-4 md:mb-6">
+                                <span
+                                    class="material-symbols-outlined text-white text-4xl md:text-5xl">visibility</span>
+                                <h3 class="text-white text-2xl md:text-3xl font-black">OUR VISION</h3>
+                            </div>
+                            <p class="text-white/90 text-base md:text-lg leading-relaxed font-medium whitespace-pre-line"
+                                th:text="${academyInfo.vision}">
+                                To be the premier sports academy in Central India, nurturing talent and creating
+                                champions who excel not just in sports, but in life. We envision a future where every
+                                athlete who walks through our doors discovers their true potential and achieves
+                                greatness.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Core Values Section -->
+        <section class="bg-white py-16 md:py-20 lg:py-24 relative">
+            <div class="absolute inset-0 bg-diagonal opacity-50"></div>
+            <div class="max-w-[1280px] mx-auto px-6 relative z-10">
+                <div class="mb-12 md:mb-16 text-center">
+                    <h2 class="text-charcoal text-3xl md:text-4xl lg:text-5xl font-black mb-4">OUR CORE VALUES</h2>
+                    <p
+                        class="text-bronze uppercase tracking-[0.3em] md:tracking-[0.4em] font-bold text-sm md:text-base lg:text-lg">
+                        What Defines Us</p>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-10">
+                    <div
+                        class="clip-card bg-white p-8 md:p-10 border border-charcoal/10 hover:border-bronze/60 transition-colors group shadow-lg">
+                        <div
+                            class="w-14 h-14 md:w-16 md:h-16 clip-warrior bg-charcoal flex items-center justify-center text-white mb-6 md:mb-8 group-hover:bg-bronze transition-colors">
+                            <span class="material-symbols-outlined text-3xl md:text-4xl">psychology</span>
+                        </div>
+                        <h3 class="text-charcoal text-xl md:text-2xl font-bold mb-3 md:mb-4">DISCIPLINE</h3>
+                        <p class="text-charcoal/60 text-base md:text-lg">
+                            The foundation of every champion. We instill unwavering discipline that transforms ordinary
+                            individuals into extraordinary athletes.
+                        </p>
+                    </div>
+                    <div
+                        class="clip-card bg-white p-8 md:p-10 border border-charcoal/10 hover:border-bronze/60 transition-colors group shadow-lg">
+                        <div
+                            class="w-14 h-14 md:w-16 md:h-16 clip-warrior bg-charcoal flex items-center justify-center text-white mb-6 md:mb-8 group-hover:bg-bronze transition-colors">
+                            <span class="material-symbols-outlined text-3xl md:text-4xl">star</span>
+                        </div>
+                        <h3 class="text-charcoal text-xl md:text-2xl font-bold mb-3 md:mb-4">EXCELLENCE</h3>
+                        <p class="text-charcoal/60 text-base md:text-lg">
+                            We never settle for mediocrity. Every training session, every technique, every moment is
+                            crafted for excellence.
+                        </p>
+                    </div>
+                    <div
+                        class="clip-card bg-white p-8 md:p-10 border border-charcoal/10 hover:border-bronze/60 transition-colors group shadow-lg">
+                        <div
+                            class="w-14 h-14 md:w-16 md:h-16 clip-warrior bg-charcoal flex items-center justify-center text-white mb-6 md:mb-8 group-hover:bg-bronze transition-colors">
+                            <span class="material-symbols-outlined text-3xl md:text-4xl">groups</span>
+                        </div>
+                        <h3 class="text-charcoal text-xl md:text-2xl font-bold mb-3 md:mb-4">INTEGRITY</h3>
+                        <p class="text-charcoal/60 text-base md:text-lg">
+                            Honor and respect guide our every action. We build not just athletes, but individuals of
+                            character and strength.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Facilities Section -->
+        <section class="bg-cream py-16 md:py-20 lg:py-24">
+            <div class="max-w-[1280px] mx-auto px-6">
+                <div class="mb-12 md:mb-16 text-center">
+                    <h2 class="text-charcoal text-3xl md:text-4xl lg:text-5xl font-black mb-4">WORLD-CLASS FACILITIES
+                    </h2>
+                    <p
+                        class="text-bronze uppercase tracking-[0.3em] md:tracking-[0.4em] font-bold text-sm md:text-base lg:text-lg">
+                        The Arena of
+                        Champions</p>
+                </div>
+
+                <!-- Responsive Facilities Grid -->
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
+                    <!-- Facility Card 1 -->
+                    <div class="clip-card overflow-hidden bg-white shadow-lg border border-charcoal/5">
+                        <div class="h-56 md:h-64 bg-cover bg-center"
+                            style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuDJtG9k8C9pfGGvwy6dJpR8oM0-7YkOWUv3wPl_R0W6v6eSDFv52tZqhPEr3KhFHuJNZo0Ro-CZUqMf0I8vLrjXZ2fZ1Hygws1YQlLxANTuFdIYUGBy1TFTBYm_oOSU09j63ecj4PQ-3RqD8yto7-0XytVTF_bfsdyipwcZcEmWx_ebrkaCla9XlyfvbK9s640bqrZlU4bdUTCKnU0UHQ4JVayYGK6EQbJ_u9fVlq8hPpytq2S7PGr6d72XAozeNBY1j-Xm87HOOO94");'>
+                        </div>
+                        <div class="p-5 md:p-6">
+                            <h3 class="text-charcoal text-lg md:text-xl font-black mb-2 md:mb-3 uppercase">Strength
+                                Training Arena</h3>
+                            <p class="text-charcoal/70 text-sm md:text-base">State-of-the-art equipment for building raw
+                                power and endurance.
+                            </p>
+                        </div>
+                    </div>
+
+                    <!-- Facility Card 2 -->
+                    <div class="clip-card overflow-hidden bg-white shadow-lg border border-charcoal/5">
+                        <div class="h-56 md:h-64 bg-cover bg-center"
+                            style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuDmZhq8UxPz8DSeV64xRdguyh4y5mioZSwCMxP-AHM96Wt9BItv3HlnlXtute5OYvBkCCWtKu4Cf65H588M_httuGeOglSewZHJXvYFzSpU_O--RP6S4NANnboYBoUlM19ZK7DwVUnr1y5MfHiuzlsD4IXVLu1rPR5D5ZC66kM0vChI7-OL4mVbjqnLeF55KomesnM2_Eb70DlvzBAlFKbB6yxQoXFnPqu6UxKJCXt4xRP-li_OIjSFUlsXfoV3Lvj1NKRKZmqPR1A_");'>
+                        </div>
+                        <div class="p-5 md:p-6">
+                            <h3 class="text-charcoal text-lg md:text-xl font-black mb-2 md:mb-3 uppercase">Athletic
+                                Track</h3>
+                            <p class="text-charcoal/70 text-sm md:text-base">Professional-grade running track for speed
+                                and agility training.
+                            </p>
+                        </div>
+                    </div>
+
+                    <!-- Facility Card 3 -->
+                    <div class="clip-card overflow-hidden bg-white shadow-lg border border-charcoal/5">
+                        <div class="h-56 md:h-64 bg-cover bg-center"
+                            style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuDJgqRv6YwBpeLrcA-A1YUcNsemGXn7YdflnnKNP0aLBSha_VAEuxstN7vBakdZuZrG2ufancQk-mm-71yiz_iQJ1DJzQEahdwkjs4S9JWYZGVv6kiWnBrdx2boKJ0oV8Fo-umNQltgpVrT9ZBZHh_d51p89BY0A50jIVBhJtQPrgXUrlDt71Q8J9hawJWzTcPUSEnNTsAi8vdPg8zEZ7xfRjNbOOTRmCDqPOgqkvrkEKC52a47kD9L64nfEymUk_xV8l4HQpKvbQJ8");'>
+                        </div>
+                        <div class="p-5 md:p-6">
+                            <h3 class="text-charcoal text-lg md:text-xl font-black mb-2 md:mb-3 uppercase">Combat Arena
+                            </h3>
+                            <p class="text-charcoal/70 text-sm md:text-base">Dedicated space for martial arts and combat
+                                sports training.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Contact Info Section -->
+        <section class="bg-charcoal py-16 md:py-20 lg:py-24 text-white">
+            <div class="max-w-[1280px] mx-auto px-6">
+                <div class="text-center mb-10 md:mb-12">
+                    <h2 class="text-white text-3xl md:text-4xl lg:text-5xl font-black mb-4">VISIT US</h2>
+                    <p
+                        class="text-bronze uppercase tracking-[0.3em] md:tracking-[0.4em] font-bold text-sm md:text-base">
+                        Find Your Path to Greatness</p>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-10 max-w-4xl mx-auto">
+                    <!-- Address -->
+                    <div class="text-center">
+                        <div
+                            class="w-14 h-14 md:w-16 md:h-16 bg-bronze clip-warrior mx-auto mb-4 md:mb-6 flex items-center justify-center">
+                            <span class="material-symbols-outlined text-3xl md:text-4xl text-white">location_on</span>
+                        </div>
+                        <h3 class="text-bronze text-lg md:text-xl font-black mb-2 md:mb-3 uppercase">Location</h3>
+                        <p class="text-white/80 text-sm md:text-base whitespace-pre-line"
+                            th:text="${academyInfo.address}">
+                            Bahubali Academy
+                            Sagar, Madhya Pradesh
+                        </p>
+                    </div>
+
+                    <!-- Phone -->
+                    <div class="text-center">
+                        <div
+                            class="w-14 h-14 md:w-16 md:h-16 bg-bronze clip-warrior mx-auto mb-4 md:mb-6 flex items-center justify-center">
+                            <span class="material-symbols-outlined text-3xl md:text-4xl text-white">phone</span>
+                        </div>
+                        <h3 class="text-bronze text-lg md:text-xl font-black mb-2 md:mb-3 uppercase">Phone</h3>
+                        <a th:href="'tel:' + ${academyInfo.phone}"
+                            class="text-white/80 text-sm md:text-base hover:text-bronze transition-colors">
+                            <p th:text="${academyInfo.phone}">+91 (XXX) XXX-XXXX</p>
+                        </a>
+                    </div>
+
+                    <!-- Email -->
+                    <div class="text-center">
+                        <div
+                            class="w-14 h-14 md:w-16 md:h-16 bg-bronze clip-warrior mx-auto mb-4 md:mb-6 flex items-center justify-center">
+                            <span class="material-symbols-outlined text-3xl md:text-4xl text-white">email</span>
+                        </div>
+                        <h3 class="text-bronze text-lg md:text-xl font-black mb-2 md:mb-3 uppercase">Email</h3>
+                        <a th:href="'mailto:' + ${academyInfo.email}"
+                            class="text-white/80 text-sm md:text-base hover:text-bronze transition-colors">
+                            <p th:text="${academyInfo.email}">info@bahubaliacademy.com</p>
+                        </a>
+                    </div>
+                </div>
+
+                <div class="text-center mt-10 md:mt-12">
+                    <a href="/contact">
+                        <button
+                            class="bg-athletic-orange text-white px-10 md:px-12 py-3 md:py-4 clip-button font-black text-lg md:text-xl shadow-2xl hover:bg-bronze transition-all uppercase">
+                            Get In Touch
+                        </button>
+                    </a>
+                </div>
+            </div>
+        </section>
+
+        <!-- CTA Section -->
+        <section class="py-16 md:py-20 lg:py-24 bg-athletic-orange relative overflow-hidden group">
+            <div class="absolute inset-0 bg-diagonal opacity-10 group-hover:opacity-20 transition-opacity"></div>
+            <div class="max-w-[1280px] mx-auto px-6 text-center relative z-10">
+                <h2 class="text-white text-4xl md:text-5xl lg:text-7xl font-black mb-6 md:mb-8 leading-none">START YOUR
+                    JOURNEY</h2>
+                <p
+                    class="text-white/90 text-base md:text-lg lg:text-2xl font-bold mb-8 md:mb-12 max-w-2xl mx-auto uppercase tracking-wide">
+                    Join the legacy. Transform your life. Become a champion.
+                </p>
+                <a href="/contact">
+                    <button
+                        class="bg-charcoal text-white px-10 md:px-12 lg:px-16 py-4 md:py-5 lg:py-6 clip-button font-black text-xl md:text-2xl lg:text-3xl shadow-2xl hover:bg-white hover:text-charcoal transition-all uppercase">
+                        Join The Academy
+                    </button>
+                </a>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-charcoal text-white py-12 md:py-16 lg:py-20">
+        <div class="max-w-[1280px] mx-auto px-6">
+            <div
+                class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 md:gap-10 lg:gap-12 mb-10 md:mb-12 lg:mb-16">
+                <!-- Section 1: About -->
+                <div class="footer-section">
+                    <h3 class="text-bronze text-xl md:text-2xl font-black mb-4 md:mb-6 uppercase tracking-wider"
+                        th:text="${academyInfo.academyName}">
+                        Bahubali Academy Sagar
+                    </h3>
+                    <p class="text-white/70 mb-6 md:mb-8 leading-relaxed text-sm md:text-base">
+                        Empowering individuals through discipline, dedication, and excellence in physical training.
+                    </p>
+                    <div class="flex gap-4">
+                        <!-- Facebook -->
+                        <a th:href="${academyInfo.facebookLink}"
+                            th:if="${academyInfo.facebookLink != null and !#strings.isEmpty(academyInfo.facebookLink)}"
+                            target="_blank" rel="noopener noreferrer"
+                            class="w-10 h-10 md:w-12 md:h-12 bg-bronze hover:bg-white text-white hover:text-charcoal flex items-center justify-center font-black text-lg md:text-xl transition-all clip-warrior">
+                            <span class="material-symbols-outlined">facebook</span>
+                        </a>
+
+                        <!-- Instagram -->
+                        <a th:href="${academyInfo.instagramLink}"
+                            th:if="${academyInfo.instagramLink != null and !#strings.isEmpty(academyInfo.instagramLink)}"
+                            target="_blank" rel="noopener noreferrer"
+                            class="w-10 h-10 md:w-12 md:h-12 bg-bronze hover:bg-white text-white hover:text-charcoal flex items-center justify-center font-black text-lg md:text-xl transition-all clip-warrior">
+                            <span class="material-symbols-outlined">photo_camera</span>
+                        </a>
+
+                        <!-- YouTube -->
+                        <a th:href="${academyInfo.youtubeLink}"
+                            th:if="${academyInfo.youtubeLink != null and !#strings.isEmpty(academyInfo.youtubeLink)}"
+                            target="_blank" rel="noopener noreferrer"
+                            class="w-10 h-10 md:w-12 md:h-12 bg-bronze hover:bg-white text-white hover:text-charcoal flex items-center justify-center font-black text-lg md:text-xl transition-all clip-warrior">
+                            <span class="material-symbols-outlined">play_circle</span>
+                        </a>
+
+                        <!-- Other App Link -->
+                        <a th:href="${academyInfo.otherAppLink}"
+                            th:if="${academyInfo.otherAppLink != null and !#strings.isEmpty(academyInfo.otherAppLink)}"
+                            target="_blank" rel="noopener noreferrer"
+                            class="w-10 h-10 md:w-12 md:h-12 bg-bronze hover:bg-white text-white hover:text-charcoal flex items-center justify-center font-black text-lg md:text-xl transition-all clip-warrior">
+                            <span class="material-symbols-outlined">link</span>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Section 2: Contact Info -->
+                <div class="footer-section">
+                    <h3 class="text-bronze text-xl md:text-2xl font-black mb-4 md:mb-6 uppercase tracking-wider">Contact
+                        Info</h3>
+                    <ul class="space-y-3 md:space-y-4 text-white/70 text-sm md:text-base">
+                        <li class="flex items-start gap-2">
+                            <span class="text-bronze">📍</span>
+                            <span th:text="${academyInfo.address}">Bahubali Academy, Sagar, MP</span>
+                        </li>
+                        <li class="flex items-start gap-2">
+                            <span class="text-bronze">📞</span>
+                            <a th:href="'tel:' + ${academyInfo.phone}" class="hover:text-bronze transition-colors">
+                                <span th:text="${academyInfo.phone}">+91 (XXX) XXX-XXXX</span>
+                            </a>
+                        </li>
+                        <li class="flex items-start gap-2">
+                            <span class="text-bronze">✉️</span>
+                            <a th:href="'mailto:' + ${academyInfo.email}" class="hover:text-bronze transition-colors">
+                                <span th:text="${academyInfo.email}">info@bahubaliacademy.com</span>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- Section 3: Quick Links -->
+                <div class="footer-section">
+                    <h3 class="text-bronze text-xl md:text-2xl font-black mb-4 md:mb-6 uppercase tracking-wider">Quick
+                        Links</h3>
+                    <ul class="space-y-3 md:space-y-4 text-white/70 text-sm md:text-base">
+                        <li><a href="/about"
+                                class="hover:text-bronze transition-colors uppercase tracking-wide font-semibold">About
+                                Us</a></li>
+                        <li><a href="/members"
+                                class="hover:text-bronze transition-colors uppercase tracking-wide font-semibold">Members</a>
+                        </li>
+                        <li><a href="/gallery"
+                                class="hover:text-bronze transition-colors uppercase tracking-wide font-semibold">Gallery</a>
+                        </li>
+                        <li><a href="/contact"
+                                class="hover:text-bronze transition-colors uppercase tracking-wide font-semibold">Contact</a>
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- Section 4: Opening Hours -->
+                <div class="footer-section">
+                    <h3 class="text-bronze text-xl md:text-2xl font-black mb-4 md:mb-6 uppercase tracking-wider">Opening
+                        Hours</h3>
+                    <ul class="space-y-3 md:space-y-4 text-white/70 text-sm md:text-base leading-relaxed">
+                        <li><span class="font-bold text-white">Monday - Friday:</span><br />6:00 AM - 10:00 PM</li>
+                        <li><span class="font-bold text-white">Saturday:</span><br />7:00 AM - 8:00 PM</li>
+                        <li><span class="font-bold text-white">Sunday:</span><br />8:00 AM - 6:00 PM</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Footer Bottom -->
+            <div class="pt-6 md:pt-8 border-t border-white/20 text-center">
+                <p class="text-white/60 text-xs md:text-sm font-semibold uppercase tracking-widest">
+                    &copy; 2026 <span th:text="${academyInfo.academyName}">Bahubali Academy Sagar</span>. All rights
+                    reserved. | Designed for Excellence
+                </p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Mobile Menu Toggle Script -->
+    <script>
+        document.getElementById('mobile-menu-toggle').addEventListener('click', function () {
+            const menu = document.getElementById('mobile-menu');
+            const icon = this.querySelector('.material-symbols-outlined');
+
+            menu.classList.toggle('active');
+
+            // Toggle icon between menu and close
+            if (menu.classList.contains('active')) {
+                icon.textContent = 'close';
+            } else {
+                icon.textContent = 'menu';
+            }
+        });
+    </script>
+
+</body>
+
+</html>
