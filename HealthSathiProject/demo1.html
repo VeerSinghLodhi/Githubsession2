@@ -1,0 +1,660 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title
+        th:text="${academyInfo != null ? academyInfo.academyName + ' | Developer' : 'Website Developer | Bahubali Academy'}">
+        Website Developer | Bahubali Academy</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;500;600;700&amp;family=Teko:wght@400;500;600;700&amp;display=swap"
+        rel="stylesheet" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+        rel="stylesheet" />
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "bronze": "#CD7F32",
+                        "charcoal": "#2C2416",
+                        "cream": "#FDFBF7",
+                        "gold": "#D4AF37",
+                        "athletic-orange": "#FF5722",
+                        "soft-grey": "#F2F2F2"
+                    },
+                    fontFamily: {
+                        "display": ["Teko", "sans-serif"],
+                        "body": ["Rajdhani", "sans-serif"]
+                    },
+                },
+            },
+        }
+    </script>
+    <style type="text/tailwindcss">
+        @layer base {
+        body {
+            @apply font-body bg-cream text-charcoal;
+        }
+        h1, h2, h3, h4 {
+            @apply font-display uppercase tracking-wider;
+        }
+    }
+    .clip-warrior {
+        clip-path: polygon(10% 0, 100% 0, 90% 100%, 0% 100%);
+    }
+    .clip-card {
+        clip-path: polygon(0 0, 90% 0, 100% 15%, 100% 100%, 10% 100%, 0 85%);
+    }
+    .clip-button {
+        clip-path: polygon(15% 0, 100% 0, 85% 100%, 0 100%);
+    }
+    .bg-grid {
+        background-image: radial-gradient(rgba(44, 36, 22, 0.05) 1px, transparent 1px);
+        background-size: 30px 30px;
+    }
+    .bg-diagonal {
+        background: repeating-linear-gradient(45deg, transparent, transparent 10px, rgba(44, 36, 22, 0.03) 10px, rgba(44, 36, 22, 0.03) 20px);
+    }
+  </style>
+</head>
+
+<body class="bg-cream text-charcoal">
+
+    <!-- Main Container -->
+    <div class="min-h-screen relative overflow-hidden">
+
+        <!-- Background Pattern -->
+        <div class="absolute inset-0 bg-grid opacity-60"></div>
+        <div class="absolute inset-0 bg-diagonal opacity-40"></div>
+
+        <!-- Header -->
+        <header class="relative z-10 bg-white border-b-4 border-bronze shadow-lg">
+            <div class="max-w-7xl mx-auto px-6 py-6">
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center gap-3">
+                        <img src="../images/logo.png" alt="Logo" class="w-12 h-12 object-contain" />
+                        <div>
+                            <h2 class="text-bronze text-2xl font-black uppercase tracking-wider"
+                                th:text="${academyInfo != null ? academyInfo.academyName : 'Bahubali Academy'}">Bahubali
+                                Academy</h2>
+                            <p class="text-charcoal/60 text-xs uppercase tracking-widest font-semibold">Sagar</p>
+                        </div>
+                    </div>
+                    <a href="/"
+                        class="clip-button bg-bronze hover:bg-athletic-orange text-white px-6 py-3 font-bold uppercase text-sm tracking-wide transition-all shadow-lg">
+                        Back to Home
+                    </a>
+                </div>
+            </div>
+        </header>
+
+        <!-- Main Content -->
+        <main class="relative z-10 py-12 md:py-16">
+            <div class="max-w-6xl mx-auto px-6">
+
+                <!-- Page Title -->
+                <div class="text-center mb-12">
+                    <div class="flex items-center justify-center gap-3 mb-2">
+                        <div class="h-1 w-12 bg-bronze"></div>
+                        <span class="text-bronze uppercase tracking-[0.3em] font-bold text-sm">Meet the Developer</span>
+                        <div class="h-1 w-12 bg-bronze"></div>
+                    </div>
+                    <h1 class="text-charcoal text-4xl md:text-5xl lg:text-6xl font-black leading-tight mb-4">WEBSITE
+                        CREATOR</h1>
+                    <p class="text-charcoal/60 text-lg md:text-xl max-w-2xl mx-auto">
+                        Full Stack Developer crafting efficient and scalable solutions
+                    </p>
+                </div>
+
+                <!-- Developer Profile Card -->
+                <div class="bg-white clip-card border border-charcoal/10 shadow-2xl overflow-hidden mb-8">
+
+                    <!-- Hero Section with Photo -->
+                    <div class="relative">
+                        <div class="absolute inset-0 bg-gradient-to-r from-charcoal via-charcoal/90 to-bronze/80"></div>
+                        <div class="relative grid grid-cols-1 md:grid-cols-2 gap-8 p-8 md:p-12">
+
+                            <!-- Photo Section -->
+                            <div class="flex justify-center items-center">
+                                <div class="relative">
+                                    <div
+                                        class="w-64 h-64 md:w-80 md:h-80 rounded-full overflow-hidden border-8 border-bronze shadow-2xl">
+                                        <!-- GitHub profile avatar -->
+                                        <img src="C:\Users\Veersingh Lodhi\Downloads\VeerDocuments\veerpicture.png"
+                                            alt="Veer Singh Lodhi" class="w-full h-full object-cover"
+                                            onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';" />
+                                        <!-- Fallback if image not found -->
+                                        <div class="w-full h-full bg-bronze flex items-center justify-center"
+                                            style="display: none;">
+                                            <span class="material-symbols-outlined text-white text-9xl">person</span>
+                                        </div>
+                                    </div>
+                                    <div
+                                        class="absolute -bottom-4 -right-4 bg-athletic-orange text-white p-4 clip-warrior shadow-lg">
+                                        <span class="material-symbols-outlined text-5xl">code</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Info Section -->
+                            <div class="flex flex-col justify-center text-white">
+                                <h2 class="text-4xl md:text-5xl font-black mb-3">VEER SINGH LODHI</h2>
+                                <p class="text-bronze text-xl md:text-2xl font-bold mb-6 uppercase tracking-wider">Full
+                                    Stack Developer</p>
+
+                                <div class="space-y-3 mb-6">
+                                    <div class="flex items-center gap-3">
+                                        <span class="material-symbols-outlined text-bronze text-2xl">mail</span>
+                                        <a href="mailto:veerlodhi54@gmail.com"
+                                            class="text-white/90 hover:text-bronze transition-colors font-semibold">
+                                            veerlodhi54@gmail.com
+                                        </a>
+                                    </div>
+                                    <div class="flex items-center gap-3">
+                                        <span class="material-symbols-outlined text-bronze text-2xl">location_on</span>
+                                        <span class="text-white/90 font-semibold">Sagar, Madhya Pradesh</span>
+                                    </div>
+                                    <div class="flex items-center gap-3">
+                                        <span class="material-symbols-outlined text-bronze text-2xl">school</span>
+                                        <span class="text-white/90 font-semibold">B.Tech Student | CSE</span>
+                                    </div>
+                                    <div class="flex items-center gap-3">
+                                        <span class="material-symbols-outlined text-bronze text-2xl">visibility</span>
+                                        <span class="text-white/90 font-semibold">17 followers · 16 following</span>
+                                    </div>
+                                </div>
+
+                                <!-- Social Links -->
+                                <div class="flex flex-wrap gap-3">
+                                    <a href="https://www.linkedin.com/in/veer-singh-lodhi-6786aa325" target="_blank"
+                                        class="clip-button bg-bronze hover:bg-white hover:text-charcoal text-white px-6 py-3 font-bold uppercase text-sm transition-all flex items-center gap-2">
+                                        <span class="material-symbols-outlined">work</span>
+                                        <span>LinkedIn</span>
+                                    </a>
+                                    <a href="https://github.com/VeerSinghLodhi" target="_blank"
+                                        class="clip-button bg-athletic-orange hover:bg-white hover:text-charcoal text-white px-6 py-3 font-bold uppercase text-sm transition-all flex items-center gap-2">
+                                        <span class="material-symbols-outlined">code</span>
+                                        <span>GitHub</span>
+                                    </a>
+                                    <a href="https://x.com/veerSin22816021" target="_blank"
+                                        class="clip-button bg-charcoal hover:bg-white hover:text-charcoal text-white px-6 py-3 font-bold uppercase text-sm transition-all flex items-center gap-2">
+                                        <span class="material-symbols-outlined">share</span>
+                                        <span>Twitter/X</span>
+                                    </a>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+
+                </div>
+
+                <!-- Content Grid -->
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
+
+                    <!-- About Section -->
+                    <div class="bg-white clip-card border border-charcoal/10 shadow-lg overflow-hidden">
+                        <div class="bg-gradient-to-r from-charcoal to-charcoal/90 p-6">
+                            <div class="flex items-center gap-3">
+                                <span class="material-symbols-outlined text-bronze text-3xl">person</span>
+                                <h3 class="text-white text-2xl font-black">ABOUT ME</h3>
+                            </div>
+                        </div>
+                        <div class="p-6">
+                            <p class="text-charcoal/80 text-base leading-relaxed font-semibold mb-4">
+                                I am a passionate and detail-oriented Full Stack Developer dedicated to crafting
+                                efficient and scalable solutions. Proficient in a range of programming languages and
+                                tools, I bring expertise in Java, Spring Boot, DSA (C, C++, Java), Python, and Web
+                                Development.
+                            </p>
+                            <p class="text-charcoal/80 text-base leading-relaxed font-semibold mb-4">
+                                My focus lies in developing seamless user experiences and robust backend systems. With a
+                                strong foundation in both front-end and back-end technologies, I am committed to
+                                delivering impactful solutions that meet the highest standards.
+                            </p>
+                            <p class="text-charcoal/80 text-base leading-relaxed font-semibold">
+                                Currently learning Spring Boot and advancing my Data Structures & Algorithms skills. I
+                                enjoy building efficient applications and solving complex problems.
+                            </p>
+                        </div>
+                    </div>
+
+                    <!-- Skills Section -->
+                    <div class="bg-white clip-card border border-charcoal/10 shadow-lg overflow-hidden">
+                        <div class="bg-gradient-to-r from-athletic-orange to-athletic-orange/90 p-6">
+                            <div class="flex items-center gap-3">
+                                <span class="material-symbols-outlined text-white text-3xl">psychology</span>
+                                <h3 class="text-white text-2xl font-black">TECH STACK</h3>
+                            </div>
+                        </div>
+                        <div class="p-6 space-y-4">
+                            <!-- Programming Languages -->
+                            <div>
+                                <label
+                                    class="flex items-center gap-2 text-bronze font-bold uppercase tracking-wider text-xs mb-2">
+                                    <span class="material-symbols-outlined text-sm">code</span>
+                                    <span>Programming Languages</span>
+                                </label>
+                                <div class="flex flex-wrap gap-2">
+                                    <span
+                                        class="bg-bronze/10 text-bronze px-3 py-1 rounded-full font-bold text-sm">Java</span>
+                                    <span
+                                        class="bg-bronze/10 text-bronze px-3 py-1 rounded-full font-bold text-sm">C</span>
+                                    <span
+                                        class="bg-bronze/10 text-bronze px-3 py-1 rounded-full font-bold text-sm">C++</span>
+                                    <span
+                                        class="bg-bronze/10 text-bronze px-3 py-1 rounded-full font-bold text-sm">Python</span>
+                                    <span
+                                        class="bg-bronze/10 text-bronze px-3 py-1 rounded-full font-bold text-sm">JavaScript</span>
+                                </div>
+                            </div>
+
+                            <!-- Web Technologies -->
+                            <div>
+                                <label
+                                    class="flex items-center gap-2 text-bronze font-bold uppercase tracking-wider text-xs mb-2">
+                                    <span class="material-symbols-outlined text-sm">web</span>
+                                    <span>Web Development</span>
+                                </label>
+                                <div class="flex flex-wrap gap-2">
+                                    <span
+                                        class="bg-athletic-orange/10 text-athletic-orange px-3 py-1 rounded-full font-bold text-sm">HTML5</span>
+                                    <span
+                                        class="bg-athletic-orange/10 text-athletic-orange px-3 py-1 rounded-full font-bold text-sm">CSS3</span>
+                                    <span
+                                        class="bg-athletic-orange/10 text-athletic-orange px-3 py-1 rounded-full font-bold text-sm">Bootstrap</span>
+                                    <span
+                                        class="bg-athletic-orange/10 text-athletic-orange px-3 py-1 rounded-full font-bold text-sm">Node.js</span>
+                                    <span
+                                        class="bg-athletic-orange/10 text-athletic-orange px-3 py-1 rounded-full font-bold text-sm">Thymeleaf</span>
+                                    <span
+                                        class="bg-athletic-orange/10 text-athletic-orange px-3 py-1 rounded-full font-bold text-sm">Spring
+                                        Boot</span>
+                                </div>
+                            </div>
+
+                            <!-- Database -->
+                            <div>
+                                <label
+                                    class="flex items-center gap-2 text-bronze font-bold uppercase tracking-wider text-xs mb-2">
+                                    <span class="material-symbols-outlined text-sm">storage</span>
+                                    <span>Databases</span>
+                                </label>
+                                <div class="flex flex-wrap gap-2">
+                                    <span
+                                        class="bg-charcoal/10 text-charcoal px-3 py-1 rounded-full font-bold text-sm">MySQL</span>
+                                    <span
+                                        class="bg-charcoal/10 text-charcoal px-3 py-1 rounded-full font-bold text-sm">Oracle</span>
+                                    <span
+                                        class="bg-charcoal/10 text-charcoal px-3 py-1 rounded-full font-bold text-sm">PostgreSQL</span>
+                                </div>
+                            </div>
+
+                            <!-- Tools & Concepts -->
+                            <div>
+                                <label
+                                    class="flex items-center gap-2 text-bronze font-bold uppercase tracking-wider text-xs mb-2">
+                                    <span class="material-symbols-outlined text-sm">build</span>
+                                    <span>Tools & Concepts</span>
+                                </label>
+                                <div class="flex flex-wrap gap-2">
+                                    <span
+                                        class="bg-gold/10 text-charcoal px-3 py-1 rounded-full font-bold text-sm">Git</span>
+                                    <span
+                                        class="bg-gold/10 text-charcoal px-3 py-1 rounded-full font-bold text-sm">GitHub</span>
+                                    <span
+                                        class="bg-gold/10 text-charcoal px-3 py-1 rounded-full font-bold text-sm">DSA</span>
+                                    <span
+                                        class="bg-gold/10 text-charcoal px-3 py-1 rounded-full font-bold text-sm">DBMS</span>
+                                    <span
+                                        class="bg-gold/10 text-charcoal px-3 py-1 rounded-full font-bold text-sm">OOP</span>
+                                    <span class="bg-gold/10 text-charcoal px-3 py-1 rounded-full font-bold text-sm">REST
+                                        APIs</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+
+                <!-- Featured Projects Section -->
+                <div class="bg-white clip-card border border-charcoal/10 shadow-lg overflow-hidden mb-8">
+                    <div class="bg-gradient-to-r from-gold to-bronze p-6">
+                        <div class="flex items-center gap-3">
+                            <span class="material-symbols-outlined text-white text-3xl">folder_special</span>
+                            <h3 class="text-white text-2xl font-black">FEATURED PROJECTS</h3>
+                        </div>
+                    </div>
+                    <div class="p-6 md:p-8">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+
+                            <!-- Project 1: SagarNaukri.com -->
+                            <div class="bg-cream border-l-4 border-bronze p-6 rounded-lg">
+                                <div class="flex items-start gap-3 mb-3">
+                                    <span class="material-symbols-outlined text-bronze text-3xl">work</span>
+                                    <div>
+                                        <h4 class="text-charcoal text-xl font-black uppercase mb-1">SagarNaukri.com</h4>
+                                        <p class="text-bronze text-sm font-bold uppercase tracking-wider">Job Portal
+                                            Platform</p>
+                                    </div>
+                                </div>
+                                <p class="text-charcoal/70 text-sm leading-relaxed mb-4">
+                                    A comprehensive full-stack job portal connecting job seekers with employers through
+                                    a secure and user-friendly platform built with modern technologies.
+                                </p>
+                                <div class="space-y-2 text-sm mb-4">
+                                    <div class="flex items-start gap-2">
+                                        <span class="text-bronze">•</span>
+                                        <span class="text-charcoal/80 font-semibold">Java, Spring Boot,
+                                            PostgreSQL</span>
+                                    </div>
+                                    <div class="flex items-start gap-2">
+                                        <span class="text-bronze">•</span>
+                                        <span class="text-charcoal/80 font-semibold">Thymeleaf UI & REST APIs</span>
+                                    </div>
+                                    <div class="flex items-start gap-2">
+                                        <span class="text-bronze">•</span>
+                                        <span class="text-charcoal/80 font-semibold">OTP verification & role-based
+                                            dashboards</span>
+                                    </div>
+                                </div>
+                                <a href="https://github.com/VeerSinghLodhi/SagarNaukri.com" target="_blank"
+                                    class="inline-flex items-center gap-2 text-bronze hover:text-athletic-orange transition-colors font-bold text-sm">
+                                    <span>View on GitHub</span>
+                                    <span class="material-symbols-outlined text-lg">arrow_forward</span>
+                                </a>
+                            </div>
+
+                            <!-- Project 2: 100 Days Series -->
+                            <div class="bg-cream border-l-4 border-athletic-orange p-6 rounded-lg">
+                                <div class="flex items-start gap-3 mb-3">
+                                    <span
+                                        class="material-symbols-outlined text-athletic-orange text-3xl">emoji_events</span>
+                                    <div>
+                                        <h4 class="text-charcoal text-xl font-black uppercase mb-1">100 Days Series</h4>
+                                        <p class="text-athletic-orange text-sm font-bold uppercase tracking-wider">
+                                            Coding Challenge Journey</p>
+                                    </div>
+                                </div>
+                                <p class="text-charcoal/70 text-sm leading-relaxed mb-4">
+                                    A collection of daily programming challenges as part of 100 Days of Code journey.
+                                    Each day tackles a new concept or problem with detailed implementations.
+                                </p>
+                                <div class="space-y-2 text-sm mb-4">
+                                    <div class="flex items-start gap-2">
+                                        <span class="text-athletic-orange">•</span>
+                                        <span class="text-charcoal/80 font-semibold">Daily coding challenges in
+                                            Java</span>
+                                    </div>
+                                    <div class="flex items-start gap-2">
+                                        <span class="text-athletic-orange">•</span>
+                                        <span class="text-charcoal/80 font-semibold">Comprehensive concept
+                                            explanations</span>
+                                    </div>
+                                    <div class="flex items-start gap-2">
+                                        <span class="text-athletic-orange">•</span>
+                                        <span class="text-charcoal/80 font-semibold">⭐ 8 stars on GitHub</span>
+                                    </div>
+                                </div>
+                                <a href="https://github.com/VeerSinghLodhi/100-Days-Series" target="_blank"
+                                    class="inline-flex items-center gap-2 text-athletic-orange hover:text-bronze transition-colors font-bold text-sm">
+                                    <span>View on GitHub</span>
+                                    <span class="material-symbols-outlined text-lg">arrow_forward</span>
+                                </a>
+                            </div>
+
+                            <!-- Project 3: Data Structures & Algorithms -->
+                            <div class="bg-cream border-l-4 border-gold p-6 rounded-lg">
+                                <div class="flex items-start gap-3 mb-3">
+                                    <span class="material-symbols-outlined text-gold text-3xl">account_tree</span>
+                                    <div>
+                                        <h4 class="text-charcoal text-xl font-black uppercase mb-1">DSA Repository</h4>
+                                        <p class="text-charcoal/70 text-sm font-bold uppercase tracking-wider">
+                                            Data Structures & Algorithms</p>
+                                    </div>
+                                </div>
+                                <p class="text-charcoal/70 text-sm leading-relaxed mb-4">
+                                    Comprehensive implementations and explanations of various Data Structures and
+                                    Algorithms in C and C++. Designed for learning and interview preparation.
+                                </p>
+                                <div class="space-y-2 text-sm mb-4">
+                                    <div class="flex items-start gap-2">
+                                        <span class="text-gold">•</span>
+                                        <span class="text-charcoal/80 font-semibold">C & C++ implementations</span>
+                                    </div>
+                                    <div class="flex items-start gap-2">
+                                        <span class="text-gold">•</span>
+                                        <span class="text-charcoal/80 font-semibold">Detailed explanations &
+                                            examples</span>
+                                    </div>
+                                    <div class="flex items-start gap-2">
+                                        <span class="text-gold">•</span>
+                                        <span class="text-charcoal/80 font-semibold">⭐ 4 stars on GitHub</span>
+                                    </div>
+                                </div>
+                                <a href="https://github.com/VeerSinghLodhi/Data-Structures--Algorithms" target="_blank"
+                                    class="inline-flex items-center gap-2 text-charcoal hover:text-athletic-orange transition-colors font-bold text-sm">
+                                    <span>View on GitHub</span>
+                                    <span class="material-symbols-outlined text-lg">arrow_forward</span>
+                                </a>
+                            </div>
+
+                            <!-- Project 4: Spring Boot -->
+                            <div class="bg-cream border-l-4 border-charcoal p-6 rounded-lg">
+                                <div class="flex items-start gap-3 mb-3">
+                                    <span class="material-symbols-outlined text-charcoal text-3xl">Terminal</span>
+                                    <div>
+                                        <h4 class="text-charcoal text-xl font-black uppercase mb-1">Spring Boot Learning
+                                        </h4>
+                                        <p class="text-charcoal/70 text-sm font-bold uppercase tracking-wider">
+                                            Backend Development Journey</p>
+                                    </div>
+                                </div>
+                                <p class="text-charcoal/70 text-sm leading-relaxed mb-4">
+                                    A collection of learnings, projects, and experiments with Spring Boot. From basic
+                                    setup to building REST APIs, security, and microservices.
+                                </p>
+                                <div class="space-y-2 text-sm mb-4">
+                                    <div class="flex items-start gap-2">
+                                        <span class="text-charcoal">•</span>
+                                        <span class="text-charcoal/80 font-semibold">Spring Boot framework
+                                            exploration</span>
+                                    </div>
+                                    <div class="flex items-start gap-2">
+                                        <span class="text-charcoal">•</span>
+                                        <span class="text-charcoal/80 font-semibold">REST APIs & microservices</span>
+                                    </div>
+                                    <div class="flex items-start gap-2">
+                                        <span class="text-charcoal">•</span>
+                                        <span class="text-charcoal/80 font-semibold">⭐ 4 stars on GitHub</span>
+                                    </div>
+                                </div>
+                                <a href="https://github.com/VeerSinghLodhi/Spring-Boot" target="_blank"
+                                    class="inline-flex items-center gap-2 text-charcoal hover:text-athletic-orange transition-colors font-bold text-sm">
+                                    <span>View on GitHub</span>
+                                    <span class="material-symbols-outlined text-lg">arrow_forward</span>
+                                </a>
+                            </div>
+
+                        </div>
+
+                        <!-- View All Repositories -->
+                        <div class="mt-8 text-center">
+                            <a href="https://github.com/VeerSinghLodhi?tab=repositories" target="_blank"
+                                class="clip-button bg-bronze hover:bg-athletic-orange text-white px-8 py-3 font-bold uppercase text-sm transition-all inline-flex items-center gap-2">
+                                <span>View All 28 Repositories</span>
+                                <span class="material-symbols-outlined">open_in_new</span>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Achievements & GitHub Stats -->
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+
+                    <!-- Achievements -->
+                    <div class="bg-white clip-card border border-charcoal/10 shadow-lg overflow-hidden">
+                        <div class="bg-gradient-to-r from-charcoal to-charcoal/90 p-6">
+                            <div class="flex items-center gap-3">
+                                <span class="material-symbols-outlined text-bronze text-3xl">emoji_events</span>
+                                <h3 class="text-white text-2xl font-black">ACHIEVEMENTS</h3>
+                            </div>
+                        </div>
+                        <div class="p-6">
+                            <div class="space-y-4">
+                                <div class="flex items-start gap-3">
+                                    <span
+                                        class="material-symbols-outlined text-bronze text-2xl mt-1">military_tech</span>
+                                    <div>
+                                        <h4 class="text-charcoal font-black uppercase text-sm mb-1">GitHub Pull Shark
+                                        </h4>
+                                        <p class="text-charcoal/70 text-sm">Earned the Pull Shark achievement for
+                                            contributions to open source projects</p>
+                                    </div>
+                                </div>
+                                <div class="flex items-start gap-3">
+                                    <span class="material-symbols-outlined text-gold text-2xl mt-1">code</span>
+                                    <div>
+                                        <h4 class="text-charcoal font-black uppercase text-sm mb-1">28 Public
+                                            Repositories
+                                        </h4>
+                                        <p class="text-charcoal/70 text-sm">Maintaining an active portfolio of projects
+                                            and learning repositories</p>
+                                    </div>
+                                </div>
+                                <div class="flex items-start gap-3">
+                                    <span
+                                        class="material-symbols-outlined text-athletic-orange text-2xl mt-1">star</span>
+                                    <div>
+                                        <h4 class="text-charcoal font-black uppercase text-sm mb-1">15+ GitHub Stars
+                                        </h4>
+                                        <p class="text-charcoal/70 text-sm">Projects recognized by the developer
+                                            community</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Interests & Platforms -->
+                    <div class="bg-white clip-card border border-charcoal/10 shadow-lg overflow-hidden">
+                        <div class="bg-gradient-to-r from-athletic-orange to-athletic-orange/90 p-6">
+                            <div class="flex items-center gap-3">
+                                <span class="material-symbols-outlined text-white text-3xl">interests</span>
+                                <h3 class="text-white text-2xl font-black">CODING PLATFORMS</h3>
+                            </div>
+                        </div>
+                        <div class="p-6">
+                            <div class="space-y-4">
+                                <a href="https://leetcode.com/veersinghlodhi50" target="_blank"
+                                    class="flex items-center justify-between p-4 bg-cream rounded-lg hover:bg-bronze/10 transition-colors group">
+                                    <div class="flex items-center gap-3">
+                                        <span class="material-symbols-outlined text-bronze text-2xl">code</span>
+                                        <div>
+                                            <h4 class="text-charcoal font-black uppercase text-sm">LeetCode</h4>
+                                            <p class="text-charcoal/60 text-xs">Problem Solving Practice</p>
+                                        </div>
+                                    </div>
+                                    <span
+                                        class="material-symbols-outlined text-bronze group-hover:translate-x-1 transition-transform">arrow_forward</span>
+                                </a>
+
+                                <a href="https://github.com/VeerSinghLodhi" target="_blank"
+                                    class="flex items-center justify-between p-4 bg-cream rounded-lg hover:bg-bronze/10 transition-colors group">
+                                    <div class="flex items-center gap-3">
+                                        <span
+                                            class="material-symbols-outlined text-athletic-orange text-2xl">folder</span>
+                                        <div>
+                                            <h4 class="text-charcoal font-black uppercase text-sm">GitHub</h4>
+                                            <p class="text-charcoal/60 text-xs">17 Followers · 28 Repositories</p>
+                                        </div>
+                                    </div>
+                                    <span
+                                        class="material-symbols-outlined text-athletic-orange group-hover:translate-x-1 transition-transform">arrow_forward</span>
+                                </a>
+
+                                <a href="https://www.linkedin.com/in/veer-singh-lodhi-6786aa325" target="_blank"
+                                    class="flex items-center justify-between p-4 bg-cream rounded-lg hover:bg-bronze/10 transition-colors group">
+                                    <div class="flex items-center gap-3">
+                                        <span class="material-symbols-outlined text-charcoal text-2xl">work</span>
+                                        <div>
+                                            <h4 class="text-charcoal font-black uppercase text-sm">LinkedIn</h4>
+                                            <p class="text-charcoal/60 text-xs">Professional Network</p>
+                                        </div>
+                                    </div>
+                                    <span
+                                        class="material-symbols-outlined text-charcoal group-hover:translate-x-1 transition-transform">arrow_forward</span>
+                                </a>
+                            </div>
+
+                            <div class="mt-6 pt-6 border-t border-charcoal/10">
+                                <label
+                                    class="flex items-center gap-2 text-bronze font-bold uppercase tracking-wider text-xs mb-3">
+                                    <span class="material-symbols-outlined text-sm">interests</span>
+                                    <span>Fun Fact</span>
+                                </label>
+                                <p class="text-charcoal/80 font-semibold text-sm">
+                                    😎 I'm funny! When I'm not coding, you'll find me playing cricket, strategy gaming,
+                                    or participating in coding contests.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+
+                <!-- Call to Action -->
+                <div class="mt-12 text-center">
+                    <div class="bg-white clip-card border border-charcoal/10 shadow-2xl overflow-hidden">
+                        <div class="bg-gradient-to-r from-charcoal via-bronze to-athletic-orange p-8 md:p-12">
+                            <span
+                                class="material-symbols-outlined text-white text-6xl mb-4 inline-block">rocket_launch</span>
+                            <h3 class="text-white text-3xl md:text-4xl font-black mb-4">LET'S BUILD SOMETHING AMAZING
+                            </h3>
+                            <p class="text-white/90 text-lg mb-6 max-w-2xl mx-auto">
+                                Interested in collaborating or have a project in mind? Feel free to reach out! I'm
+                                always open to discussing new ideas and opportunities.
+                            </p>
+                            <div class="flex flex-col sm:flex-row gap-4 justify-center">
+                                <a href="mailto:veerlodhi54@gmail.com"
+                                    class="clip-button bg-white hover:bg-bronze text-charcoal hover:text-white px-8 py-4 font-black text-lg uppercase transition-all inline-flex items-center justify-center gap-2">
+                                    <span class="material-symbols-outlined">mail</span>
+                                    <span>Email Me</span>
+                                </a>
+                                <a href="https://github.com/VeerSinghLodhi" target="_blank"
+                                    class="clip-button bg-athletic-orange hover:bg-white text-white hover:text-charcoal px-8 py-4 font-black text-lg uppercase transition-all inline-flex items-center justify-center gap-2">
+                                    <span class="material-symbols-outlined">code</span>
+                                    <span>View GitHub</span>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </main>
+
+        <!-- Footer -->
+        <footer class="relative z-10 bg-charcoal text-white py-8 border-t-4 border-bronze mt-12">
+            <div class="max-w-7xl mx-auto px-6 text-center">
+                <p class="text-white/80 text-sm font-semibold uppercase tracking-widest mb-2">
+                    Website Developed by Veer Singh Lodhi
+                </p>
+                <p class="text-white/60 text-xs uppercase tracking-widest">
+                    &copy; 2026 <span
+                        th:text="${academyInfo != null ? academyInfo.academyName : 'Bahubali Academy'}">Bahubali
+                        Academy</span> Sagar - All Rights Reserved
+                </p>
+            </div>
+        </footer>
+
+    </div>
+
+</body>
+
+</html>
