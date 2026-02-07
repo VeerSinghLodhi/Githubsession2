@@ -1,0 +1,727 @@
+<!DOCTYPE html>
+<html lang="hi" xmlns:th="http://www.thymeleaf.org" th:classappend="${seniorMode} ? 'senior-mode' : ''">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>उपयोगकर्ता विवरण - हेल्थ साथी</title>
+    <meta name="_csrf" th:content="${_csrf.token}">
+    <meta name="_csrf_header" th:content="${_csrf.headerName}">
+
+    <link href="https://fonts.googleapis.com" rel="preconnect" />
+    <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Devanagari:wght@400;500;600;700&display=swap"
+        rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap"
+        rel="stylesheet" />
+    <link rel="stylesheet" th:href="@{/css/senior-mode.css}">
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #0058ba;
+            --primary-dark: #155a96;
+            --primary-light: #e3f2fd;
+            --text-main: #1e293b;
+            --text-secondary: #64748b;
+            --border-light: #e2e8f0;
+            --surface: #ffffff;
+            --background: #f8fafc;
+        }
+
+        body {
+            font-family: 'Noto Sans Devanagari', 'Inter', sans-serif;
+            background: var(--background);
+            color: var(--text-main);
+            min-height: 100vh;
+        }
+
+        .hamburger {
+            display: none;
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            z-index: 1001;
+            background: transparent;
+            border: none;
+            cursor: pointer;
+            padding: 8px;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        .hamburger span {
+            display: block;
+            width: 25px;
+            height: 3px;
+            background: var(--primary);
+            border-radius: 2px;
+            transition: all 0.3s ease;
+        }
+
+        .sidebar-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 99;
+        }
+
+        .sidebar-overlay.active {
+            display: block;
+        }
+
+        .main-content {
+            margin-left: 280px;
+            padding: 24px;
+            min-height: 100vh;
+            transition: margin-left 0.3s ease;
+        }
+
+        .header {
+            background: var(--surface);
+            border-radius: 16px;
+            padding: 20px 24px;
+            margin-bottom: 24px;
+            box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
+        }
+
+        .header-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+        }
+
+        .back-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 16px;
+            background: var(--border-light);
+            border: none;
+            border-radius: 10px;
+            color: var(--text-main);
+            font-weight: 600;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-decoration: none;
+        }
+
+        .back-btn:hover {
+            background: #cbd5e1;
+        }
+
+        .user-header {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .user-avatar-large {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: var(--primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 32px;
+            font-weight: 700;
+        }
+
+        .user-info h1 {
+            font-size: 28px;
+            font-weight: 700;
+            color: var(--text-main);
+            margin-bottom: 4px;
+        }
+
+        .user-info p {
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        .content-grid {
+            display: grid;
+            gap: 20px;
+            grid-template-columns: 2fr 1fr;
+        }
+
+        .card {
+            background: var(--surface);
+            border-radius: 16px;
+            padding: 24px;
+            box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
+        }
+
+        .card-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 20px;
+            padding-bottom: 16px;
+            border-bottom: 1px solid var(--border-light);
+        }
+
+        .card-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            background: var(--primary-light);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .card-icon .material-symbols-outlined {
+            color: var(--primary);
+            font-size: 24px;
+        }
+
+        .card-title {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--text-main);
+        }
+
+        .info-row {
+            display: flex;
+            gap: 16px;
+            padding: 16px 0;
+            border-bottom: 1px solid var(--border-light);
+        }
+
+        .info-row:last-child {
+            border-bottom: none;
+        }
+
+        .info-label {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-secondary);
+            min-width: 150px;
+        }
+
+        .info-value {
+            font-size: 14px;
+            color: var(--text-main);
+            flex: 1;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 6px 12px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .badge-active {
+            background: #d1fae5;
+            color: #065f46;
+        }
+
+        .badge-inactive {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+        .badge-role {
+            background: var(--primary-light);
+            color: var(--primary);
+        }
+
+        .stat-card {
+            background: var(--surface);
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
+        }
+
+        .stat-value {
+            font-size: 32px;
+            font-weight: 700;
+            color: var(--text-main);
+            margin-bottom: 4px;
+        }
+
+        .stat-label {
+            font-size: 13px;
+            color: var(--text-secondary);
+            font-weight: 500;
+        }
+
+        .hospital-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .hospital-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px;
+            background: #f8fafc;
+            border-radius: 12px;
+            transition: all 0.3s;
+        }
+
+        .hospital-item:hover {
+            background: #e3f2fd;
+        }
+
+        .hospital-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            background: var(--primary-light);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .hospital-icon .material-symbols-outlined {
+            color: var(--primary);
+            font-size: 24px;
+        }
+
+        .hospital-info {
+            flex: 1;
+        }
+
+        .hospital-name {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-main);
+            margin-bottom: 2px;
+        }
+
+        .hospital-address {
+            font-size: 12px;
+            color: var(--text-secondary);
+        }
+
+        .claim-timeline {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .timeline-item {
+            display: flex;
+            gap: 16px;
+        }
+
+        .timeline-dot {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .timeline-dot.pending {
+            background: #fef3c7;
+        }
+
+        .timeline-dot.approved {
+            background: #d1fae5;
+        }
+
+        .timeline-dot.rejected {
+            background: #fee2e2;
+        }
+
+        .timeline-dot .material-symbols-outlined {
+            font-size: 20px;
+        }
+
+        .timeline-dot.pending .material-symbols-outlined {
+            color: #92400e;
+        }
+
+        .timeline-dot.approved .material-symbols-outlined {
+            color: #065f46;
+        }
+
+        .timeline-dot.rejected .material-symbols-outlined {
+            color: #991b1b;
+        }
+
+        .timeline-content {
+            flex: 1;
+            padding-bottom: 16px;
+            border-bottom: 1px solid var(--border-light);
+        }
+
+        .timeline-item:last-child .timeline-content {
+            border-bottom: none;
+        }
+
+        .timeline-hospital {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-main);
+            margin-bottom: 4px;
+        }
+
+        .timeline-date {
+            font-size: 12px;
+            color: var(--text-secondary);
+            margin-bottom: 8px;
+        }
+
+        .timeline-status {
+            display: inline-block;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border-radius: 10px;
+            font-size: 14px;
+            font-weight: 600;
+            border: none;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            text-decoration: none;
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-dark);
+        }
+
+        .btn-secondary {
+            background: var(--border-light);
+            color: var(--text-main);
+        }
+
+        .btn-secondary:hover {
+            background: #cbd5e1;
+        }
+
+        .btn-danger {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+        .btn-danger:hover {
+            background: #fecaca;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 40px 20px;
+            color: var(--text-secondary);
+        }
+
+        .empty-state .material-symbols-outlined {
+            font-size: 48px;
+            margin-bottom: 12px;
+            opacity: 0.5;
+        }
+
+        @media (max-width: 1024px) {
+            .content-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .hamburger {
+                display: flex;
+            }
+
+            .main-content {
+                margin-left: 0;
+                padding: 80px 16px 16px 16px;
+            }
+
+            .user-header {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            .info-row {
+                flex-direction: column;
+                gap: 8px;
+            }
+
+            .info-label {
+                min-width: auto;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <button class="hamburger" onclick="toggleSidebar()">
+        <span></span>
+        <span></span>
+        <span></span>
+    </button>
+
+    <div class="sidebar-overlay" onclick="toggleSidebar()"></div>
+
+    <div th:replace="~{fragments/admin-sidebar::adminSidebar}"></div>
+
+    <main class="main-content">
+        <div class="header">
+            <div class="header-top">
+                <a th:href="@{/admin/claim-requests}" class="back-btn">
+                    <span class="material-symbols-outlined">arrow_back</span>
+                    वापस जाएं
+                </a>
+            </div>
+            <div class="user-header">
+                <div class="user-avatar-large" th:text="${#strings.substring(user.fullName, 0, 1)}">U</div>
+                <div class="user-info">
+                    <h1 th:text="${user.fullName}">User Name</h1>
+                    <p th:text="${user.email}">user@email.com</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="content-grid">
+            <!-- Left Column -->
+            <div style="display: flex; flex-direction: column; gap: 20px;">
+
+                <!-- Basic Information -->
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-icon">
+                            <span class="material-symbols-outlined">person</span>
+                        </div>
+                        <h2 class="card-title">मूल जानकारी</h2>
+                    </div>
+
+                    <div class="info-row">
+                        <div class="info-label">पूरा नाम</div>
+                        <div class="info-value" th:text="${user.fullName}">Full Name</div>
+                    </div>
+
+                    <div class="info-row">
+                        <div class="info-label">उपयोगकर्ता नाम</div>
+                        <div class="info-value" th:text="${user.username}">Username</div>
+                    </div>
+
+                    <div class="info-row">
+                        <div class="info-label">ईमेल</div>
+                        <div class="info-value">
+                            <a th:href="'mailto:' + ${user.email}" th:text="${user.email}"
+                                style="color: var(--primary); text-decoration: none;">Email</a>
+                        </div>
+                    </div>
+
+                    <div class="info-row">
+                        <div class="info-label">संपर्क</div>
+                        <div class="info-value">
+                            <a th:href="'tel:' + ${user.contact}" th:text="${user.contact}"
+                                style="color: var(--primary); text-decoration: none;">Contact</a>
+                        </div>
+                    </div>
+
+                    <div class="info-row" th:if="${user.role}">
+                        <div class="info-label">भूमिका</div>
+                        <div class="info-value">
+                            <span class="badge badge-role" th:text="${user.role}">Role</span>
+                        </div>
+                    </div>
+
+                    <div class="info-row">
+                        <div class="info-label">स्थिति</div>
+                        <div class="info-value">
+                            <span class="badge badge-active">सक्रिय</span>
+                        </div>
+                    </div>
+
+                    <div class="info-row" th:if="${user.registeredOn}">
+                        <div class="info-label">पंजीकरण तिथि</div>
+                        <div class="info-value" th:text="${#temporals.format(user.registeredOn, 'dd MMM yyyy')}">Date
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Hospital Access -->
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-icon">
+                            <span class="material-symbols-outlined">local_hospital</span>
+                        </div>
+                        <h2 class="card-title">अस्पताल एक्सेस</h2>
+                    </div>
+
+                    <div th:if="${hospitalAccess != null && !#lists.isEmpty(hospitalAccess)}" class="hospital-list">
+                        <div th:each="access : ${hospitalAccess}" class="hospital-item">
+                            <div class="hospital-icon">
+                                <span class="material-symbols-outlined">business</span>
+                            </div>
+                            <div class="hospital-info">
+                                <div class="hospital-name" th:text="${access.hospital.name}">Hospital Name</div>
+                                <div class="hospital-address" th:text="${access.hospital.address}">Address</div>
+                            </div>
+                            <a th:href="@{'/admin/hospital/details/' + ${access.hospital.hospitalId}}"
+                                class="btn btn-secondary" style="padding: 8px 16px;">
+                                <span class="material-symbols-outlined" style="font-size: 18px;">visibility</span>
+                            </a>
+                        </div>
+                    </div>
+
+                    <div th:unless="${hospitalAccess != null && !#lists.isEmpty(hospitalAccess)}" class="empty-state">
+                        <span class="material-symbols-outlined">business_center</span>
+                        <p>कोई अस्पताल एक्सेस नहीं</p>
+                    </div>
+                </div>
+
+                <!-- Claim Request History -->
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-icon">
+                            <span class="material-symbols-outlined">history</span>
+                        </div>
+                        <h2 class="card-title">अनुरोध इतिहास</h2>
+                    </div>
+
+                    <div th:if="${claimRequests != null && !#lists.isEmpty(claimRequests)}" class="claim-timeline">
+                        <div th:each="claim : ${claimRequests}" class="timeline-item">
+                            <div class="timeline-dot" th:classappend="${#strings.toLowerCase(claim.status.name())}">
+                                <span class="material-symbols-outlined">
+                                    <span th:if="${claim.status.name() == 'PENDING'}">schedule</span>
+                                    <span th:if="${claim.status.name() == 'APPROVED'}">check_circle</span>
+                                    <span th:if="${claim.status.name() == 'REJECTED'}">cancel</span>
+                                </span>
+                            </div>
+                            <div class="timeline-content">
+                                <div class="timeline-hospital" th:text="${claim.hospital.name}">Hospital Name</div>
+                                <div class="timeline-date"
+                                    th:text="${#temporals.format(claim.requestedOn, 'dd MMM yyyy, hh:mm a')}">Date</div>
+                                <div class="timeline-status">
+                                    <span class="badge"
+                                        th:classappend="${'badge-' + #strings.toLowerCase(claim.status.name())}"
+                                        th:text="${claim.status.name() == 'PENDING' ? 'समीक्षाधीन' : 
+                                               (claim.status.name() == 'APPROVED' ? 'स्वीकृत' : 'अस्वीकृत')}">
+                                        Status
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div th:unless="${claimRequests != null && !#lists.isEmpty(claimRequests)}" class="empty-state">
+                        <span class="material-symbols-outlined">receipt_long</span>
+                        <p>कोई अनुरोध इतिहास नहीं</p>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- Right Column -->
+            <div style="display: flex; flex-direction: column; gap: 20px;">
+
+                <!-- Quick Stats -->
+                <div class="stat-card">
+                    <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 12px;">
+                        <div
+                            style="width: 40px; height: 40px; border-radius: 10px; background: var(--primary-light); display: flex; align-items: center; justify-content: center;">
+                            <span class="material-symbols-outlined"
+                                style="color: var(--primary); font-size: 24px;">business</span>
+                        </div>
+                    </div>
+                    <div class="stat-value" th:text="${hospitalAccessCount ?: 0}">0</div>
+                    <div class="stat-label">अस्पताल एक्सेस</div>
+                </div>
+
+                <div class="stat-card">
+                    <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 12px;">
+                        <div
+                            style="width: 40px; height: 40px; border-radius: 10px; background: #fef3c7; display: flex; align-items: center; justify-content: center;">
+                            <span class="material-symbols-outlined"
+                                style="color: #92400e; font-size: 24px;">pending</span>
+                        </div>
+                    </div>
+                    <div class="stat-value" th:text="${pendingClaimsCount ?: 0}">0</div>
+                    <div class="stat-label">समीक्षाधीन अनुरोध</div>
+                </div>
+
+                <div class="stat-card">
+                    <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 12px;">
+                        <div
+                            style="width: 40px; height: 40px; border-radius: 10px; background: #d1fae5; display: flex; align-items: center; justify-content: center;">
+                            <span class="material-symbols-outlined"
+                                style="color: #065f46; font-size: 24px;">check_circle</span>
+                        </div>
+                    </div>
+                    <div class="stat-value" th:text="${approvedClaimsCount ?: 0}">0</div>
+                    <div class="stat-label">स्वीकृत अनुरोध</div>
+                </div>
+
+                <!-- Actions -->
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-icon">
+                            <span class="material-symbols-outlined">settings</span>
+                        </div>
+                        <h2 class="card-title">क्रियाएं</h2>
+                    </div>
+
+                    <div style="display: flex; flex-direction: column; gap: 8px;">
+                        <a th:href="@{'/admin/user/edit/' + ${user.id}}" class="btn btn-primary"
+                            style="width: 100%; justify-content: center;">
+                            <span class="material-symbols-outlined">edit</span>
+                            उपयोगकर्ता संपादित करें
+                        </a>
+                        <a th:href="@{'/admin/claim-requests'}" class="btn btn-secondary"
+                            style="width: 100%; justify-content: center;">
+                            <span class="material-symbols-outlined">assignment</span>
+                            एक्सेस अनुरोध देखें
+                        </a>
+                        <button class="btn btn-danger" style="width: 100%; justify-content: center;">
+                            <span class="material-symbols-outlined">block</span>
+                            उपयोगकर्ता निष्क्रिय करें
+                        </button>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+    </main>
+
+    <script>
+        function toggleSidebar() {
+            const sidebar = document.querySelector('.sidebar');
+            const overlay = document.querySelector('.sidebar-overlay');
+            const hamburger = document.querySelector('.hamburger');
+
+            sidebar.classList.toggle('active');
+            overlay.classList.toggle('active');
+            hamburger.classList.toggle('active');
+        }
+    </script>
+
+</body>
+
+</html>

@@ -1,0 +1,1215 @@
+<!DOCTYPE html>
+<html lang="hi" xmlns:th="http://www.thymeleaf.org" th:classappend="${seniorMode} ? 'senior-mode' : ''">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>अस्पताल एक्सेस अनुरोध - हेल्थ साथी</title>
+    <meta name="_csrf" th:content="${_csrf.token}">
+    <meta name="_csrf_header" th:content="${_csrf.headerName}">
+
+    <link href="https://fonts.googleapis.com" rel="preconnect" />
+    <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Devanagari:wght@400;500;600;700&display=swap"
+        rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap"
+        rel="stylesheet" />
+    <link rel="stylesheet" th:href="@{/css/senior-mode.css}">
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #0058ba;
+            --primary-dark: #155a96;
+            --primary-light: #e3f2fd;
+            --text-main: #1e293b;
+            --text-secondary: #64748b;
+            --border-light: #e2e8f0;
+            --surface: #ffffff;
+            --background: #f8fafc;
+        }
+
+        body {
+            font-family: 'Noto Sans Devanagari', 'Inter', sans-serif;
+            background: var(--background);
+            color: var(--text-main);
+            min-height: 100vh;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        /* Hamburger Menu */
+        .hamburger {
+            display: none;
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            z-index: 1001;
+            background: transparent;
+            border: none;
+            cursor: pointer;
+            padding: 8px;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        .hamburger span {
+            display: block;
+            width: 25px;
+            height: 3px;
+            background: var(--primary);
+            border-radius: 2px;
+            transition: all 0.3s ease;
+        }
+
+        .hamburger.active span:nth-child(1) {
+            transform: rotate(45deg) translate(8px, 8px);
+        }
+
+        .hamburger.active span:nth-child(2) {
+            opacity: 0;
+        }
+
+        .hamburger.active span:nth-child(3) {
+            transform: rotate(-45deg) translate(7px, -7px);
+        }
+
+        /* Overlay for mobile */
+        .sidebar-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 99;
+        }
+
+        .sidebar-overlay.active {
+            display: block;
+        }
+
+        .sidebar {
+            position: fixed;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 280px;
+            background: var(--surface);
+            border-right: 1px solid var(--border-light);
+            padding: 24px;
+            overflow-y: auto;
+            z-index: 100;
+            transition: transform 0.3s ease;
+        }
+
+        .logo-section {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 32px;
+            padding-bottom: 24px;
+            border-bottom: 1px solid var(--border-light);
+        }
+
+        .logo-icon {
+            width: 48px;
+            height: 48px;
+            background: var(--primary);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transform: rotate(3deg);
+            transition: transform 0.3s;
+        }
+
+        .logo-icon:hover {
+            transform: rotate(0deg);
+        }
+
+        .logo-icon .material-symbols-outlined {
+            color: white;
+            font-size: 28px;
+        }
+
+        .logo-text h2 {
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--text-main);
+        }
+
+        .logo-text p {
+            font-size: 12px;
+            color: var(--text-secondary);
+        }
+
+        .nav-menu {
+            list-style: none;
+        }
+
+        .nav-item {
+            margin-bottom: 8px;
+        }
+
+        .nav-link {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 16px;
+            border-radius: 12px;
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 14px;
+            transition: all 0.3s;
+            cursor: pointer;
+        }
+
+        .nav-link:hover {
+            background: var(--primary-light);
+            color: var(--primary);
+        }
+
+        .nav-link.active {
+            background: var(--primary);
+            color: white;
+        }
+
+        .nav-link .material-symbols-outlined {
+            font-size: 22px;
+        }
+
+        .badge {
+            background: #ef4444;
+            color: white;
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: 600;
+            margin-left: auto;
+        }
+
+        .main-content {
+            margin-left: 280px;
+            padding: 24px;
+            min-height: 100vh;
+            transition: margin-left 0.3s ease;
+        }
+
+        .header {
+            background: var(--surface);
+            border-radius: 16px;
+            padding: 20px 24px;
+            margin-bottom: 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
+        }
+
+        .header h1 {
+            font-size: 28px;
+            font-weight: 700;
+            color: var(--text-main);
+        }
+
+        .header-subtitle {
+            font-size: 14px;
+            color: var(--text-secondary);
+            margin-top: 4px;
+        }
+
+        /* Stats Cards */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+
+        .stat-card {
+            background: var(--surface);
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
+            transition: all 0.3s;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+        }
+
+        .stat-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 12px;
+        }
+
+        .stat-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .stat-icon.pending {
+            background: #fef3c7;
+            color: #92400e;
+        }
+
+        .stat-icon.approved {
+            background: #d1fae5;
+            color: #065f46;
+        }
+
+        .stat-icon.rejected {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+        .stat-icon.total {
+            background: var(--primary-light);
+            color: var(--primary);
+        }
+
+        .stat-value {
+            font-size: 28px;
+            font-weight: 700;
+            color: var(--text-main);
+        }
+
+        .stat-label {
+            font-size: 13px;
+            color: var(--text-secondary);
+            font-weight: 500;
+        }
+
+        /* Filter Section */
+        .filter-section {
+            background: var(--surface);
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
+        }
+
+        .filter-row {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .filter-chip {
+            padding: 8px 16px;
+            border-radius: 20px;
+            border: 2px solid var(--border-light);
+            background: white;
+            font-size: 14px;
+            font-weight: 500;
+            color: var(--text-secondary);
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .filter-chip.active {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+
+        .filter-chip:hover:not(.active) {
+            border-color: var(--primary);
+            color: var(--primary);
+        }
+
+        /* Request Cards */
+        .requests-container {
+            display: grid;
+            gap: 16px;
+        }
+
+        .request-card {
+            background: var(--surface);
+            border-radius: 16px;
+            padding: 24px;
+            box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
+            transition: all 0.3s;
+            border-left: 4px solid transparent;
+        }
+
+        .request-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+        }
+
+        .request-card.pending {
+            border-left-color: #f59e0b;
+        }
+
+        .request-card.approved {
+            border-left-color: #10b981;
+        }
+
+        .request-card.rejected {
+            border-left-color: #ef4444;
+        }
+
+        .request-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: start;
+            margin-bottom: 16px;
+        }
+
+        .request-info h3 {
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--text-main);
+            margin-bottom: 4px;
+        }
+
+        .request-meta {
+            display: flex;
+            gap: 16px;
+            flex-wrap: wrap;
+            font-size: 13px;
+            color: var(--text-secondary);
+        }
+
+        .meta-item {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .meta-item .material-symbols-outlined {
+            font-size: 16px;
+        }
+
+        .status-badge {
+            padding: 6px 14px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 600;
+            white-space: nowrap;
+        }
+
+        .status-pending {
+            background: #fef3c7;
+            color: #92400e;
+        }
+
+        .status-approved {
+            background: #d1fae5;
+            color: #065f46;
+        }
+
+        .status-rejected {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+        .request-details {
+            margin: 16px 0;
+        }
+
+        .detail-row {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 12px;
+            align-items: start;
+        }
+
+        .detail-label {
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--text-secondary);
+            min-width: 120px;
+        }
+
+        .detail-value {
+            font-size: 14px;
+            color: var(--text-main);
+            flex: 1;
+        }
+
+        .message-box {
+            background: #f8fafc;
+            border-radius: 8px;
+            padding: 12px;
+            font-size: 14px;
+            color: var(--text-main);
+            line-height: 1.6;
+            margin-top: 8px;
+        }
+
+        .request-actions {
+            display: flex;
+            gap: 8px;
+            margin-top: 16px;
+            padding-top: 16px;
+            border-top: 1px solid var(--border-light);
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border-radius: 10px;
+            font-size: 14px;
+            font-weight: 600;
+            border: none;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            font-family: 'Noto Sans Devanagari', 'Inter', sans-serif;
+        }
+
+        .btn-approve {
+            background: #10b981;
+            color: white;
+        }
+
+        .btn-approve:hover {
+            background: #059669;
+        }
+
+        .btn-reject {
+            background: #ef4444;
+            color: white;
+        }
+
+        .btn-reject:hover {
+            background: #dc2626;
+        }
+
+        .btn-view {
+            background: var(--primary);
+            color: white;
+        }
+
+        .btn-view:hover {
+            background: var(--primary-dark);
+        }
+
+        .btn-secondary {
+            background: var(--border-light);
+            color: var(--text-main);
+        }
+
+        .btn-secondary:hover {
+            background: #cbd5e1;
+        }
+
+        .proof-document {
+            margin-top: 12px;
+            padding: 12px;
+            background: #f8fafc;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .proof-icon {
+            width: 40px;
+            height: 40px;
+            background: var(--primary-light);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .proof-icon .material-symbols-outlined {
+            color: var(--primary);
+            font-size: 24px;
+        }
+
+        .proof-info {
+            flex: 1;
+        }
+
+        .proof-name {
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--text-main);
+        }
+
+        .proof-size {
+            font-size: 12px;
+            color: var(--text-secondary);
+        }
+
+        /* Empty State */
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            background: var(--surface);
+            border-radius: 16px;
+        }
+
+        .empty-state .material-symbols-outlined {
+            font-size: 80px;
+            color: var(--border-light);
+            margin-bottom: 16px;
+        }
+
+        .empty-state h3 {
+            font-size: 20px;
+            color: var(--text-main);
+            margin-bottom: 8px;
+        }
+
+        .empty-state p {
+            color: var(--text-secondary);
+            font-size: 14px;
+        }
+
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: var(--surface);
+            border-radius: 20px;
+            padding: 32px;
+            max-width: 600px;
+            width: 100%;
+            max-height: 90vh;
+            overflow-y: auto;
+            animation: slideUp 0.3s ease;
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+        }
+
+        .modal-header h2 {
+            font-size: 22px;
+            font-weight: 700;
+        }
+
+        .close-btn {
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 4px;
+            color: var(--text-secondary);
+        }
+
+        .close-btn:hover {
+            color: var(--text-main);
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--text-main);
+            margin-bottom: 8px;
+        }
+
+        .form-group textarea {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid var(--border-light);
+            border-radius: 10px;
+            font-family: 'Noto Sans Devanagari', 'Inter', sans-serif;
+            font-size: 14px;
+            resize: vertical;
+            min-height: 100px;
+        }
+
+        .form-group textarea:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+
+        .modal-actions {
+            display: flex;
+            gap: 12px;
+            margin-top: 24px;
+        }
+
+        /* Success/Error Modal */
+        .notification-modal {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) scale(0.9);
+            background: var(--surface);
+            border-radius: 20px;
+            padding: 32px;
+            max-width: 400px;
+            width: 90%;
+            z-index: 1001;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            opacity: 0;
+            pointer-events: none;
+            transition: all 0.3s ease;
+        }
+
+        .notification-modal.active {
+            opacity: 1;
+            transform: translate(-50%, -50%) scale(1);
+            pointer-events: all;
+        }
+
+        .notification-icon {
+            width: 64px;
+            height: 64px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 16px;
+        }
+
+        .notification-icon.success {
+            background: #d1fae5;
+        }
+
+        .notification-icon.error {
+            background: #fee2e2;
+        }
+
+        .notification-icon .material-symbols-outlined {
+            font-size: 36px;
+        }
+
+        .notification-icon.success .material-symbols-outlined {
+            color: #065f46;
+        }
+
+        .notification-icon.error .material-symbols-outlined {
+            color: #991b1b;
+        }
+
+        .notification-title {
+            font-size: 20px;
+            font-weight: 700;
+            text-align: center;
+            margin-bottom: 8px;
+            color: var(--text-main);
+        }
+
+        .notification-message {
+            font-size: 14px;
+            color: var(--text-secondary);
+            text-align: center;
+            margin-bottom: 24px;
+            line-height: 1.6;
+        }
+
+        .notification-actions {
+            display: flex;
+            gap: 8px;
+        }
+
+        /* Confirm Modal */
+        .confirm-modal .modal-content {
+            max-width: 450px;
+        }
+
+        .confirm-icon {
+            width: 56px;
+            height: 56px;
+            border-radius: 50%;
+            background: #fef3c7;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 16px;
+        }
+
+        .confirm-icon .material-symbols-outlined {
+            font-size: 32px;
+            color: #92400e;
+        }
+
+        .confirm-title {
+            font-size: 20px;
+            font-weight: 700;
+            text-align: center;
+            margin-bottom: 8px;
+            color: var(--text-main);
+        }
+
+        .confirm-message {
+            font-size: 14px;
+            color: var(--text-secondary);
+            text-align: center;
+            margin-bottom: 24px;
+            line-height: 1.6;
+        }
+
+        .btn-revoke {
+            background: #f59e0b;
+            color: white;
+        }
+
+        .btn-revoke:hover {
+            background: #d97706;
+        }
+
+        .btn-sm {
+            padding: 6px 12px;
+            font-size: 12px;
+        }
+
+        /* Mobile Responsive */
+        @media (max-width: 768px) {
+            .hamburger {
+                display: flex;
+            }
+
+            .sidebar {
+                transform: translateX(-100%);
+            }
+
+            .sidebar.active {
+                transform: translateX(0);
+            }
+
+            .main-content {
+                margin-left: 0;
+                padding: 80px 16px 16px 16px;
+            }
+
+            .header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 12px;
+            }
+
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .filter-row {
+                flex-direction: column;
+            }
+
+            .request-header {
+                flex-direction: column;
+                gap: 12px;
+            }
+
+            .request-actions {
+                flex-direction: column;
+            }
+
+            .btn {
+                width: 100%;
+                justify-content: center;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- Hamburger Menu -->
+    <button class="hamburger" onclick="toggleSidebar()">
+        <span></span>
+        <span></span>
+        <span></span>
+    </button>
+
+    <!-- Overlay -->
+    <div class="sidebar-overlay" onclick="toggleSidebar()"></div>
+
+    <!-- Sidebar -->
+    <div th:replace="~{fragments/admin-sidebar::adminSidebar}"></div>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <!-- Header -->
+        <div class="header">
+            <div>
+                <h1>अस्पताल एक्सेस अनुरोध</h1>
+                <p class="header-subtitle">Hospital Access Claim Requests</p>
+            </div>
+        </div>
+
+        <!-- Stats Grid -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-header">
+                    <div class="stat-icon total">
+                        <span class="material-symbols-outlined">receipt_long</span>
+                    </div>
+                </div>
+                <div class="stat-value" th:text="${totalRequests ?: 0}">0</div>
+                <div class="stat-label">कुल अनुरोध</div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-header">
+                    <div class="stat-icon pending">
+                        <span class="material-symbols-outlined">schedule</span>
+                    </div>
+                </div>
+                <div class="stat-value" th:text="${pendingRequests ?: 0}">0</div>
+                <div class="stat-label">समीक्षाधीन</div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-header">
+                    <div class="stat-icon approved">
+                        <span class="material-symbols-outlined">check_circle</span>
+                    </div>
+                </div>
+                <div class="stat-value" th:text="${approvedRequests ?: 0}">0</div>
+                <div class="stat-label">स्वीकृत</div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-header">
+                    <div class="stat-icon rejected">
+                        <span class="material-symbols-outlined">cancel</span>
+                    </div>
+                </div>
+                <div class="stat-value" th:text="${rejectedRequests ?: 0}">0</div>
+                <div class="stat-label">अस्वीकृत</div>
+            </div>
+        </div>
+
+        <!-- Filter Section -->
+        <div class="filter-section">
+            <div class="filter-row">
+                <button class="filter-chip active" data-status="all">
+                    सभी अनुरोध (All)
+                </button>
+                <button class="filter-chip" data-status="PENDING">
+                    समीक्षाधीन (Pending)
+                </button>
+                <button class="filter-chip" data-status="APPROVED">
+                    स्वीकृत (Approved)
+                </button>
+                <button class="filter-chip" data-status="REJECTED">
+                    अस्वीकृत (Rejected)
+                </button>
+            </div>
+        </div>
+
+        <!-- Requests Container -->
+        <div class="requests-container" id="requestsContainer">
+
+            <!-- Request Card Template -->
+            <div th:each="claim : ${claimRequests}" th:if="${claim != null}" class="request-card"
+                th:classappend="${#strings.toLowerCase(claim.status.name())}" th:data-status="${claim.status.name()}">
+
+                <div class="request-header">
+                    <div class="request-info">
+                        <h3 th:text="${claim.hospital.name}">Hospital Name</h3>
+                        <div class="request-meta">
+                            <div class="meta-item">
+                                <span class="material-symbols-outlined">person</span>
+                                <span th:text="${claim.user.fullName}">User Name</span>
+                            </div>
+                            <div class="meta-item">
+                                <span class="material-symbols-outlined">calendar_today</span>
+                                <span th:text="${#temporals.format(claim.requestedOn, 'dd MMM yyyy')}">Date</span>
+                            </div>
+                        </div>
+                    </div>
+                    <span class="status-badge" th:classappend="${'status-' + #strings.toLowerCase(claim.status.name())}"
+                        th:text="${claim.status.name() == 'PENDING' ? 'समीक्षाधीन' : 
+                               (claim.status.name() == 'APPROVED' ? 'स्वीकृत' : 'अस्वीकृत')}">
+                        Status
+                    </span>
+                </div>
+
+                <div class="request-details">
+                    <div class="detail-row">
+                        <div class="detail-label">अस्पताल पता:</div>
+                        <div class="detail-value" th:text="${claim.hospital.address}">Address</div>
+                    </div>
+
+                    <div class="detail-row">
+                        <div class="detail-label">उपयोगकर्ता ईमेल:</div>
+                        <div class="detail-value" th:text="${claim.user.email}">Email</div>
+                    </div>
+
+                    <div class="detail-row">
+                        <div class="detail-label">संपर्क:</div>
+                        <div class="detail-value" th:text="${claim.user.contact}">Contact</div>
+                    </div>
+
+                    <div class="detail-row">
+                        <div class="detail-label">अनुरोध कारण:</div>
+                        <div class="detail-value">
+                            <div class="message-box" th:text="${claim.message}">Message</div>
+                        </div>
+                    </div>
+
+                    <!-- Proof Document -->
+                    <div th:if="${claim.proofDocument != null && !#strings.isEmpty(claim.proofDocument)}"
+                        class="proof-document">
+                        <div class="proof-icon">
+                            <span class="material-symbols-outlined">description</span>
+                        </div>
+                        <div class="proof-info">
+                            <div class="proof-name">प्रमाण दस्तावेज़</div>
+                            <div class="proof-size">Proof Document Attached</div>
+                        </div>
+                        <a th:href="@{'/' + ${claim.proofDocument}}" target="_blank" class="btn btn-secondary btn-sm">
+                            <span class="material-symbols-outlined">visibility</span>
+                            देखें
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Actions -->
+                <div class="request-actions">
+                    <!-- For Pending Requests -->
+                    <div th:if="${claim.status.name() == 'PENDING'}" style="display: flex; gap: 8px; width: 100%;">
+                        <button class="btn btn-approve" th:onclick="'approveRequest(' + ${claim.claimId} + ')'">
+                            <span class="material-symbols-outlined">check_circle</span>
+                            स्वीकृत करें
+                        </button>
+                        <button class="btn btn-reject" th:onclick="'openRejectModal(' + ${claim.claimId} + ')'">
+                            <span class="material-symbols-outlined">cancel</span>
+                            अस्वीकृत करें
+                        </button>
+                    </div>
+
+                    <!-- For Approved/Rejected Requests -->
+                    <div th:if="${claim.status.name() != 'PENDING'}" style="display: flex; gap: 8px; width: 100%;">
+                        <a th:href="@{'/admin/hospital/details/' + ${claim.hospital.hospitalId}}" class="btn btn-view">
+                            <span class="material-symbols-outlined">visibility</span>
+                            अस्पताल देखें
+                        </a>
+                        <a th:href="@{'/admin/user/details/' + ${claim.user.id}}" class="btn btn-secondary">
+                            <span class="material-symbols-outlined">person</span>
+                            उपयोगकर्ता देखें
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- Empty State -->
+        <div id="emptyState" class="empty-state" style="display: none;">
+            <span class="material-symbols-outlined">inbox</span>
+            <h3>कोई अनुरोध नहीं मिला</h3>
+            <p>चयनित फ़िल्टर के लिए कोई अनुरोध उपलब्ध नहीं है</p>
+        </div>
+
+    </main>
+
+    <!-- Reject Modal -->
+    <div id="rejectModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>अनुरोध अस्वीकृत करें</h2>
+                <button class="close-btn" onclick="closeRejectModal()">
+                    <span class="material-symbols-outlined">close</span>
+                </button>
+            </div>
+
+            <form id="rejectForm">
+                <input type="hidden" id="rejectClaimId">
+
+                <div class="form-group">
+                    <label>अस्वीकृत करने का कारण (वैकल्पिक)</label>
+                    <textarea id="rejectionReason" placeholder="कृपया अस्वीकृत करने का कारण बताएं..."></textarea>
+                </div>
+
+                <div class="modal-actions">
+                    <button type="button" class="btn btn-secondary" onclick="closeRejectModal()">
+                        रद्द करें
+                    </button>
+                    <button type="submit" class="btn btn-reject">
+                        <span class="material-symbols-outlined">cancel</span>
+                        अस्वीकृत करें
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script th:inline="javascript">
+        /*<![CDATA[*/
+        const csrfToken = /*[[${_csrf.token}]]*/ '';
+        const csrfHeader = /*[[${_csrf.headerName}]]*/ '';
+        /*]]>*/
+
+        function toggleSidebar() {
+            const sidebar = document.querySelector('.sidebar');
+            const overlay = document.querySelector('.sidebar-overlay');
+            const hamburger = document.querySelector('.hamburger');
+
+            sidebar.classList.toggle('active');
+            overlay.classList.toggle('active');
+            hamburger.classList.toggle('active');
+        }
+
+        // Filter functionality
+        document.querySelectorAll('.filter-chip').forEach(chip => {
+            chip.addEventListener('click', function () {
+                // Update active state
+                document.querySelectorAll('.filter-chip').forEach(c => c.classList.remove('active'));
+                this.classList.add('active');
+
+                const status = this.getAttribute('data-status');
+                filterRequests(status);
+            });
+        });
+
+        function filterRequests(status) {
+            const cards = document.querySelectorAll('.request-card');
+            const emptyState = document.getElementById('emptyState');
+            let visibleCount = 0;
+
+            cards.forEach(card => {
+                const cardStatus = card.getAttribute('data-status');
+
+                if (status === 'all' || cardStatus === status) {
+                    card.style.display = 'block';
+                    visibleCount++;
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+
+            // Show/hide empty state
+            if (visibleCount === 0) {
+                emptyState.style.display = 'block';
+            } else {
+                emptyState.style.display = 'none';
+            }
+        }
+
+        // Approve request
+        async function approveRequest(claimId) {
+            if (!confirm('क्या आप इस अनुरोध को स्वीकृत करना चाहते हैं?')) {
+                return;
+            }
+
+            try {
+                const response = await fetch(`/admin/api/claim-requests/${claimId}/approve`, {
+                    method: 'POST',
+                    headers: {
+                        [csrfHeader]: csrfToken,
+                        'Content-Type': 'application/json'
+                    }
+                });
+
+                if (response.ok) {
+                    alert('अनुरोध सफलतापूर्वक स्वीकृत किया गया!');
+                    window.location.reload();
+                } else {
+                    const error = await response.json();
+                    alert(error.message || 'अनुरोध स्वीकृत करने में त्रुटि हुई');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('अनुरोध स्वीकृत करने में त्रुटि हुई');
+            }
+        }
+
+        // Reject modal functions
+        function openRejectModal(claimId) {
+            document.getElementById('rejectClaimId').value = claimId;
+            document.getElementById('rejectModal').classList.add('active');
+        }
+
+        function closeRejectModal() {
+            document.getElementById('rejectModal').classList.remove('active');
+            document.getElementById('rejectionReason').value = '';
+        }
+
+        // Reject form submission
+        document.getElementById('rejectForm').addEventListener('submit', async function (e) {
+            e.preventDefault();
+
+            const claimId = document.getElementById('rejectClaimId').value;
+            const reason = document.getElementById('rejectionReason').value;
+
+            try {
+                const response = await fetch(`/admin/api/claim-requests/${claimId}/reject`, {
+                    method: 'POST',
+                    headers: {
+                        [csrfHeader]: csrfToken,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ reason: reason })
+                });
+
+                if (response.ok) {
+                    alert('अनुरोध अस्वीकृत कर दिया गया');
+                    window.location.reload();
+                } else {
+                    const error = await response.json();
+                    alert(error.message || 'अनुरोध अस्वीकृत करने में त्रुटि हुई');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('अनुरोध अस्वीकृत करने में त्रुटि हुई');
+            }
+
+            closeRejectModal();
+        });
+
+        // Close sidebar when clicking on a nav link on mobile
+        document.querySelectorAll('.nav-link').forEach(link => {
+            link.addEventListener('click', () => {
+                if (window.innerWidth <= 768) {
+                    toggleSidebar();
+                }
+            });
+        });
+    </script>
+
+</body>
+
+</html>
