@@ -1,0 +1,571 @@
+<!DOCTYPE html>
+<html lang="hi" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Hospital Dashboard - Health Saathi</title>
+    <meta name="_csrf" th:content="${_csrf.token}">
+    <meta name="_csrf_header" th:content="${_csrf.headerName}">
+
+    <link href="https://fonts.googleapis.com" rel="preconnect" />
+    <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect" />
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Devanagari:wght@400;500;600;700&display=swap"
+        rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet" />
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #2563eb;
+            --primary-dark: #1e40af;
+            --primary-light: #dbeafe;
+            --secondary: #10b981;
+            --accent: #f59e0b;
+            --danger: #ef4444;
+            --text-primary: #0f172a;
+            --text-secondary: #64748b;
+            --text-tertiary: #94a3b8;
+            --bg-primary: #ffffff;
+            --bg-secondary: #f8fafc;
+            --bg-tertiary: #f1f5f9;
+            --border: #e2e8f0;
+            --shadow-sm: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
+            --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+            --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+        }
+
+        body {
+            font-family: 'DM Sans', 'Noto Sans Devanagari', sans-serif;
+            background: var(--bg-secondary);
+            color: var(--text-primary);
+            line-height: 1.6;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+
+        .material-symbols-rounded {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+
+        /* Container */
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        /* Header Section */
+        .header {
+            margin-bottom: 3rem;
+        }
+
+        .back-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.75rem 1.25rem;
+            background: var(--bg-primary);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            color: var(--text-secondary);
+            font-weight: 600;
+            font-size: 0.9rem;
+            text-decoration: none;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            margin-bottom: 2rem;
+        }
+
+        .back-btn:hover {
+            background: var(--bg-tertiary);
+            color: var(--text-primary);
+            transform: translateX(-4px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .back-btn .material-symbols-rounded {
+            font-size: 20px;
+        }
+
+        .hospital-header {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            border-radius: 24px;
+            padding: 3rem;
+            color: white;
+            box-shadow: var(--shadow-xl);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hospital-header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 400px;
+            height: 400px;
+            background: radial-gradient(circle, rgba(255, 255, 255, 0.1) 0%, transparent 70%);
+            pointer-events: none;
+        }
+
+        .hospital-header-content {
+            position: relative;
+            z-index: 1;
+            display: flex;
+            align-items: center;
+            gap: 2rem;
+        }
+
+        .hospital-icon {
+            width: 120px;
+            height: 120px;
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(10px);
+            border-radius: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            border: 3px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .hospital-icon .material-symbols-rounded {
+            font-size: 64px;
+            font-variation-settings: 'FILL' 1, 'wght' 300, 'GRAD' 0, 'opsz' 48;
+        }
+
+        .hospital-info h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            letter-spacing: -0.02em;
+        }
+
+        .hospital-meta {
+            display: flex;
+            align-items: center;
+            gap: 2rem;
+            margin-top: 1rem;
+            font-size: 1rem;
+            opacity: 0.95;
+        }
+
+        .meta-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .meta-item .material-symbols-rounded {
+            font-size: 20px;
+        }
+
+        /* Dashboard Grid */
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+            gap: 2rem;
+            margin-bottom: 3rem;
+        }
+
+        .dashboard-card {
+            background: var(--bg-primary);
+            border-radius: 20px;
+            padding: 2rem;
+            border: 1px solid var(--border);
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            cursor: pointer;
+            text-decoration: none;
+            color: inherit;
+            display: block;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .dashboard-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, transparent 0%, rgba(37, 99, 235, 0.03) 100%);
+            opacity: 0;
+            transition: opacity 0.4s ease;
+        }
+
+        .dashboard-card:hover {
+            transform: translateY(-8px);
+            box-shadow: var(--shadow-xl);
+            border-color: var(--primary-light);
+        }
+
+        .dashboard-card:hover::before {
+            opacity: 1;
+        }
+
+        .card-icon-wrapper {
+            width: 80px;
+            height: 80px;
+            border-radius: 18px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 1.5rem;
+            position: relative;
+            z-index: 1;
+        }
+
+        .card-icon-wrapper.blue {
+            background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%);
+        }
+
+        .card-icon-wrapper.green {
+            background: linear-gradient(135deg, #d1fae5 0%, #a7f3d0 100%);
+        }
+
+        .card-icon-wrapper.amber {
+            background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+        }
+
+        .card-icon-wrapper .material-symbols-rounded {
+            font-size: 40px;
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 48;
+        }
+
+        .card-icon-wrapper.blue .material-symbols-rounded {
+            color: var(--primary);
+        }
+
+        .card-icon-wrapper.green .material-symbols-rounded {
+            color: var(--secondary);
+        }
+
+        .card-icon-wrapper.amber .material-symbols-rounded {
+            color: var(--accent);
+        }
+
+        .card-content h2 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            color: var(--text-primary);
+        }
+
+        .card-content p {
+            font-size: 0.95rem;
+            color: var(--text-secondary);
+            line-height: 1.6;
+            margin-bottom: 1.5rem;
+        }
+
+        .card-stats {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding-top: 1.5rem;
+            border-top: 1px solid var(--border);
+        }
+
+        .stat {
+            display: flex;
+            flex-direction: column;
+            gap: 0.25rem;
+        }
+
+        .stat-value {
+            font-size: 1.75rem;
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+
+        .stat-label {
+            font-size: 0.85rem;
+            color: var(--text-tertiary);
+            font-weight: 500;
+        }
+
+        .card-action {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: var(--primary);
+            font-weight: 600;
+            font-size: 0.9rem;
+            transition: gap 0.3s ease;
+        }
+
+        .dashboard-card:hover .card-action {
+            gap: 0.75rem;
+        }
+
+        .card-action .material-symbols-rounded {
+            font-size: 20px;
+        }
+
+        /* Quick Actions */
+        .quick-actions {
+            background: var(--bg-primary);
+            border-radius: 20px;
+            padding: 2rem;
+            border: 1px solid var(--border);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .quick-actions h3 {
+            font-size: 1.25rem;
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+            color: var(--text-primary);
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .quick-actions h3 .material-symbols-rounded {
+            font-size: 28px;
+            color: var(--primary);
+        }
+
+        .action-buttons {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+        }
+
+        .action-btn {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 1rem 1.25rem;
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            color: var(--text-primary);
+            font-weight: 600;
+            font-size: 0.9rem;
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+
+        .action-btn:hover {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .action-btn .material-symbols-rounded {
+            font-size: 22px;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .container {
+                padding: 1rem;
+            }
+
+            .hospital-header {
+                padding: 2rem;
+            }
+
+            .hospital-header-content {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            .hospital-info h1 {
+                font-size: 1.75rem;
+            }
+
+            .hospital-meta {
+                flex-direction: column;
+                gap: 0.75rem;
+            }
+
+            .dashboard-grid {
+                grid-template-columns: 1fr;
+                gap: 1.5rem;
+            }
+
+            .action-buttons {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Animations */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .dashboard-card {
+            animation: fadeInUp 0.6s ease backwards;
+        }
+
+        .dashboard-card:nth-child(1) {
+            animation-delay: 0.1s;
+        }
+
+        .dashboard-card:nth-child(2) {
+            animation-delay: 0.2s;
+        }
+
+        .dashboard-card:nth-child(3) {
+            animation-delay: 0.3s;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="container">
+        <!-- Back Button -->
+        <a th:href="@{/user/hospitals/all}" class="back-btn">
+            <span class="material-symbols-rounded">arrow_back</span>
+            <span>Back to Hospitals</span>
+        </a>
+
+        <!-- Hospital Header -->
+        <div class="header">
+            <div class="hospital-header">
+                <div class="hospital-header-content">
+                    <div class="hospital-icon">
+                        <span class="material-symbols-rounded">local_hospital</span>
+                    </div>
+                    <div class="hospital-info">
+                        <h1 th:text="${hospital.name}">Hospital Name</h1>
+                        <div class="hospital-meta">
+                            <div class="meta-item">
+                                <span class="material-symbols-rounded">location_on</span>
+                                <span th:text="${hospital.address}">Hospital Address</span>
+                            </div>
+                            <div class="meta-item">
+                                <span class="material-symbols-rounded">call</span>
+                                <span th:text="${hospital.contact}">Contact Number</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Dashboard Cards -->
+        <div class="dashboard-grid">
+            <!-- Hospital Images Card -->
+            <a th:href="@{'/hospital/images/' + ${hospital.hospitalId}}" class="dashboard-card">
+                <div class="card-icon-wrapper blue">
+                    <span class="material-symbols-rounded">photo_library</span>
+                </div>
+                <div class="card-content">
+                    <h2>Hospital Images</h2>
+                    <p>Manage and showcase your hospital's facilities, infrastructure, and environment through images
+                    </p>
+                    <div class="card-stats">
+                        <div class="stat">
+                            <div class="stat-value"
+                                th:text="${hospital.images != null ? #lists.size(hospital.images) : 0}">0</div>
+                            <div class="stat-label">Total Images</div>
+                        </div>
+                        <div class="card-action">
+                            <span>Manage Gallery</span>
+                            <span class="material-symbols-rounded">arrow_forward</span>
+                        </div>
+                    </div>
+                </div>
+            </a>
+
+            <!-- Edit Hospital Card -->
+            <a th:href="@{'/hospital/edit/' + ${hospital.hospitalId}}" class="dashboard-card">
+                <div class="card-icon-wrapper green">
+                    <span class="material-symbols-rounded">edit_square</span>
+                </div>
+                <div class="card-content">
+                    <h2>Edit Hospital</h2>
+                    <p>Update hospital information, contact details, facilities, timings, and other essential details
+                    </p>
+                    <div class="card-stats">
+                        <div class="stat">
+                            <div class="stat-value">
+                                <span class="material-symbols-rounded"
+                                    style="font-size: 1.75rem; color: var(--secondary);">verified</span>
+                            </div>
+                            <div class="stat-label">Profile Status</div>
+                        </div>
+                        <div class="card-action">
+                            <span>Edit Details</span>
+                            <span class="material-symbols-rounded">arrow_forward</span>
+                        </div>
+                    </div>
+                </div>
+            </a>
+
+            <!-- Hospital Doctors Card -->
+            <a th:href="@{'/hospital/doctors/' + ${hospital.hospitalId}}" class="dashboard-card">
+                <div class="card-icon-wrapper amber">
+                    <span class="material-symbols-rounded">medical_services</span>
+                </div>
+                <div class="card-content">
+                    <h2>Hospital Doctors</h2>
+                    <p>Add, manage, and update information about doctors and medical specialists at your hospital</p>
+                    <div class="card-stats">
+                        <div class="stat">
+                            <div class="stat-value" th:text="${doctors != null ? #lists.size(doctors) : 0}">0</div>
+                            <div class="stat-label">Total Doctors</div>
+                        </div>
+                        <div class="card-action">
+                            <span>Manage Doctors</span>
+                            <span class="material-symbols-rounded">arrow_forward</span>
+                        </div>
+                    </div>
+                </div>
+            </a>
+        </div>
+
+        <!-- Quick Actions -->
+        <div class="quick-actions">
+            <h3>
+                <span class="material-symbols-rounded">bolt</span>
+                Quick Actions
+            </h3>
+            <div class="action-buttons">
+                <a th:href="@{'/hospital/images/upload/' + ${hospital.hospitalId}}" class="action-btn">
+                    <span class="material-symbols-rounded">add_photo_alternate</span>
+                    <span>Upload Image</span>
+                </a>
+                <a th:href="@{'/hospital/doctors/add/' + ${hospital.hospitalId}}" class="action-btn">
+                    <span class="material-symbols-rounded">person_add</span>
+                    <span>Add Doctor</span>
+                </a>
+                <a th:href="@{'/hospital/view/' + ${hospital.hospitalId}}" class="action-btn">
+                    <span class="material-symbols-rounded">visibility</span>
+                    <span>View Public Profile</span>
+                </a>
+                <a th:href="@{'/hospital/analytics/' + ${hospital.hospitalId}}" class="action-btn">
+                    <span class="material-symbols-rounded">analytics</span>
+                    <span>View Analytics</span>
+                </a>
+            </div>
+        </div>
+
+    </div>
+
+</body>
+
+</html>

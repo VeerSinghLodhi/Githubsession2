@@ -1,0 +1,583 @@
+<!DOCTYPE html>
+<html lang="hi" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Edit Hospital - Health Saathi</title>
+    <meta name="_csrf" th:content="${_csrf.token}">
+    <meta name="_csrf_header" th:content="${_csrf.headerName}">
+
+    <link href="https://fonts.googleapis.com" rel="preconnect" />
+    <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect" />
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Devanagari:wght@400;500;600;700&display=swap"
+        rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet" />
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #2563eb;
+            --primary-dark: #1e40af;
+            --primary-light: #dbeafe;
+            --secondary: #10b981;
+            --text-primary: #0f172a;
+            --text-secondary: #64748b;
+            --bg-primary: #ffffff;
+            --bg-secondary: #f8fafc;
+            --border: #e2e8f0;
+            --success: #10b981;
+            --success-light: #d1fae5;
+        }
+
+        body {
+            font-family: 'DM Sans', 'Noto Sans Devanagari', sans-serif;
+            background: var(--bg-secondary);
+            color: var(--text-primary);
+            line-height: 1.6;
+        }
+
+        .material-symbols-rounded {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .back-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.75rem 1.25rem;
+            background: var(--bg-primary);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            color: var(--text-secondary);
+            font-weight: 600;
+            font-size: 0.9rem;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            margin-bottom: 2rem;
+        }
+
+        .back-btn:hover {
+            background: var(--primary);
+            color: white;
+            transform: translateX(-4px);
+        }
+
+        .page-header {
+            background: var(--bg-primary);
+            border-radius: 20px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            border: 1px solid var(--border);
+        }
+
+        .page-header h1 {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 0.5rem;
+        }
+
+        .page-header p {
+            color: var(--text-secondary);
+            font-size: 0.95rem;
+        }
+
+        .form-card {
+            background: var(--bg-primary);
+            border-radius: 20px;
+            padding: 2.5rem;
+            border: 1px solid var(--border);
+        }
+
+        .form-section {
+            margin-bottom: 2.5rem;
+        }
+
+        .form-section:last-child {
+            margin-bottom: 0;
+        }
+
+        .section-title {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 2px solid var(--border);
+        }
+
+        .section-title .material-symbols-rounded {
+            font-size: 28px;
+            color: var(--primary);
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group.full-width {
+            grid-column: 1 / -1;
+        }
+
+        .form-label {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 0.75rem;
+            font-size: 0.9rem;
+        }
+
+        .form-label .material-symbols-rounded {
+            font-size: 18px;
+            color: var(--primary);
+        }
+
+        .required {
+            color: #ef4444;
+        }
+
+        .form-input,
+        .form-select,
+        .form-textarea {
+            width: 100%;
+            padding: 0.875rem 1rem;
+            border: 2px solid var(--border);
+            border-radius: 12px;
+            font-size: 0.95rem;
+            font-family: 'DM Sans', 'Noto Sans Devanagari', sans-serif;
+            color: var(--text-primary);
+            background: var(--bg-secondary);
+            transition: all 0.3s ease;
+        }
+
+        .form-input:focus,
+        .form-select:focus,
+        .form-textarea:focus {
+            outline: none;
+            border-color: var(--primary);
+            background: var(--bg-primary);
+            box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.1);
+        }
+
+        .form-textarea {
+            resize: vertical;
+            min-height: 120px;
+        }
+
+        .form-hint {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            margin-top: 0.5rem;
+        }
+
+        .facility-input-wrapper {
+            display: flex;
+            gap: 0.75rem;
+        }
+
+        .facility-input-wrapper .form-input {
+            flex: 1;
+        }
+
+        .add-btn {
+            padding: 0.875rem 1.25rem;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .add-btn:hover {
+            background: var(--primary-dark);
+            transform: translateY(-2px);
+        }
+
+        .facilities-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.75rem;
+            margin-top: 1rem;
+        }
+
+        .facility-tag {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 1rem;
+            background: var(--primary-light);
+            color: var(--primary);
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: 600;
+        }
+
+        .facility-tag .remove-btn {
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: var(--primary);
+            color: white;
+            transition: all 0.3s ease;
+        }
+
+        .facility-tag .remove-btn:hover {
+            background: var(--primary-dark);
+            transform: scale(1.1);
+        }
+
+        .facility-tag .material-symbols-rounded {
+            font-size: 16px;
+        }
+
+        .form-actions {
+            display: flex;
+            gap: 1rem;
+            margin-top: 2rem;
+            padding-top: 2rem;
+            border-top: 2px solid var(--border);
+        }
+
+        .btn {
+            flex: 1;
+            padding: 1rem 2rem;
+            border: none;
+            border-radius: 12px;
+            font-weight: 700;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.75rem;
+            font-family: 'DM Sans', 'Noto Sans Devanagari', sans-serif;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(37, 99, 235, 0.4);
+        }
+
+        .btn-secondary {
+            background: var(--bg-secondary);
+            color: var(--text-primary);
+            border: 2px solid var(--border);
+        }
+
+        .btn-secondary:hover {
+            background: var(--border);
+        }
+
+        .success-message {
+            background: var(--success-light);
+            border-left: 4px solid var(--success);
+            color: #065f46;
+            padding: 1rem 1.5rem;
+            border-radius: 12px;
+            margin-bottom: 2rem;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            animation: slideInDown 0.4s ease;
+        }
+
+        .success-message .material-symbols-rounded {
+            font-size: 24px;
+            color: var(--success);
+        }
+
+        @keyframes slideInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 1rem;
+            }
+
+            .form-card {
+                padding: 1.5rem;
+            }
+
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .form-actions {
+                flex-direction: column;
+            }
+
+            .facility-input-wrapper {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="container">
+        <!-- Back Button -->
+        <a th:href="@{'/hospital/dashboard/' + ${hospital.hospitalId}}" class="back-btn">
+            <span class="material-symbols-rounded">arrow_back</span>
+            <span>Back to Dashboard</span>
+        </a>
+
+        <!-- Success Message -->
+        <div th:if="${param.success}" class="success-message">
+            <span class="material-symbols-rounded">check_circle</span>
+            <span>Hospital details updated successfully!</span>
+        </div>
+
+        <!-- Page Header -->
+        <div class="page-header">
+            <h1>Edit Hospital Details</h1>
+            <p>Update hospital information, contact details, and facilities</p>
+        </div>
+
+        <!-- Form -->
+        <div class="form-card">
+            <form th:action="@{'/hospital/update/' + ${hospital.hospitalId}}" method="post">
+                <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+
+                <!-- Basic Information -->
+                <div class="form-section">
+                    <h2 class="section-title">
+                        <span class="material-symbols-rounded">business</span>
+                        <span>Basic Information</span>
+                    </h2>
+
+                    <div class="form-grid">
+                        <div class="form-group full-width">
+                            <label class="form-label">
+                                <span class="material-symbols-rounded">local_hospital</span>
+                                <span>Hospital Name <span class="required">*</span></span>
+                            </label>
+                            <input type="text" name="name" th:value="${hospital.name}" class="form-input" required
+                                placeholder="Enter hospital name">
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">
+                                <span class="material-symbols-rounded">schedule</span>
+                                <span>Timings <span class="required">*</span></span>
+                            </label>
+                            <input type="text" name="timings" th:value="${hospital.timings}" class="form-input" required
+                                placeholder="e.g., 24/7 or 9:00 AM - 9:00 PM">
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">
+                                <span class="material-symbols-rounded">category</span>
+                                <span>Hospital Type</span>
+                            </label>
+                            <select name="typeId" class="form-select">
+                                <option value="">Select Type</option>
+                                <option th:each="type : ${hospitalTypes}" th:value="${type.typeId}"
+                                    th:text="${type.type}"
+                                    th:selected="${hospital.type != null && hospital.type.typeId == type.typeId}">
+                                </option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Contact Information -->
+                <div class="form-section">
+                    <h2 class="section-title">
+                        <span class="material-symbols-rounded">contact_phone</span>
+                        <span>Contact Information</span>
+                    </h2>
+
+                    <div class="form-grid">
+                        <div class="form-group full-width">
+                            <label class="form-label">
+                                <span class="material-symbols-rounded">location_on</span>
+                                <span>Address <span class="required">*</span></span>
+                            </label>
+                            <input type="text" name="address" th:value="${hospital.address}" class="form-input" required
+                                placeholder="Enter complete address">
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">
+                                <span class="material-symbols-rounded">call</span>
+                                <span>Contact Number <span class="required">*</span></span>
+                            </label>
+                            <input type="tel" name="contact" th:value="${hospital.contact}" class="form-input" required
+                                placeholder="Enter contact number">
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">
+                                <span class="material-symbols-rounded">email</span>
+                                <span>Email</span>
+                            </label>
+                            <input type="email" name="email" th:value="${hospital.email}" class="form-input"
+                                placeholder="hospital@example.com">
+                        </div>
+
+                        <div class="form-group full-width">
+                            <label class="form-label">
+                                <span class="material-symbols-rounded">language</span>
+                                <span>Website</span>
+                            </label>
+                            <input type="url" name="website" th:value="${hospital.website}" class="form-input"
+                                placeholder="https://www.hospital.com">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Description & Facilities -->
+                <div class="form-section">
+                    <h2 class="section-title">
+                        <span class="material-symbols-rounded">description</span>
+                        <span>Description & Facilities</span>
+                    </h2>
+
+                    <div class="form-group">
+                        <label class="form-label">
+                            <span class="material-symbols-rounded">article</span>
+                            <span>Description</span>
+                        </label>
+                        <textarea name="description" th:text="${hospital.description}" class="form-textarea"
+                            placeholder="Brief description about the hospital, services, and specialties"></textarea>
+                        <p class="form-hint">Provide a detailed overview of your hospital's services and specialties</p>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">
+                            <span class="material-symbols-rounded">medical_services</span>
+                            <span>Facilities</span>
+                        </label>
+                        <div class="facility-input-wrapper">
+                            <input type="text" id="facilityInput" class="form-input"
+                                placeholder="Add facility (e.g., ICU, Emergency, Lab)">
+                            <button type="button" class="add-btn" onclick="addFacility()">
+                                <span class="material-symbols-rounded">add</span>
+                                <span>Add</span>
+                            </button>
+                        </div>
+                        <input type="hidden" name="facilities" id="facilitiesHidden" th:value="${hospital.facilities}">
+                        <div id="facilitiesTags" class="facilities-tags"></div>
+                        <p class="form-hint">Add available facilities and services at your hospital</p>
+                    </div>
+                </div>
+
+                <!-- Form Actions -->
+                <div class="form-actions">
+                    <button type="submit" class="btn btn-primary">
+                        <span class="material-symbols-rounded">save</span>
+                        <span>Save Changes</span>
+                    </button>
+                    <button type="reset" class="btn btn-secondary">
+                        <span class="material-symbols-rounded">refresh</span>
+                        <span>Reset Form</span>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        let facilities = [];
+
+        function addFacility() {
+            const input = document.getElementById('facilityInput');
+            const value = input.value.trim();
+
+            if (value && !facilities.includes(value)) {
+                facilities.push(value);
+                updateFacilitiesDisplay();
+                input.value = '';
+            }
+        }
+
+        function removeFacility(index) {
+            facilities.splice(index, 1);
+            updateFacilitiesDisplay();
+        }
+
+        function updateFacilitiesDisplay() {
+            const container = document.getElementById('facilitiesTags');
+            const hidden = document.getElementById('facilitiesHidden');
+
+            container.innerHTML = facilities.map((facility, index) => `
+      <div class="facility-tag">
+        <span>${facility}</span>
+        <div class="remove-btn" onclick="removeFacility(${index})">
+          <span class="material-symbols-rounded">close</span>
+        </div>
+      </div>
+    `).join('');
+
+            hidden.value = facilities.join(',');
+        }
+
+        document.getElementById('facilityInput').addEventListener('keypress', function (e) {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                addFacility();
+            }
+        });
+
+        window.addEventListener('DOMContentLoaded', () => {
+            const existingFacilities = document.getElementById('facilitiesHidden').value;
+            if (existingFacilities) {
+                facilities = existingFacilities.split(',').filter(f => f.trim());
+                updateFacilitiesDisplay();
+            }
+        });
+    </script>
+
+</body>
+
+</html>

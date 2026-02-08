@@ -1,0 +1,719 @@
+<!DOCTYPE html>
+<html lang="hi" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Hospital Doctors - Health Saathi</title>
+    <meta name="_csrf" th:content="${_csrf.token}">
+    <meta name="_csrf_header" th:content="${_csrf.headerName}">
+
+    <link href="https://fonts.googleapis.com" rel="preconnect" />
+    <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect" />
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Devanagari:wght@400;500;600;700&display=swap"
+        rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet" />
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #2563eb;
+            --primary-dark: #1e40af;
+            --primary-light: #dbeafe;
+            --secondary: #10b981;
+            --accent: #f59e0b;
+            --danger: #ef4444;
+            --text-primary: #0f172a;
+            --text-secondary: #64748b;
+            --bg-primary: #ffffff;
+            --bg-secondary: #f8fafc;
+            --border: #e2e8f0;
+        }
+
+        body {
+            font-family: 'DM Sans', 'Noto Sans Devanagari', sans-serif;
+            background: var(--bg-secondary);
+            color: var(--text-primary);
+        }
+
+        .material-symbols-rounded {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .back-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.75rem 1.25rem;
+            background: var(--bg-primary);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            color: var(--text-secondary);
+            font-weight: 600;
+            font-size: 0.9rem;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            margin-bottom: 2rem;
+        }
+
+        .back-btn:hover {
+            background: var(--primary);
+            color: white;
+            transform: translateX(-4px);
+        }
+
+        .page-header {
+            background: var(--bg-primary);
+            border-radius: 20px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            border: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 2rem;
+        }
+
+        .header-content h1 {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 0.5rem;
+        }
+
+        .header-content p {
+            color: var(--text-secondary);
+            font-size: 0.95rem;
+        }
+
+        .add-btn {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 1rem 1.5rem;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-weight: 700;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            white-space: nowrap;
+        }
+
+        .add-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(37, 99, 235, 0.4);
+        }
+
+        .doctors-container {
+            background: var(--bg-primary);
+            border-radius: 20px;
+            padding: 2rem;
+            border: 1px solid var(--border);
+        }
+
+        .doctors-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .doctor-card {
+            background: var(--bg-secondary);
+            border-radius: 16px;
+            padding: 1.75rem;
+            border: 2px solid var(--border);
+            transition: all 0.4s ease;
+        }
+
+        .doctor-card:hover {
+            transform: translateY(-6px);
+            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.12);
+            border-color: var(--primary-light);
+        }
+
+        .doctor-header {
+            display: flex;
+            gap: 1.25rem;
+            margin-bottom: 1.5rem;
+            padding-bottom: 1.5rem;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .doctor-avatar {
+            width: 72px;
+            height: 72px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 28px;
+            font-weight: 700;
+            flex-shrink: 0;
+            box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
+        }
+
+        .doctor-info h3 {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 0.5rem;
+        }
+
+        .doctor-specialty {
+            display: inline-block;
+            padding: 0.4rem 0.875rem;
+            background: var(--primary-light);
+            color: var(--primary);
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+
+        .doctor-details {
+            display: flex;
+            flex-direction: column;
+            gap: 0.875rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .detail-item {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+        }
+
+        .detail-item .material-symbols-rounded {
+            font-size: 20px;
+            color: var(--primary);
+        }
+
+        .doctor-actions {
+            display: flex;
+            gap: 0.75rem;
+        }
+
+        .btn {
+            flex: 1;
+            padding: 0.75rem 1rem;
+            border: none;
+            border-radius: 10px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+
+        .btn-edit {
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            border: 2px solid var(--border);
+        }
+
+        .btn-edit:hover {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+
+        .btn-delete {
+            background: var(--danger);
+            color: white;
+        }
+
+        .btn-delete:hover {
+            background: #dc2626;
+            box-shadow: 0 4px 12px rgba(239, 68, 68, 0.4);
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 4rem 2rem;
+            background: var(--bg-secondary);
+            border-radius: 16px;
+            border: 2px dashed var(--border);
+        }
+
+        .empty-icon {
+            width: 120px;
+            height: 120px;
+            background: var(--primary-light);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 2rem;
+        }
+
+        .empty-icon .material-symbols-rounded {
+            font-size: 64px;
+            color: var(--primary);
+        }
+
+        .empty-state h3 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 0.75rem;
+        }
+
+        .empty-state p {
+            font-size: 1rem;
+            color: var(--text-secondary);
+            margin-bottom: 2rem;
+        }
+
+        /* Modal Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(4px);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: var(--bg-primary);
+            border-radius: 24px;
+            padding: 2.5rem;
+            max-width: 600px;
+            width: 100%;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.3);
+            animation: modalSlideIn 0.3s ease;
+        }
+
+        @keyframes modalSlideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-30px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .modal-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 2rem;
+        }
+
+        .modal-header h2 {
+            font-size: 1.75rem;
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+
+        .close-btn {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            border: none;
+            background: var(--bg-secondary);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+        }
+
+        .close-btn:hover {
+            background: var(--border);
+            transform: rotate(90deg);
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-label {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 0.75rem;
+            font-size: 0.9rem;
+        }
+
+        .form-label .material-symbols-rounded {
+            font-size: 18px;
+            color: var(--primary);
+        }
+
+        .required {
+            color: var(--danger);
+        }
+
+        .form-input,
+        .form-select,
+        .form-textarea {
+            width: 100%;
+            padding: 0.875rem 1rem;
+            border: 2px solid var(--border);
+            border-radius: 12px;
+            font-size: 0.95rem;
+            font-family: 'DM Sans', 'Noto Sans Devanagari', sans-serif;
+            color: var(--text-primary);
+            background: var(--bg-secondary);
+            transition: all 0.3s ease;
+        }
+
+        .form-input:focus,
+        .form-select:focus,
+        .form-textarea:focus {
+            outline: none;
+            border-color: var(--primary);
+            background: var(--bg-primary);
+            box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.1);
+        }
+
+        .modal-actions {
+            display: flex;
+            gap: 1rem;
+            margin-top: 2rem;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(37, 99, 235, 0.4);
+        }
+
+        .btn-secondary {
+            background: var(--bg-secondary);
+            color: var(--text-primary);
+        }
+
+        .btn-secondary:hover {
+            background: var(--border);
+        }
+
+        /* Toast Notification */
+        .toast {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: white;
+            padding: 1rem 1.5rem;
+            border-radius: 12px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            z-index: 3000;
+            animation: slideInRight 0.3s ease;
+        }
+
+        .toast.success {
+            border-left: 4px solid var(--secondary);
+        }
+
+        .toast.error {
+            border-left: 4px solid var(--danger);
+        }
+
+        .toast .material-symbols-rounded {
+            font-size: 24px;
+        }
+
+        .toast.success .material-symbols-rounded {
+            color: var(--secondary);
+        }
+
+        .toast.error .material-symbols-rounded {
+            color: var(--danger);
+        }
+
+        @keyframes slideInRight {
+            from {
+                opacity: 0;
+                transform: translateX(100%);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 1rem;
+            }
+
+            .page-header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .doctors-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .modal-content {
+                padding: 1.5rem;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="container">
+        <!-- Back Button -->
+        <a th:href="@{'/hospital/dashboard/' + ${hospital.hospitalId}}" class="back-btn">
+            <span class="material-symbols-rounded">arrow_back</span>
+            <span>Back to Dashboard</span>
+        </a>
+
+        <!-- Page Header -->
+        <div class="page-header">
+            <div class="header-content">
+                <h1>Hospital Doctors</h1>
+                <p>Manage doctors and medical specialists at your hospital</p>
+            </div>
+            <button class="add-btn" onclick="openAddDoctorModal()">
+                <span class="material-symbols-rounded">person_add</span>
+                <span>Add Doctor</span>
+            </button>
+        </div>
+
+        <!-- Doctors Container -->
+        <div class="doctors-container">
+            <!-- Doctors Grid -->
+            <div th:if="${doctors != null && !#lists.isEmpty(doctors)}" class="doctors-grid">
+                <div th:each="doctor : ${doctors}" class="doctor-card">
+                    <div class="doctor-header">
+                        <div class="doctor-avatar" th:text="${#strings.substring(doctor.name, 0, 1)}">D</div>
+                        <div class="doctor-info">
+                            <h3 th:text="${doctor.name}">Doctor Name</h3>
+                            <span class="doctor-specialty" th:text="${doctor.specialization}">Specialty</span>
+                        </div>
+                    </div>
+
+                    <div class="doctor-details">
+                        <div class="detail-item">
+                            <span class="material-symbols-rounded">call</span>
+                            <span th:text="${doctor.contact}">Contact Number</span>
+                        </div>
+                        <div class="detail-item" th:if="${doctor.qualification}">
+                            <span class="material-symbols-rounded">school</span>
+                            <span th:text="${doctor.qualification}">Qualification</span>
+                        </div>
+                        <div class="detail-item" th:if="${doctor.experience}">
+                            <span class="material-symbols-rounded">work</span>
+                            <span th:text="${doctor.experience} + ' years experience'">Experience</span>
+                        </div>
+                    </div>
+
+                    <div class="doctor-actions">
+                        <button class="btn btn-edit" th:onclick="'editDoctor(\'' + ${doctor.doctorId} + '\')'">
+                            <span class="material-symbols-rounded">edit</span>
+                            <span>Edit</span>
+                        </button>
+                        <button class="btn btn-delete" th:onclick="'deleteDoctor(\'' + ${doctor.doctorId} + '\')'">
+                            <span class="material-symbols-rounded">delete</span>
+                            <span>Delete</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Empty State -->
+            <div th:unless="${doctors != null && !#lists.isEmpty(doctors)}" class="empty-state">
+                <div class="empty-icon">
+                    <span class="material-symbols-rounded">medical_services</span>
+                </div>
+                <h3>No Doctors Added</h3>
+                <p>Add doctors to your hospital profile to help patients find the right specialists</p>
+                <button class="add-btn" onclick="openAddDoctorModal()">
+                    <span class="material-symbols-rounded">person_add</span>
+                    <span>Add First Doctor</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add/Edit Doctor Modal -->
+    <div id="doctorModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="modalTitle">Add Doctor</h2>
+                <button class="close-btn" onclick="closeDoctorModal()">
+                    <span class="material-symbols-rounded">close</span>
+                </button>
+            </div>
+
+            <form id="doctorForm" th:action="@{'/hospital/add-doctor/' + ${hospital.hospitalId}}" method="post">
+                <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+                <input type="hidden" id="doctorId" name="doctorId">
+
+                <div class="form-group">
+                    <label class="form-label">
+                        <span class="material-symbols-rounded">person</span>
+                        <span>Doctor Name <span class="required">*</span></span>
+                    </label>
+                    <input type="text" id="doctorName" name="name" class="form-input" required
+                        placeholder="Enter doctor's full name">
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">
+                        <span class="material-symbols-rounded">medical_services</span>
+                        <span>Specialization <span class="required">*</span></span>
+                    </label>
+                    <input type="text" id="doctorSpecialization" name="specialization" class="form-input" required
+                        placeholder="e.g., Cardiologist, Neurologist">
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">
+                        <span class="material-symbols-rounded">call</span>
+                        <span>Contact Number <span class="required">*</span></span>
+                    </label>
+                    <input type="tel" id="doctorContact" name="contact" class="form-input" required
+                        placeholder="Enter contact number">
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">
+                        <span class="material-symbols-rounded">school</span>
+                        <span>Qualification</span>
+                    </label>
+                    <input type="text" id="doctorQualification" name="qualification" class="form-input"
+                        placeholder="e.g., MBBS, MD, MS">
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">
+                        <span class="material-symbols-rounded">work</span>
+                        <span>Experience (Years)</span>
+                    </label>
+                    <input type="number" id="doctorExperience" name="experience" class="form-input"
+                        placeholder="Years of experience" min="0">
+                </div>
+
+                <div class="modal-actions">
+                    <button type="submit" class="btn btn-primary">
+                        <span class="material-symbols-rounded">save</span>
+                        <span>Save Doctor</span>
+                    </button>
+                    <button type="button" class="btn btn-secondary" onclick="closeDoctorModal()">
+                        <span class="material-symbols-rounded">close</span>
+                        <span>Cancel</span>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script th:inline="javascript">
+        const csrfToken = /*[[${_csrf.token}]]*/ '';
+        const csrfHeader = /*[[${_csrf.headerName}]]*/ '';
+
+        function showToast(message, type = 'success') {
+            const toast = document.createElement('div');
+            toast.className = `toast ${type}`;
+            toast.innerHTML = `
+      <span class="material-symbols-rounded">${type === 'success' ? 'check_circle' : 'error'}</span>
+      <span>${message}</span>
+    `;
+            document.body.appendChild(toast);
+            setTimeout(() => {
+                toast.style.animation = 'slideInRight 0.3s ease reverse';
+                setTimeout(() => toast.remove(), 300);
+            }, 3000);
+        }
+
+        function openAddDoctorModal() {
+            document.getElementById('modalTitle').textContent = 'Add Doctor';
+            document.getElementById('doctorForm').reset();
+            document.getElementById('doctorId').value = '';
+            document.getElementById('doctorModal').classList.add('active');
+        }
+
+        function closeDoctorModal() {
+            document.getElementById('doctorModal').classList.remove('active');
+        }
+
+        function editDoctor(doctorId) {
+            // Fetch doctor data and populate form
+            document.getElementById('modalTitle').textContent = 'Edit Doctor';
+            document.getElementById('doctorId').value = doctorId;
+            document.getElementById('doctorModal').classList.add('active');
+
+            // TODO: Implement fetch and populate doctor data from backend
+            showToast('Edit doctor functionality - connect to your backend API', 'error');
+        }
+
+        function deleteDoctor(doctorId) {
+            if (confirm('Are you sure you want to delete this doctor?')) {
+                fetch('/hospital/delete-doctor/' + doctorId, {
+                    method: 'DELETE',
+                    headers: {
+                        [csrfHeader]: csrfToken
+                    }
+                })
+                    .then(response => {
+                        if (response.ok) {
+                            showToast('Doctor deleted successfully', 'success');
+                            setTimeout(() => location.reload(), 1000);
+                        } else {
+                            showToast('Failed to delete doctor. Please try again.', 'error');
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        showToast('Error deleting doctor. Please check your connection.', 'error');
+                    });
+            }
+        }
+    </script>
+
+</body>
+
+</html>
