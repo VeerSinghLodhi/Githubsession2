@@ -1,0 +1,581 @@
+<!DOCTYPE html>
+<html lang="hi" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Add Doctor - Health Saathi</title>
+    <meta name="_csrf" th:content="${_csrf.token}">
+    <meta name="_csrf_header" th:content="${_csrf.headerName}">
+
+    <link href="https://fonts.googleapis.com" rel="preconnect" />
+    <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect" />
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Devanagari:wght@400;500;600;700&display=swap"
+        rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet" />
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #2563eb;
+            --primary-dark: #1e40af;
+            --primary-light: #dbeafe;
+            --secondary: #10b981;
+            --text-primary: #0f172a;
+            --text-secondary: #64748b;
+            --bg-primary: #ffffff;
+            --bg-secondary: #f8fafc;
+            --border: #e2e8f0;
+            --success: #10b981;
+            --success-light: #d1fae5;
+            --error: #ef4444;
+            --error-light: #fee2e2;
+        }
+
+        body {
+            font-family: 'DM Sans', 'Noto Sans Devanagari', sans-serif;
+            background: var(--bg-secondary);
+            color: var(--text-primary);
+        }
+
+        .material-symbols-rounded {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+
+        .container {
+            max-width: 700px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .back-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.75rem 1.25rem;
+            background: var(--bg-primary);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            color: var(--text-secondary);
+            font-weight: 600;
+            font-size: 0.9rem;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            margin-bottom: 2rem;
+            cursor: pointer;
+        }
+
+        .back-btn:hover {
+            background: var(--primary);
+            color: white;
+            transform: translateX(-4px);
+        }
+
+        .page-header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .page-icon {
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 1.5rem;
+            transform: rotate(3deg);
+            transition: transform 0.3s;
+            box-shadow: 0 8px 30px rgba(37, 99, 235, 0.2);
+        }
+
+        .page-icon:hover {
+            transform: rotate(0deg);
+        }
+
+        .page-icon .material-symbols-rounded {
+            font-size: 44px;
+            color: white;
+        }
+
+        .page-header h1 {
+            font-size: 2rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, var(--primary) 0%, #4a9fd8 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 0.5rem;
+        }
+
+        .page-header p {
+            color: var(--text-secondary);
+            font-size: 0.95rem;
+        }
+
+        .message {
+            padding: 1rem 1.25rem;
+            border-radius: 12px;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            font-size: 0.95rem;
+            animation: slideInDown 0.4s ease;
+        }
+
+        .message.success {
+            background: var(--success-light);
+            border-left: 4px solid var(--success);
+            color: #065f46;
+        }
+
+        .message.error {
+            background: var(--error-light);
+            border-left: 4px solid var(--error);
+            color: #991b1b;
+        }
+
+        .message .material-symbols-rounded {
+            font-size: 24px;
+        }
+
+        .message.success .material-symbols-rounded {
+            color: var(--success);
+        }
+
+        .message.error .material-symbols-rounded {
+            color: var(--error);
+        }
+
+        @keyframes slideInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .form-card {
+            background: var(--bg-primary);
+            border-radius: 20px;
+            padding: 2.5rem;
+            border: 1px solid var(--border);
+            box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
+        }
+
+        .profile-upload {
+            padding: 2rem;
+            background: rgba(37, 99, 235, 0.05);
+            border: 2px dashed rgba(37, 99, 235, 0.3);
+            border-radius: 16px;
+            text-align: center;
+            transition: all 0.3s;
+            margin-bottom: 2rem;
+        }
+
+        .profile-upload:hover {
+            border-color: rgba(37, 99, 235, 0.5);
+            background: rgba(37, 99, 235, 0.08);
+        }
+
+        .preview-container {
+            position: relative;
+            display: inline-block;
+            margin-bottom: 1.25rem;
+        }
+
+        .image-preview {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            box-shadow: 0 4px 20px rgba(37, 99, 235, 0.3);
+        }
+
+        .image-preview img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .image-preview .material-symbols-rounded {
+            font-size: 56px;
+            color: white;
+        }
+
+        .camera-button {
+            position: absolute;
+            bottom: 0;
+            right: 0;
+            width: 44px;
+            height: 44px;
+            background: var(--primary);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 4px 12px rgba(37, 99, 235, 0.4);
+            border: none;
+        }
+
+        .camera-button:hover {
+            background: var(--primary-dark);
+            transform: scale(1.1);
+        }
+
+        .camera-button .material-symbols-rounded {
+            font-size: 24px;
+            color: white;
+        }
+
+        .upload-text {
+            font-size: 0.95rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 0.25rem;
+        }
+
+        .upload-hint {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-label {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 0.75rem;
+            font-size: 0.9rem;
+        }
+
+        .form-label .material-symbols-rounded {
+            font-size: 18px;
+            color: var(--primary);
+        }
+
+        .required {
+            color: var(--error);
+        }
+
+        .input-wrapper {
+            position: relative;
+        }
+
+        .input-icon {
+            position: absolute;
+            left: 16px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-secondary);
+            transition: color 0.3s;
+        }
+
+        .input-wrapper:focus-within .input-icon {
+            color: var(--primary);
+        }
+
+        .form-input,
+        .form-select {
+            width: 100%;
+            padding: 0.875rem 1rem 0.875rem 3rem;
+            border: 2px solid var(--border);
+            border-radius: 12px;
+            font-size: 0.95rem;
+            font-family: 'DM Sans', 'Noto Sans Devanagari', sans-serif;
+            color: var(--text-primary);
+            background: var(--bg-secondary);
+            transition: all 0.3s ease;
+        }
+
+        .form-input:focus,
+        .form-select:focus {
+            outline: none;
+            border-color: var(--primary);
+            background: var(--bg-primary);
+            box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.1);
+        }
+
+        .form-input::placeholder {
+            color: #9ca3af;
+        }
+
+        .form-select {
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%2364748b'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 16px center;
+            background-size: 20px;
+            padding-right: 3rem;
+        }
+
+        .form-actions {
+            display: flex;
+            gap: 1rem;
+            margin-top: 2rem;
+        }
+
+        .btn {
+            flex: 1;
+            padding: 1rem 1.5rem;
+            border: none;
+            border-radius: 12px;
+            font-weight: 700;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.75rem;
+            font-family: 'DM Sans', 'Noto Sans Devanagari', sans-serif;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(37, 99, 235, 0.4);
+        }
+
+        .btn-secondary {
+            background: var(--bg-secondary);
+            color: var(--text-primary);
+            border: 2px solid var(--border);
+        }
+
+        .btn-secondary:hover {
+            background: var(--border);
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 1rem;
+            }
+
+            .form-card {
+                padding: 1.5rem;
+            }
+
+            .form-actions {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="container">
+        <!-- Back Button -->
+        <a onclick="window.history.back()" class="back-btn">
+            <span class="material-symbols-rounded">arrow_back</span>
+            <span>Back</span>
+        </a>
+
+        <!-- Page Header -->
+        <div class="page-header">
+            <div class="page-icon">
+                <span class="material-symbols-rounded">medical_information</span>
+            </div>
+            <h1>Add Doctor</h1>
+            <p>Create a new doctor profile</p>
+        </div>
+
+        <!-- Success Message -->
+        <div th:if="${successMessage}" class="message success">
+            <span class="material-symbols-rounded">check_circle</span>
+            <span th:text="${successMessage}">Doctor added successfully!</span>
+        </div>
+
+        <!-- Error Message -->
+        <div th:if="${errorMessage}" class="message error">
+            <span class="material-symbols-rounded">error</span>
+            <span th:text="${errorMessage}">Something went wrong. Please try again.</span>
+        </div>
+
+        <!-- Form Card -->
+        <div class="form-card">
+            <form th:action="@{/hospital/add-doctor}" method="post" enctype="multipart/form-data">
+                <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+                <input type="hidden" name="hospitalId" th:value="${hospitalId}" />
+
+                <!-- Profile Picture Upload -->
+                <div class="profile-upload">
+                    <div class="preview-container">
+                        <div class="image-preview" id="imagePreview">
+                            <span class="material-symbols-rounded" id="defaultIcon">person</span>
+                            <img id="previewImg" style="display: none;" alt="Preview" />
+                        </div>
+                        <label for="profilePicture" class="camera-button">
+                            <span class="material-symbols-rounded">photo_camera</span>
+                        </label>
+                    </div>
+                    <p class="upload-text">Upload Profile Photo</p>
+                    <p class="upload-hint">JPG, PNG or GIF (Max 5MB)</p>
+                    <input type="file" id="profilePicture" name="file" accept="image/*" style="display: none;" />
+                </div>
+
+                <!-- Name -->
+                <div class="form-group">
+                    <label class="form-label">
+                        <span class="material-symbols-rounded">person</span>
+                        <span>Full Name <span class="required">*</span></span>
+                    </label>
+                    <div class="input-wrapper">
+                        <span class="input-icon material-symbols-rounded">person</span>
+                        <input type="text" name="name" id="name" class="form-input" placeholder="Dr. Amit Kumar"
+                            required>
+                    </div>
+                </div>
+
+                <!-- Specialization -->
+                <div class="form-group">
+                    <label class="form-label">
+                        <span class="material-symbols-rounded">medical_services</span>
+                        <span>Specialization <span class="required">*</span></span>
+                    </label>
+                    <div class="input-wrapper">
+                        <span class="input-icon material-symbols-rounded">medical_services</span>
+                        <input type="text" name="specialization" id="specialization" class="form-input"
+                            placeholder="Cardiologist" required>
+                    </div>
+                </div>
+
+                <!-- Qualification -->
+                <div class="form-group">
+                    <label class="form-label">
+                        <span class="material-symbols-rounded">school</span>
+                        <span>Qualification <span class="required">*</span></span>
+                    </label>
+                    <div class="input-wrapper">
+                        <span class="input-icon material-symbols-rounded">school</span>
+                        <input type="text" name="qualification" id="qualification" class="form-input"
+                            placeholder="MBBS, MD" required>
+                    </div>
+                </div>
+
+                <!-- Contact -->
+                <div class="form-group">
+                    <label class="form-label">
+                        <span class="material-symbols-rounded">call</span>
+                        <span>Contact Number <span class="required">*</span></span>
+                    </label>
+                    <div class="input-wrapper">
+                        <span class="input-icon material-symbols-rounded">call</span>
+                        <input type="tel" name="contact" id="contact" class="form-input" placeholder="9876543210"
+                            pattern="[0-9]{10}" required>
+                    </div>
+                </div>
+
+                <!-- Experience -->
+                <div class="form-group">
+                    <label class="form-label">
+                        <span class="material-symbols-rounded">work</span>
+                        <span>Experience (Years)</span>
+                    </label>
+                    <div class="input-wrapper">
+                        <span class="input-icon material-symbols-rounded">work</span>
+                        <input type="number" name="experience" id="experience" class="form-input" placeholder="10"
+                            min="0">
+                    </div>
+                </div>
+
+                <!-- Form Actions -->
+                <div class="form-actions">
+                    <button type="button" onclick="window.history.back()" class="btn btn-secondary">
+                        <span class="material-symbols-rounded">close</span>
+                        <span>Cancel</span>
+                    </button>
+                    <button type="submit" class="btn btn-primary">
+                        <span>Add Doctor</span>
+                        <span class="material-symbols-rounded">check</span>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // Auto-hide messages
+        window.addEventListener('DOMContentLoaded', () => {
+            const messages = document.querySelectorAll('.message');
+            messages.forEach(message => {
+                setTimeout(() => {
+                    message.style.animation = 'slideInDown 0.4s ease reverse';
+                    setTimeout(() => message.remove(), 400);
+                }, 3000);
+            });
+        });
+
+        // Capitalize fields on blur
+        const name = document.getElementById('name');
+        const specialization = document.getElementById('specialization');
+        const qualification = document.getElementById('qualification');
+        const contact = document.getElementById('contact');
+
+        name?.addEventListener('blur', function () {
+            this.value = this.value.trim().toUpperCase();
+        });
+
+        specialization?.addEventListener('blur', function () {
+            this.value = this.value.trim().toUpperCase();
+        });
+
+        qualification?.addEventListener('blur', function () {
+            this.value = this.value.trim().toUpperCase();
+        });
+
+        contact?.addEventListener('blur', function () {
+            this.value = this.value.trim();
+        });
+
+        // Profile picture preview
+        const profilePictureInput = document.getElementById('profilePicture');
+        const previewImg = document.getElementById('previewImg');
+        const defaultIcon = document.getElementById('defaultIcon');
+
+        profilePictureInput?.addEventListener('change', function (e) {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function (event) {
+                    previewImg.src = event.target.result;
+                    previewImg.style.display = 'block';
+                    defaultIcon.style.display = 'none';
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+    </script>
+
+</body>
+
+</html>

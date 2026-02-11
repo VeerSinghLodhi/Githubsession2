@@ -1,0 +1,1333 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>अस्पताल एक्सेस क्लेम करें - हेल्थ साथी</title>
+    <meta name="_csrf" th:content="${_csrf.token}">
+    <meta name="_csrf_header" th:content="${_csrf.headerName}">
+
+    <link href="https://fonts.googleapis.com" rel="preconnect" />
+    <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect" />
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Devanagari:wght@400;500;600;700&display=swap"
+        rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap"
+        rel="stylesheet" />
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <script id="tailwind-config">
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#0058ba",
+                        "primary-dark": "#155a96",
+                        "primary-light": "#e3f2fd",
+                        "text-main": "#1e293b",
+                        "text-secondary": "#64748b",
+                        "border-light": "#e2e8f0",
+                        "surface": "#ffffff",
+                        "background": "#f8fafc",
+                    },
+                    fontFamily: {
+                        "display": ["Noto Sans Devanagari", "sans-serif"],
+                        "hindi": ["Noto Sans Devanagari", "sans-serif"]
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0.75rem",
+                        "xl": "1rem",
+                        "2xl": "1.25rem",
+                        "3xl": "1.5rem"
+                    },
+                    boxShadow: {
+                        'soft': '0 4px 20px -4px rgba(30, 115, 190, 0.1)',
+                        'glow': '0 8px 30px rgba(30, 115, 190, 0.2)',
+                        'card': '0 2px 12px rgba(0, 0, 0, 0.06)',
+                        'hover': '0 8px 25px rgba(30, 115, 190, 0.15)',
+                    }
+                },
+            },
+        }
+    </script>
+    <link rel="stylesheet" th:href="@{/FragmentStyle.css}" />
+    <style>
+        .file-upload-area {
+            border: 2px dashed #e2e8f0;
+            transition: all 0.3s ease;
+        }
+
+        .file-upload-area:hover {
+            border-color: #0058ba;
+            background-color: #f8fafc;
+        }
+
+        .file-upload-area.drag-over {
+            border-color: #0058ba;
+            background-color: #e3f2fd;
+        }
+
+        .uploaded-file {
+            animation: slideIn 0.3s ease-out;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .char-counter {
+            font-size: 12px;
+            color: #64748b;
+        }
+
+        .char-counter.warning {
+            color: #f59e0b;
+        }
+
+        .char-counter.error {
+            color: #ef4444;
+        }
+
+        .info-card {
+            background: linear-gradient(135deg, #e3f2fd 0%, #f8fafc 100%);
+        }
+
+        .step-indicator {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .step-number {
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            background: #0058ba;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            font-weight: 600;
+            flex-shrink: 0;
+        }
+
+        .submit-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        .loading-spinner {
+            border: 3px solid #f3f4f6;
+            border-top: 3px solid #0058ba;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            animation: spin 0.8s linear infinite;
+        }
+
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+
+        .success-message {
+            display: none;
+            animation: fadeIn 0.5s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: scale(0.9);
+            }
+
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        /* Document Preview Styles */
+        .preview-container {
+            margin-top: 12px;
+            border-radius: 12px;
+            overflow: hidden;
+            border: 2px solid #e2e8f0;
+        }
+
+        .preview-image {
+            width: 100%;
+            max-height: 300px;
+            object-fit: contain;
+            background: #f8fafc;
+        }
+
+        .preview-pdf {
+            width: 100%;
+            height: 400px;
+            border: none;
+        }
+
+        .preview-document {
+            background: linear-gradient(135deg, #f8fafc 0%, #e3f2fd 100%);
+            padding: 40px;
+            text-align: center;
+        }
+
+        .preview-actions {
+            display: flex;
+            gap: 8px;
+            margin-top: 12px;
+        }
+
+        .preview-btn {
+            flex: 1;
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: 600;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            cursor: pointer;
+        }
+
+        .preview-btn-view {
+            background: #0058ba;
+            color: white;
+            border: none;
+        }
+
+        .preview-btn-view:hover {
+            background: #155a96;
+        }
+
+        .preview-btn-remove {
+            background: #fee2e2;
+            color: #991b1b;
+            border: 1px solid #fecaca;
+        }
+
+        .preview-btn-remove:hover {
+            background: #fecaca;
+        }
+
+        .zoom-controls {
+            display: flex;
+            gap: 4px;
+            justify-content: center;
+            margin-top: 8px;
+        }
+
+        .zoom-btn {
+            width: 32px;
+            height: 32px;
+            border-radius: 8px;
+            background: white;
+            border: 1px solid #e2e8f0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .zoom-btn:hover {
+            background: #f8fafc;
+            border-color: #0058ba;
+        }
+
+        /* Full Screen Preview Modal */
+        .preview-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.95);
+            z-index: 9999;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            animation: fadeIn 0.3s ease-out;
+        }
+
+        .preview-modal.active {
+            display: flex;
+        }
+
+        .preview-modal-content {
+            max-width: 90vw;
+            max-height: 90vh;
+            position: relative;
+        }
+
+        .preview-modal-image {
+            max-width: 100%;
+            max-height: 90vh;
+            object-fit: contain;
+        }
+
+        .preview-modal-controls {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            display: flex;
+            gap: 8px;
+        }
+
+        .modal-control-btn {
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.9);
+            border: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.2s;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        .modal-control-btn:hover {
+            background: white;
+            transform: scale(1.1);
+        }
+
+        .modal-control-btn.close {
+            background: rgba(239, 68, 68, 0.9);
+            color: white;
+        }
+
+        .modal-control-btn.close:hover {
+            background: rgb(220, 38, 38);
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        /* Toast Notification Styles */
+        .toast-container {
+            position: fixed;
+            top: 80px;
+            right: 20px;
+            z-index: 10000;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            max-width: 400px;
+            pointer-events: none;
+        }
+
+        .toast {
+            background: white;
+            border-radius: 12px;
+            padding: 16px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+            display: flex;
+            align-items: start;
+            gap: 12px;
+            animation: slideInRight 0.3s ease-out;
+            pointer-events: all;
+            border-left: 4px solid;
+        }
+
+        .toast.error {
+            border-left-color: #ef4444;
+        }
+
+        .toast.success {
+            border-left-color: #10b981;
+        }
+
+        .toast.warning {
+            border-left-color: #f59e0b;
+        }
+
+        .toast.info {
+            border-left-color: #0058ba;
+        }
+
+        .toast-icon {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .toast.error .toast-icon {
+            background: #fee2e2;
+            color: #ef4444;
+        }
+
+        .toast.success .toast-icon {
+            background: #d1fae5;
+            color: #10b981;
+        }
+
+        .toast.warning .toast-icon {
+            background: #fef3c7;
+            color: #f59e0b;
+        }
+
+        .toast.info .toast-icon {
+            background: #e3f2fd;
+            color: #0058ba;
+        }
+
+        .toast-content {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .toast-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: #1e293b;
+            margin-bottom: 2px;
+        }
+
+        .toast-message {
+            font-size: 13px;
+            color: #64748b;
+            line-height: 1.4;
+        }
+
+        .toast-close {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            color: #94a3b8;
+            transition: all 0.2s;
+            flex-shrink: 0;
+        }
+
+        .toast-close:hover {
+            background: #f1f5f9;
+            color: #475569;
+        }
+
+        @keyframes slideInRight {
+            from {
+                transform: translateX(400px);
+                opacity: 0;
+            }
+
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        @keyframes slideOutRight {
+            from {
+                transform: translateX(0);
+                opacity: 1;
+            }
+
+            to {
+                transform: translateX(400px);
+                opacity: 0;
+            }
+        }
+
+        .toast.removing {
+            animation: slideOutRight 0.3s ease-out forwards;
+        }
+
+        @media (max-width: 640px) {
+            .toast-container {
+                top: 70px;
+                right: 12px;
+                left: 12px;
+                max-width: none;
+            }
+        }
+    </style>
+</head>
+
+<body class="bg-background antialiased text-text-main">
+
+    <!-- Toast Container -->
+    <div id="toastContainer" class="toast-container"></div>
+
+    <div class="relative flex min-h-screen w-full flex-col overflow-hidden pb-6">
+
+        <!-- Header -->
+        <header class="sticky top-0 z-20 bg-white/90 backdrop-blur-md px-5 py-4 border-b border-slate-100">
+            <div class="flex items-center gap-4">
+                <button id="backBtn"
+                    class="flex items-center justify-center size-10 rounded-full bg-slate-50 text-slate-600 hover:bg-slate-100 transition-colors">
+                    <span class="material-symbols-outlined text-[24px]">arrow_back</span>
+                </button>
+                <div class="flex-1">
+                    <h1 class="text-xl font-bold text-slate-900">एक्सेस क्लेम करें</h1>
+                    <p class="text-xs text-slate-500">Claim Hospital Access</p>
+                </div>
+                <span class="material-symbols-outlined text-orange-500 text-[28px]">verified_user</span>
+            </div>
+        </header>
+
+        <main class="flex-1 flex flex-col gap-6 p-5">
+
+            <!-- Hospital Info Card -->
+            <div class="bg-white rounded-2xl overflow-hidden border border-slate-100 shadow-soft">
+                <div class="p-5">
+                    <div class="flex gap-4">
+                        <!-- Hospital Icon/Image -->
+                        <div
+                            class="w-16 h-16 rounded-xl bg-primary-light flex items-center justify-center flex-shrink-0">
+                            <span class="material-symbols-outlined text-primary text-[32px]">local_hospital</span>
+                        </div>
+
+                        <div class="flex-1 min-w-0">
+                            <h2 class="text-lg font-bold text-slate-900 mb-1 line-clamp-2" th:text="${hospital.name}">
+                                अस्पताल का नाम</h2>
+                            <div class="flex items-center gap-2 text-sm text-slate-600 mb-1">
+                                <span class="material-symbols-outlined text-[16px]">location_on</span>
+                                <p class="line-clamp-1" th:text="${hospital.address}">पता</p>
+                            </div>
+                            <div class="flex items-center gap-2">
+                                <span class="px-2 py-1 bg-blue-50 text-primary text-xs font-semibold rounded-lg"
+                                    th:text="${hospital.type != null ? hospital.type.type : 'Hospital'}">प्रकार</span>
+                                <span th:if="${hospital.timings == '24/7'}"
+                                    class="px-2 py-1 bg-green-50 text-green-600 text-xs font-semibold rounded-lg">24/7</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Info Card -->
+            <div class="info-card rounded-2xl p-5 border border-blue-100">
+                <div class="flex gap-3">
+                    <span class="material-symbols-outlined text-primary text-[24px] flex-shrink-0">info</span>
+                    <div>
+                        <h3 class="font-semibold text-slate-900 mb-1">एक्सेस क्लेम क्यों करें?</h3>
+                        <p class="text-sm text-slate-700 leading-relaxed">
+                            अस्पताल का एक्सेस प्राप्त करने के लिए आपको अपनी पहचान सत्यापित करनी होगी।
+                            कृपया नीचे दिए गए फॉर्म को भरें और अपना प्रमाण दस्तावेज़ अपलोड करें।
+                        </p>
+                        <p class="text-xs text-slate-600 mt-2">
+                            Claim access to manage hospital details, appointments, and patient records.
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Claim Request Form -->
+            <form id="claimForm" class="bg-white rounded-2xl overflow-hidden border border-slate-100 shadow-soft">
+                <div class="p-5 space-y-6">
+
+                    <!-- Step 1: Reason for Claiming -->
+                    <div>
+                        <div class="step-indicator mb-3">
+                            <div class="step-number">1</div>
+                            <label class="text-base font-semibold text-slate-900">
+                                आप एक्सेस क्यों चाहते हैं?
+                            </label>
+                        </div>
+                        <p class="text-sm text-slate-600 mb-3 ml-9">
+                            कृपया चुनें कि आप इस अस्पताल का एक्सेस क्यों चाहते हैं
+                        </p>
+
+                        <div class="ml-9">
+                            <select id="claimReason" name="reason" required
+                                class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary focus:bg-white transition-all">
+                                <option value="" disabled selected>कारण चुनें / Select a reason</option>
+                                <option value="I am the owner">मैं मालिक हूं / I am the owner</option>
+                                <option value="I am the administrator">मैं प्रशासक हूं / I am the administrator</option>
+                                <option value="I am the manager">मैं प्रबंधक हूं / I am the manager</option>
+                                <option value="I am a staff member">मैं स्टाफ सदस्य हूं / I am a staff member</option>
+                                <option value="I am authorized by the owner">मैं मालिक द्वारा अधिकृत हूं / I am
+                                    authorized by the owner</option>
+                                <option value="Other">अन्य / Other</option>
+                            </select>
+
+                            <!-- Optional message field that appears when "Other" is selected -->
+                            <div id="otherReasonContainer" class="hidden mt-3">
+                                <textarea id="otherReasonText" name="otherReason" rows="4" maxlength="500"
+                                    class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary focus:bg-white transition-all resize-none"
+                                    placeholder="कृपया अपना कारण बताएं... / Please specify your reason..."></textarea>
+                                <div class="flex justify-between items-center mt-2">
+                                    <p class="text-xs text-slate-500">विस्तार से समझाएं (कम से कम 20 शब्द)</p>
+                                    <span id="otherCharCounter" class="char-counter">0 / 500</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Step 2: Upload Proof Document -->
+                    <div>
+                        <div class="step-indicator mb-3">
+                            <div class="step-number">2</div>
+                            <label class="text-base font-semibold text-slate-900">
+                                प्रमाण दस्तावेज़ अपलोड करें
+                            </label>
+                        </div>
+                        <p class="text-sm text-slate-600 mb-3 ml-9">
+                            आवश्यक: ID कार्ड, लाइसेंस, या स्वामित्व प्रमाण (Required)
+                        </p>
+
+                        <div class="ml-9">
+                            <!-- File Upload Area -->
+                            <div id="fileUploadArea" class="file-upload-area rounded-xl p-6 text-center cursor-pointer">
+                                <input type="file" id="proofDocument" name="proofDocument"
+                                    accept=".pdf,.jpg,.jpeg,.png,.doc,.docx" class="hidden">
+
+                                <div id="uploadPrompt">
+                                    <span
+                                        class="material-symbols-outlined text-slate-300 text-[48px] mb-2">cloud_upload</span>
+                                    <p class="text-sm font-semibold text-slate-900 mb-1">
+                                        फ़ाइल चुनने के लिए क्लिक करें या यहां ड्रैग करें
+                                    </p>
+                                    <p class="text-xs text-slate-500">
+                                        PDF, JPG, PNG, DOC (अधिकतम 5MB)
+                                    </p>
+                                </div>
+
+                                <!-- Uploaded File Display -->
+                                <div id="uploadedFileDisplay" class="hidden uploaded-file">
+                                    <div class="bg-slate-50 rounded-xl p-4">
+                                        <!-- File Info Header -->
+                                        <div class="flex items-center justify-between mb-3">
+                                            <div class="flex items-center gap-3 flex-1 min-w-0">
+                                                <span
+                                                    class="material-symbols-outlined text-primary text-[32px] flex-shrink-0">description</span>
+                                                <div class="flex-1 min-w-0">
+                                                    <p id="fileName"
+                                                        class="text-sm font-semibold text-slate-900 truncate">
+                                                        document.pdf</p>
+                                                    <p id="fileSize" class="text-xs text-slate-500">2.4 MB</p>
+                                                </div>
+                                            </div>
+                                            <button type="button" id="removeFileBtn"
+                                                class="flex items-center justify-center size-8 rounded-full bg-red-50 text-red-500 hover:bg-red-100 transition-colors flex-shrink-0">
+                                                <span class="material-symbols-outlined text-[20px]">close</span>
+                                            </button>
+                                        </div>
+
+                                        <!-- Document Preview -->
+                                        <div id="documentPreview" class="preview-container">
+                                            <!-- Image Preview -->
+                                            <div id="imagePreviewContainer" class="hidden">
+                                                <img id="imagePreview" class="preview-image" alt="Document preview">
+                                                <div class="zoom-controls">
+                                                    <button type="button" id="zoomOutBtn" class="zoom-btn">
+                                                        <span
+                                                            class="material-symbols-outlined text-[18px]">zoom_out</span>
+                                                    </button>
+                                                    <button type="button" id="resetZoomBtn" class="zoom-btn">
+                                                        <span
+                                                            class="material-symbols-outlined text-[18px]">fit_screen</span>
+                                                    </button>
+                                                    <button type="button" id="zoomInBtn" class="zoom-btn">
+                                                        <span
+                                                            class="material-symbols-outlined text-[18px]">zoom_in</span>
+                                                    </button>
+                                                </div>
+                                            </div>
+
+                                            <!-- PDF Preview -->
+                                            <div id="pdfPreviewContainer" class="hidden">
+                                                <iframe id="pdfPreview" class="preview-pdf"></iframe>
+                                            </div>
+
+                                            <!-- Generic Document Preview (Word, etc.) -->
+                                            <div id="genericPreviewContainer" class="hidden">
+                                                <div class="preview-document">
+                                                    <span
+                                                        class="material-symbols-outlined text-primary text-[64px] mb-3">description</span>
+                                                    <p class="text-sm font-semibold text-slate-900 mb-1">दस्तावेज़ अपलोड
+                                                        किया गया</p>
+                                                    <p class="text-xs text-slate-600">Document Uploaded Successfully</p>
+                                                    <p class="text-xs text-slate-500 mt-2" id="genericFileName">
+                                                        filename.doc</p>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <!-- Preview Actions -->
+                                        <div class="preview-actions">
+                                            <button type="button" id="viewFullBtn" class="preview-btn preview-btn-view">
+                                                <span class="material-symbols-outlined text-[16px]">open_in_new</span>
+                                                <span>पूर्ण आकार देखें</span>
+                                            </button>
+                                            <button type="button" id="changeFileBtn"
+                                                class="preview-btn preview-btn-remove">
+                                                <span class="material-symbols-outlined text-[16px]">swap_horiz</span>
+                                                <span>बदलें</span>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <p class="text-xs text-slate-500 mt-2 flex items-start gap-1">
+                                <span class="material-symbols-outlined text-[16px] text-red-500">priority_high</span>
+                                <span>प्रमाण दस्तावेज़ अपलोड करना अनिवार्य है (Required)</span>
+                            </p>
+                        </div>
+                    </div>
+
+                    <!-- Important Notes -->
+                    <div class="ml-9 bg-amber-50 border border-amber-200 rounded-xl p-4">
+                        <div class="flex gap-2">
+                            <span
+                                class="material-symbols-outlined text-amber-600 text-[20px] flex-shrink-0">warning</span>
+                            <div class="text-sm text-amber-900">
+                                <p class="font-semibold mb-1">ध्यान दें:</p>
+                                <ul class="list-disc list-inside space-y-1 text-xs">
+                                    <li>आपका अनुरोध व्यवस्थापक द्वारा समीक्षा के लिए भेजा जाएगा</li>
+                                    <li>सत्यापन में 1-3 कार्य दिवस लग सकते हैं</li>
+                                    <li>गलत जानकारी देने पर अनुरोध अस्वीकृत किया जा सकता है</li>
+                                    <li>आपको ईमेल के माध्यम से स्थिति अपडेट मिलेगा</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Submit Buttons -->
+                    <div class="ml-9 flex gap-3 pt-2">
+                        <button type="submit" id="submitBtn"
+                            class="submit-btn flex-1 py-3 bg-orange-500 hover:bg-orange-600 text-white text-base font-semibold rounded-xl transition-colors flex items-center justify-center gap-2">
+                            <span class="material-symbols-outlined text-[20px]">send</span>
+                            <span id="submitBtnText">अनुरोध भेजें</span>
+                            <div id="loadingSpinner" class="loading-spinner hidden"></div>
+                        </button>
+                        <button type="button" id="cancelBtn"
+                            class="px-6 py-3 bg-slate-100 hover:bg-slate-200 text-slate-700 text-base font-semibold rounded-xl transition-colors">
+                            रद्द करें
+                        </button>
+                    </div>
+
+                </div>
+            </form>
+
+            <!-- Success Message (Hidden by default) -->
+            <div id="successMessage"
+                class="success-message bg-white rounded-2xl overflow-hidden border border-green-200 shadow-soft">
+                <div class="p-6 text-center">
+                    <div class="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <span class="material-symbols-outlined text-green-600 text-[40px]">check_circle</span>
+                    </div>
+                    <h3 class="text-xl font-bold text-slate-900 mb-2">अनुरोध सफलतापूर्वक भेजा गया!</h3>
+                    <p class="text-sm text-slate-600 mb-6">
+                        आपका एक्सेस अनुरोध व्यवस्थापक की समीक्षा के लिए भेज दिया गया है।
+                        आपको जल्द ही ईमेल के माध्यम से अपडेट मिलेगा।
+                    </p>
+                    <button id="backToListBtn"
+                        class="px-6 py-3 bg-primary hover:bg-primary-dark text-white text-sm font-semibold rounded-xl transition-colors">
+                        अस्पताल सूची पर वापस जाएं
+                    </button>
+                </div>
+            </div>
+
+        </main>
+
+    </div>
+
+    <!-- Full Screen Preview Modal -->
+    <div id="previewModal" class="preview-modal">
+        <div class="preview-modal-content">
+            <img id="modalPreviewImage" class="preview-modal-image" alt="Document preview">
+            <div class="preview-modal-controls">
+                <button id="modalDownloadBtn" class="modal-control-btn" title="Download">
+                    <span class="material-symbols-outlined text-slate-700 text-[24px]">download</span>
+                </button>
+                <button id="modalCloseBtn" class="modal-control-btn close" title="Close">
+                    <span class="material-symbols-outlined text-[24px]">close</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script th:src="@{/FragmentScript.js}"></script>
+    <script th:inline="javascript">
+        /*<![CDATA[*/
+        const hospitalId = /*[[${hospital.hospitalId}]]*/ null;
+        const csrfToken = document.querySelector('meta[name="_csrf"]')?.content;
+        const csrfHeader = document.querySelector('meta[name="_csrf_header"]')?.content;
+        /*]]>*/
+
+        let selectedFile = null;
+        let currentZoom = 100;
+
+        // Toast Notification Function
+        function showToast(type, title, message, duration = 4000) {
+            const toastContainer = document.getElementById('toastContainer');
+            if (!toastContainer) return;
+
+            const toast = document.createElement('div');
+            toast.className = `toast ${type}`;
+
+            const iconMap = {
+                error: 'error',
+                success: 'check_circle',
+                warning: 'warning',
+                info: 'info'
+            };
+
+            toast.innerHTML = `
+          <div class="toast-icon">
+              <span class="material-symbols-outlined text-[18px]">${iconMap[type] || 'info'}</span>
+          </div>
+          <div class="toast-content">
+              <div class="toast-title">${title}</div>
+              <div class="toast-message">${message}</div>
+          </div>
+          <button class="toast-close" onclick="this.parentElement.remove()">
+              <span class="material-symbols-outlined text-[14px]">close</span>
+          </button>
+      `;
+
+            toastContainer.appendChild(toast);
+
+            // Auto remove after duration
+            setTimeout(() => {
+                toast.classList.add('removing');
+                setTimeout(() => {
+                    toast.remove();
+                }, 300);
+            }, duration);
+        }
+
+        document.addEventListener('DOMContentLoaded', function () {
+
+            // Back button
+            const backBtn = document.getElementById('backBtn');
+            if (backBtn) {
+                backBtn.addEventListener('click', () => {
+                    window.history.back();
+                });
+            }
+
+            // Cancel button
+            const cancelBtn = document.getElementById('cancelBtn');
+            if (cancelBtn) {
+                cancelBtn.addEventListener('click', () => {
+                    window.history.back();
+                });
+            }
+
+            // Handle claim reason dropdown
+            const claimReason = document.getElementById('claimReason');
+            const otherReasonContainer = document.getElementById('otherReasonContainer');
+            const otherReasonText = document.getElementById('otherReasonText');
+            const otherCharCounter = document.getElementById('otherCharCounter');
+
+            if (claimReason && otherReasonContainer) {
+                claimReason.addEventListener('change', function () {
+                    if (this.value === 'Other') {
+                        otherReasonContainer.classList.remove('hidden');
+                        otherReasonText.required = true;
+                    } else {
+                        otherReasonContainer.classList.add('hidden');
+                        otherReasonText.required = false;
+                        otherReasonText.value = '';
+                        if (otherCharCounter) {
+                            otherCharCounter.textContent = '0 / 500';
+                            otherCharCounter.classList.remove('warning', 'error');
+                        }
+                    }
+                });
+            }
+
+            // Character counter for "Other" reason
+            if (otherReasonText && otherCharCounter) {
+                otherReasonText.addEventListener('input', function () {
+                    const length = this.value.length;
+                    otherCharCounter.textContent = `${length} / 500`;
+
+                    if (length > 450) {
+                        otherCharCounter.classList.add('error');
+                        otherCharCounter.classList.remove('warning');
+                    } else if (length > 400) {
+                        otherCharCounter.classList.add('warning');
+                        otherCharCounter.classList.remove('error');
+                    } else {
+                        otherCharCounter.classList.remove('warning', 'error');
+                    }
+                });
+            }
+
+            // File upload
+            const fileUploadArea = document.getElementById('fileUploadArea');
+            const fileInput = document.getElementById('proofDocument');
+            const uploadPrompt = document.getElementById('uploadPrompt');
+            const uploadedFileDisplay = document.getElementById('uploadedFileDisplay');
+            const fileName = document.getElementById('fileName');
+            const fileSize = document.getElementById('fileSize');
+            const removeFileBtn = document.getElementById('removeFileBtn');
+
+            if (fileUploadArea && fileInput) {
+                // Click to upload
+                fileUploadArea.addEventListener('click', (e) => {
+                    if (!e.target.closest('#removeFileBtn')) {
+                        fileInput.click();
+                    }
+                });
+
+                // File selected
+                fileInput.addEventListener('change', function (e) {
+                    const file = e.target.files[0];
+                    if (file) {
+                        handleFileSelect(file);
+                    }
+                });
+
+                // Drag and drop
+                fileUploadArea.addEventListener('dragover', (e) => {
+                    e.preventDefault();
+                    fileUploadArea.classList.add('drag-over');
+                });
+
+                fileUploadArea.addEventListener('dragleave', () => {
+                    fileUploadArea.classList.remove('drag-over');
+                });
+
+                fileUploadArea.addEventListener('drop', (e) => {
+                    e.preventDefault();
+                    fileUploadArea.classList.remove('drag-over');
+
+                    const file = e.dataTransfer.files[0];
+                    if (file) {
+                        handleFileSelect(file);
+                    }
+                });
+
+                // Remove file
+                if (removeFileBtn) {
+                    removeFileBtn.addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        removeFile();
+                    });
+                }
+
+                // Change file button
+                const changeFileBtn = document.getElementById('changeFileBtn');
+                if (changeFileBtn) {
+                    changeFileBtn.addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        fileInput.click();
+                    });
+                }
+
+                // View full size button
+                const viewFullBtn = document.getElementById('viewFullBtn');
+                if (viewFullBtn) {
+                    viewFullBtn.addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        openFullPreview();
+                    });
+                }
+
+                // Zoom controls
+                const zoomInBtn = document.getElementById('zoomInBtn');
+                const zoomOutBtn = document.getElementById('zoomOutBtn');
+                const resetZoomBtn = document.getElementById('resetZoomBtn');
+
+                if (zoomInBtn) {
+                    zoomInBtn.addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        adjustZoom(25);
+                    });
+                }
+
+                if (zoomOutBtn) {
+                    zoomOutBtn.addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        adjustZoom(-25);
+                    });
+                }
+
+                if (resetZoomBtn) {
+                    resetZoomBtn.addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        resetZoom();
+                    });
+                }
+            }
+
+            // Form submission
+            const claimForm = document.getElementById('claimForm');
+            if (claimForm) {
+                claimForm.addEventListener('submit', handleFormSubmit);
+            }
+
+            // Back to list button (in success message)
+            const backToListBtn = document.getElementById('backToListBtn');
+            if (backToListBtn) {
+                backToListBtn.addEventListener('click', () => {
+                    window.location.href = '/user/hospitals/all';
+                });
+            }
+
+            // Preview Modal Controls
+            const previewModal = document.getElementById('previewModal');
+            const modalCloseBtn = document.getElementById('modalCloseBtn');
+            const modalDownloadBtn = document.getElementById('modalDownloadBtn');
+
+            if (modalCloseBtn) {
+                modalCloseBtn.addEventListener('click', closeModal);
+            }
+
+            if (previewModal) {
+                previewModal.addEventListener('click', function (e) {
+                    if (e.target === previewModal) {
+                        closeModal();
+                    }
+                });
+            }
+
+            if (modalDownloadBtn) {
+                modalDownloadBtn.addEventListener('click', downloadFile);
+            }
+
+            // Keyboard shortcuts for modal
+            document.addEventListener('keydown', function (e) {
+                const modal = document.getElementById('previewModal');
+                if (modal && modal.classList.contains('active')) {
+                    if (e.key === 'Escape') {
+                        closeModal();
+                    }
+                }
+            });
+        });
+
+        function handleFileSelect(file) {
+            // Validate file size (5MB max)
+            const maxSize = 5 * 1024 * 1024; // 5MB in bytes
+            if (file.size > maxSize) {
+                showToast('error', 'फ़ाइल बहुत बड़ी है', 'फ़ाइल का आकार 5MB से कम होना चाहिए। कृपया छोटी फ़ाइल चुनें।');
+                return;
+            }
+
+            // Validate file type
+            const allowedTypes = ['application/pdf', 'image/jpeg', 'image/jpg', 'image/png',
+                'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'];
+            if (!allowedTypes.includes(file.type)) {
+                showToast('error', 'अमान्य फ़ाइल प्रकार', 'कृपया केवल PDF, JPG, PNG, या DOC फ़ाइलें अपलोड करें।');
+                return;
+            }
+
+            selectedFile = file;
+
+            // Display file info
+            const fileName = document.getElementById('fileName');
+            const fileSize = document.getElementById('fileSize');
+            const uploadPrompt = document.getElementById('uploadPrompt');
+            const uploadedFileDisplay = document.getElementById('uploadedFileDisplay');
+
+            if (fileName && fileSize && uploadPrompt && uploadedFileDisplay) {
+                fileName.textContent = file.name;
+                fileSize.textContent = formatFileSize(file.size);
+
+                uploadPrompt.classList.add('hidden');
+                uploadedFileDisplay.classList.remove('hidden');
+
+                // Generate preview based on file type
+                generatePreview(file);
+
+                showToast('success', 'फ़ाइल अपलोड की गई', `${file.name} सफलतापूर्वक अपलोड किया गया।`);
+            }
+        }
+
+        function generatePreview(file) {
+            const imagePreviewContainer = document.getElementById('imagePreviewContainer');
+            const pdfPreviewContainer = document.getElementById('pdfPreviewContainer');
+            const genericPreviewContainer = document.getElementById('genericPreviewContainer');
+
+            // Hide all preview containers first
+            imagePreviewContainer?.classList.add('hidden');
+            pdfPreviewContainer?.classList.add('hidden');
+            genericPreviewContainer?.classList.add('hidden');
+
+            const fileType = file.type;
+
+            if (fileType.startsWith('image/')) {
+                // Image preview
+                const reader = new FileReader();
+                reader.onload = function (e) {
+                    const imagePreview = document.getElementById('imagePreview');
+                    if (imagePreview) {
+                        imagePreview.src = e.target.result;
+                        imagePreviewContainer?.classList.remove('hidden');
+                        resetZoom();
+                    }
+                };
+                reader.readAsDataURL(file);
+
+            } else if (fileType === 'application/pdf') {
+                // PDF preview
+                const reader = new FileReader();
+                reader.onload = function (e) {
+                    const pdfPreview = document.getElementById('pdfPreview');
+                    if (pdfPreview) {
+                        const blob = new Blob([e.target.result], { type: 'application/pdf' });
+                        const url = URL.createObjectURL(blob);
+                        pdfPreview.src = url;
+                        pdfPreviewContainer?.classList.remove('hidden');
+                    }
+                };
+                reader.readAsArrayBuffer(file);
+
+            } else {
+                // Generic document preview (Word docs, etc.)
+                const genericFileName = document.getElementById('genericFileName');
+                if (genericFileName) {
+                    genericFileName.textContent = file.name;
+                }
+                genericPreviewContainer?.classList.remove('hidden');
+            }
+        }
+
+        function adjustZoom(delta) {
+            currentZoom = Math.max(50, Math.min(200, currentZoom + delta));
+            applyZoom();
+        }
+
+        function resetZoom() {
+            currentZoom = 100;
+            applyZoom();
+        }
+
+        function applyZoom() {
+            const imagePreview = document.getElementById('imagePreview');
+            if (imagePreview) {
+                imagePreview.style.transform = `scale(${currentZoom / 100})`;
+                imagePreview.style.transition = 'transform 0.3s ease';
+            }
+        }
+
+        function openFullPreview() {
+            if (!selectedFile) return;
+
+            const fileType = selectedFile.type;
+            const modal = document.getElementById('previewModal');
+            const modalImage = document.getElementById('modalPreviewImage');
+
+            if (fileType.startsWith('image/')) {
+                // Show image in modal
+                const reader = new FileReader();
+                reader.onload = function (e) {
+                    if (modalImage) {
+                        modalImage.src = e.target.result;
+                        modal?.classList.add('active');
+                        document.body.style.overflow = 'hidden';
+                    }
+                };
+                reader.readAsDataURL(selectedFile);
+            } else if (fileType === 'application/pdf') {
+                // Open PDF in new tab
+                const url = URL.createObjectURL(selectedFile);
+                window.open(url, '_blank');
+                setTimeout(() => URL.revokeObjectURL(url), 100);
+            } else {
+                showToast('info', 'पूर्वावलोकन उपलब्ध नहीं', 'इस फ़ाइल प्रकार के लिए पूर्ण पूर्वावलोकन उपलब्ध नहीं है।');
+            }
+        }
+
+        function closeModal() {
+            const modal = document.getElementById('previewModal');
+            const modalImage = document.getElementById('modalPreviewImage');
+
+            if (modal) {
+                modal.classList.remove('active');
+                document.body.style.overflow = '';
+            }
+
+            if (modalImage) {
+                // Small delay before clearing to allow fade out animation
+                setTimeout(() => {
+                    modalImage.src = '';
+                }, 300);
+            }
+        }
+
+        function downloadFile() {
+            if (!selectedFile) return;
+
+            const url = URL.createObjectURL(selectedFile);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = selectedFile.name;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+
+            showToast('success', 'डाउनलोड शुरू', `${selectedFile.name} डाउनलोड हो रही है।`);
+        }
+
+        function removeFile() {
+            selectedFile = null;
+            currentZoom = 100;
+
+            const fileInput = document.getElementById('proofDocument');
+            if (fileInput) {
+                fileInput.value = '';
+            }
+
+            const uploadPrompt = document.getElementById('uploadPrompt');
+            const uploadedFileDisplay = document.getElementById('uploadedFileDisplay');
+
+            if (uploadPrompt && uploadedFileDisplay) {
+                uploadPrompt.classList.remove('hidden');
+                uploadedFileDisplay.classList.add('hidden');
+            }
+
+            // Clean up previews
+            const imagePreview = document.getElementById('imagePreview');
+            const pdfPreview = document.getElementById('pdfPreview');
+
+            if (imagePreview) {
+                imagePreview.src = '';
+                imagePreview.style.transform = 'scale(1)';
+            }
+
+            if (pdfPreview && pdfPreview.src) {
+                URL.revokeObjectURL(pdfPreview.src);
+                pdfPreview.src = '';
+            }
+
+            // Hide all preview containers
+            document.getElementById('imagePreviewContainer')?.classList.add('hidden');
+            document.getElementById('pdfPreviewContainer')?.classList.add('hidden');
+            document.getElementById('genericPreviewContainer')?.classList.add('hidden');
+
+            showToast('info', 'फ़ाइल हटाई गई', 'फ़ाइल सफलतापूर्वक हटा दी गई है।');
+        }
+
+        function formatFileSize(bytes) {
+            if (bytes === 0) return '0 Bytes';
+            const k = 1024;
+            const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+            const i = Math.floor(Math.log(bytes) / Math.log(k));
+            return Math.round(bytes / Math.pow(k, i) * 100) / 100 + ' ' + sizes[i];
+        }
+
+        async function handleFormSubmit(e) {
+            e.preventDefault();
+
+            const reasonSelect = document.getElementById('claimReason');
+            const reason = reasonSelect?.value;
+
+            // Validate reason selection
+            if (!reason) {
+                showToast('error', 'अधूरी जानकारी', 'कृपया एक्सेस का कारण चुनें।');
+                reasonSelect?.focus();
+                return;
+            }
+
+            let message = reason;
+
+            // If "Other" is selected, validate the text input
+            if (reason === 'Other') {
+                const otherReasonText = document.getElementById('otherReasonText');
+                const otherText = otherReasonText?.value.trim();
+
+                if (!otherText || otherText.length < 20) {
+                    showToast('error', 'अधूरी जानकारी', 'कृपया कम से कम 20 शब्दों में अपना कारण बताएं।');
+                    otherReasonText?.focus();
+                    return;
+                }
+
+                message = otherText;
+            }
+
+            // Validate proof document is uploaded
+            if (!selectedFile) {
+                showToast('error', 'दस्तावेज़ आवश्यक', 'कृपया प्रमाण दस्तावेज़ अपलोड करें। यह अनिवार्य है।');
+                document.getElementById('fileUploadArea')?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                return;
+            }
+
+            // Show loading state
+            const submitBtn = document.getElementById('submitBtn');
+            const submitBtnText = document.getElementById('submitBtnText');
+            const loadingSpinner = document.getElementById('loadingSpinner');
+
+            if (submitBtn && submitBtnText && loadingSpinner) {
+                submitBtn.disabled = true;
+                submitBtnText.textContent = 'भेजा जा रहा है...';
+                loadingSpinner.classList.remove('hidden');
+            }
+
+            try {
+                // Create FormData
+                const formData = new FormData();
+                formData.append('hospitalId', hospitalId);
+                formData.append('message', message);
+
+                if (selectedFile) {
+                    formData.append('proofDocument', selectedFile);
+                }
+
+                // Submit request
+                const response = await fetch('/user/api/hospital/claim-access', {
+                    method: 'POST',
+                    headers: {
+                        [csrfHeader]: csrfToken
+                    },
+                    body: formData
+                });
+
+                if (response.ok) {
+                    // Show success message
+                    const claimForm = document.getElementById('claimForm');
+                    const successMessage = document.getElementById('successMessage');
+
+                    if (claimForm && successMessage) {
+                        claimForm.style.display = 'none';
+                        successMessage.style.display = 'block';
+                    }
+
+                    // Scroll to top
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+
+                    showToast('success', 'अनुरोध सफल!', 'आपका एक्सेस अनुरोध सफलतापूर्वक भेजा गया है।');
+                } else {
+                    const errorData = await response.json();
+                    showToast('error', 'अनुरोध विफल', errorData.message || 'अनुरोध भेजने में त्रुटि हुई। कृपया पुनः प्रयास करें।');
+                }
+            } catch (error) {
+                console.error('Error submitting claim:', error);
+                showToast('error', 'सर्वर त्रुटि', 'अनुरोध भेजने में त्रुटि हुई। कृपया अपने इंटरनेट कनेक्शन की जांच करें और पुनः प्रयास करें।');
+            } finally {
+                // Reset loading state
+                if (submitBtn && submitBtnText && loadingSpinner) {
+                    submitBtn.disabled = false;
+                    submitBtnText.textContent = 'अनुरोध भेजें';
+                    loadingSpinner.classList.add('hidden');
+                }
+            }
+        }
+    </script>
+</body>
+
+</html>
