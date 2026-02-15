@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Hospital Audit Logs</title>
+
+    <style>
+
+        body {
+            font-family: "Segoe UI", Arial, sans-serif;
+            background: #f4f7fc;
+            margin: 0;
+            padding: 30px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: auto;
+        }
+
+        .page-title {
+            text-align: center;
+            margin-bottom: 25px;
+            color: #1e293b;
+        }
+
+        .card {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 4px 14px rgba(0,0,0,0.08);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        thead {
+            background: linear-gradient(45deg, #2563eb, #1d4ed8);
+            color: white;
+        }
+
+        th {
+            padding: 14px;
+            font-size: 14px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        td {
+            padding: 12px;
+            border-bottom: 1px solid #e5e7eb;
+            font-size: 14px;
+            color: #334155;
+            text-align: center;
+        }
+
+        tbody tr:hover {
+            background: #f1f5ff;
+            transition: 0.2s;
+        }
+
+        .badge {
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .badge-add {
+            background: #dcfce7;
+            color: #166534;
+        }
+
+        .badge-edit {
+            background: #dbeafe;
+            color: #1e40af;
+        }
+
+        .badge-delete {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+        .no-data {
+            text-align: center;
+            padding: 30px;
+            color: #64748b;
+            font-weight: 500;
+        }
+
+        .back-btn {
+            margin-bottom: 15px;
+            display: inline-block;
+            padding: 8px 16px;
+            background: #2563eb;
+            color: white;
+            border-radius: 6px;
+            text-decoration: none;
+            font-size: 14px;
+        }
+
+        .back-btn:hover {
+            background: #1e40af;
+        }
+
+    </style>
+</head>
+
+<body>
+
+<div class="container">
+
+    <h2 class="page-title">Hospital Activity / Audit Logs</h2>
+
+    <a href="javascript:history.back()" class="back-btn">⬅ Back</a>
+
+    <div class="card">
+
+        <!-- If Logs Available -->
+        <table th:if="${logs != null and !logs.isEmpty()}">
+
+            <thead>
+            <tr>
+                <th>ID</th>
+                <th>User</th>
+                <th>Hospital</th>
+                <th>Action</th>
+                <th>Entity</th>
+                <th>Description</th>
+                <th>Date & Time</th>
+            </tr>
+            </thead>
+
+            <tbody>
+
+            <tr th:each="log : ${logs}">
+
+                <td th:text="${log.id}"></td>
+
+                <td th:text="${log.user != null ? log.user.name : 'N/A'}"></td>
+
+                <td th:text="${log.hospital != null ? log.hospital.hospitalName : 'N/A'}"></td>
+
+                <!-- Action Badge -->
+                <td>
+                    <span class="badge"
+                          th:classappend="
+                          ${#strings.contains(log.actionType,'ADD')} ? ' badge-add' :
+                          (${#strings.contains(log.actionType,'EDIT')} ? ' badge-edit' :
+                          (${#strings.contains(log.actionType,'DELETE')} ? ' badge-delete' : ''))
+                          "
+                          th:text="${log.actionType}">
+                    </span>
+                </td>
+
+                <td th:text="${log.entityType}"></td>
+
+                <td th:text="${log.description}"></td>
+
+                <td th:text="${#temporals.format(log.actionTime,'dd MMM yyyy HH:mm')}"></td>
+
+            </tr>
+
+            </tbody>
+
+        </table>
+
+        <!-- If No Logs -->
+        <div class="no-data" th:if="${logs == null or logs.isEmpty()}">
+            No Audit Logs Found
+        </div>
+
+    </div>
+
+</div>
+
+</body>
+</html>

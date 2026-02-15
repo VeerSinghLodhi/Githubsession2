@@ -1,0 +1,807 @@
+<!DOCTYPE html>
+<html lang="hi" xmlns:th="http://www.thymeleaf.org" th:classappend="${seniorMode} ? 'senior-mode' : ''">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>अस्पताल ऑडिट लॉग - हेल्थ साथी</title>
+    <meta name="_csrf" th:content="${_csrf.token}">
+    <meta name="_csrf_header" th:content="${_csrf.headerName}">
+
+    <link href="https://fonts.googleapis.com" rel="preconnect" />
+    <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Devanagari:wght@400;500;600;700&display=swap"
+        rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap"
+        rel="stylesheet" />
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #0058ba;
+            --primary-dark: #155a96;
+            --primary-light: #e3f2fd;
+            --text-main: #1e293b;
+            --text-secondary: #64748b;
+            --border-light: #e2e8f0;
+            --surface: #ffffff;
+            --background: #f8fafc;
+        }
+
+        body {
+            font-family: 'Noto Sans Devanagari', 'Inter', sans-serif;
+            background: var(--background);
+            color: var(--text-main);
+            min-height: 100vh;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        /* Hamburger Menu */
+        .hamburger {
+            display: none;
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            z-index: 1001;
+            background: transparent;
+            border: none;
+            cursor: pointer;
+            padding: 8px;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        .hamburger span {
+            display: block;
+            width: 25px;
+            height: 3px;
+            background: var(--primary);
+            border-radius: 2px;
+            transition: all 0.3s ease;
+        }
+
+        .sidebar.active~.hamburger,
+        .hamburger.active {
+            display: none;
+        }
+
+        /* Overlay for mobile */
+        .sidebar-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 99;
+        }
+
+        .sidebar-overlay.active {
+            display: block;
+        }
+
+        .sidebar {
+            position: fixed;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 280px;
+            background: var(--surface);
+            border-right: 1px solid var(--border-light);
+            padding: 24px;
+            overflow-y: auto;
+            z-index: 100;
+            transition: transform 0.3s ease;
+        }
+
+        .logo-section {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 32px;
+            padding-bottom: 24px;
+            border-bottom: 1px solid var(--border-light);
+        }
+
+        .logo-icon {
+            width: 48px;
+            height: 48px;
+            background: var(--primary);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transform: rotate(3deg);
+            transition: transform 0.3s;
+        }
+
+        .logo-icon:hover {
+            transform: rotate(0deg);
+        }
+
+        .logo-icon .material-symbols-outlined {
+            color: white;
+            font-size: 28px;
+        }
+
+        .logo-text h2 {
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--text-main);
+        }
+
+        .logo-text p {
+            font-size: 12px;
+            color: var(--text-secondary);
+        }
+
+        .nav-menu {
+            list-style: none;
+        }
+
+        .nav-item {
+            margin-bottom: 8px;
+        }
+
+        .nav-link {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 16px;
+            border-radius: 12px;
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 14px;
+            transition: all 0.3s;
+            cursor: pointer;
+        }
+
+        .nav-link:hover {
+            background: var(--primary-light);
+            color: var(--primary);
+        }
+
+        .nav-link.active {
+            background: var(--primary);
+            color: white;
+        }
+
+        .nav-link .material-symbols-outlined {
+            font-size: 22px;
+        }
+
+        .badge {
+            background: #ef4444;
+            color: white;
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: 600;
+            margin-left: auto;
+        }
+
+        .main-content {
+            margin-left: 280px;
+            padding: 24px;
+            min-height: 100vh;
+            transition: margin-left 0.3s ease;
+        }
+
+        .header {
+            background: var(--surface);
+            border-radius: 16px;
+            padding: 20px 24px;
+            margin-bottom: 24px;
+            box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
+        }
+
+        .header h1 {
+            font-size: 28px;
+            font-weight: 700;
+            color: var(--text-main);
+            margin-bottom: 4px;
+        }
+
+        .header-subtitle {
+            font-size: 14px;
+            color: var(--text-secondary);
+            margin-bottom: 20px;
+        }
+
+        /* Info Section - Hospital and User */
+        .info-section {
+            display: flex;
+            gap: 24px;
+            flex-wrap: wrap;
+            padding-top: 16px;
+            border-top: 1px solid var(--border-light);
+        }
+
+        .info-item {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .info-label {
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .info-value {
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--text-main);
+        }
+
+        .info-value.hospital {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--primary);
+        }
+
+        .info-value.user {
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--text-main);
+        }
+
+        /* Filter Section */
+        .filter-section {
+            background: var(--surface);
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
+        }
+
+        .filter-row {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+
+        .filter-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .filter-label {
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--text-main);
+        }
+
+        .filter-select {
+            padding: 8px 16px;
+            border-radius: 10px;
+            border: 2px solid var(--border-light);
+            background: white;
+            font-size: 14px;
+            font-weight: 500;
+            color: var(--text-main);
+            cursor: pointer;
+            transition: all 0.3s;
+            font-family: 'Noto Sans Devanagari', 'Inter', sans-serif;
+        }
+
+        .filter-select:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+
+        .filter-chip {
+            padding: 8px 16px;
+            border-radius: 20px;
+            border: 2px solid var(--border-light);
+            background: white;
+            font-size: 14px;
+            font-weight: 500;
+            color: var(--text-secondary);
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .filter-chip.active {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+
+        .filter-chip:hover:not(.active) {
+            border-color: var(--primary);
+            color: var(--primary);
+        }
+
+        /* Table Container */
+        .table-container {
+            background: var(--surface);
+            border-radius: 16px;
+            box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
+            overflow: hidden;
+        }
+
+        .table-wrapper {
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        thead {
+            background: var(--primary-light);
+        }
+
+        thead th {
+            padding: 16px 20px;
+            text-align: left;
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--primary-dark);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            white-space: nowrap;
+        }
+
+        tbody tr {
+            border-bottom: 1px solid var(--border-light);
+            transition: background 0.2s;
+        }
+
+        tbody tr:hover {
+            background: var(--primary-light);
+        }
+
+        tbody td {
+            padding: 16px 20px;
+            font-size: 14px;
+            color: var(--text-main);
+            vertical-align: middle;
+        }
+
+        .action-badge {
+            padding: 6px 12px;
+            border-radius: 8px;
+            font-size: 12px;
+            font-weight: 600;
+            white-space: nowrap;
+            display: inline-block;
+        }
+
+        .action-edit-hospital {
+            background: #dbeafe;
+            color: #1e40af;
+        }
+
+        .action-add-doctor {
+            background: #d1fae5;
+            color: #065f46;
+        }
+
+        .action-edit-doctor {
+            background: #fef3c7;
+            color: #92400e;
+        }
+
+        .action-delete-doctor {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+        .action-add-hospital-image {
+            background: #e0e7ff;
+            color: #3730a3;
+        }
+
+        .action-edit-hospital-image {
+            background: #fce7f3;
+            color: #831843;
+        }
+
+        .action-delete-hospital-image {
+            background: #fecaca;
+            color: #7f1d1d;
+        }
+
+        .entity-badge {
+            padding: 4px 10px;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 600;
+            white-space: nowrap;
+            display: inline-block;
+        }
+
+        .entity-hospital {
+            background: var(--primary-light);
+            color: var(--primary);
+        }
+
+        .entity-doctor {
+            background: #d1fae5;
+            color: #065f46;
+        }
+
+        .entity-image {
+            background: #e0e7ff;
+            color: #3730a3;
+        }
+
+        .description-cell {
+            max-width: 400px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .time-cell {
+            font-size: 13px;
+            color: var(--text-secondary);
+            white-space: nowrap;
+        }
+
+        /* Empty State */
+        .empty-state {
+            text-align: center;
+            padding: 80px 20px;
+            background: var(--surface);
+            border-radius: 16px;
+        }
+
+        .empty-state .material-symbols-outlined {
+            font-size: 80px;
+            color: var(--border-light);
+            margin-bottom: 16px;
+        }
+
+        .empty-state h3 {
+            font-size: 20px;
+            color: var(--text-main);
+            margin-bottom: 8px;
+        }
+
+        .empty-state p {
+            color: var(--text-secondary);
+            font-size: 14px;
+        }
+
+        /* Pagination */
+        .pagination {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 8px;
+            padding: 20px;
+            background: var(--surface);
+            border-radius: 0 0 16px 16px;
+        }
+
+        .page-btn {
+            padding: 8px 12px;
+            border: 2px solid var(--border-light);
+            background: white;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-main);
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .page-btn:hover:not(:disabled) {
+            border-color: var(--primary);
+            color: var(--primary);
+        }
+
+        .page-btn.active {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+
+        .page-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        /* Mobile Responsive */
+        @media (max-width: 768px) {
+            .hamburger {
+                display: flex;
+            }
+
+            .sidebar {
+                transform: translateX(-100%);
+            }
+
+            .sidebar.active {
+                transform: translateX(0);
+            }
+
+            .main-content {
+                margin-left: 0;
+                padding: 80px 16px 16px 16px;
+            }
+
+            .header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 12px;
+            }
+
+            .info-section {
+                flex-direction: column;
+                gap: 16px;
+            }
+
+            .info-value.hospital {
+                font-size: 20px;
+            }
+
+            .filter-row {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .table-wrapper {
+                overflow-x: scroll;
+            }
+
+            table {
+                min-width: 600px;
+            }
+
+            .description-cell {
+                max-width: 200px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- Hamburger Menu -->
+    <button class="hamburger" onclick="toggleSidebar()">
+        <span></span>
+        <span></span>
+        <span></span>
+    </button>
+
+    <!-- Overlay -->
+    <div class="sidebar-overlay" onclick="toggleSidebar()"></div>
+
+    <!-- Sidebar -->
+    <div th:replace="~{fragments/admin-sidebar::adminSidebar}"></div>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <!-- Header -->
+        <div class="header">
+            <div>
+                <h1>अस्पताल ऑडिट लॉग</h1>
+                <p class="header-subtitle">Hospital Audit Logs</p>
+            </div>
+
+            <!-- Hospital and User Info Section -->
+            <div class="info-section">
+                <div class="info-item">
+                    <span class="info-label">अस्पताल (Hospital)</span>
+                    <span class="info-value hospital" th:text="${hospitalName}">City Hospital</span>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">उपयोगकर्ता (User)</span>
+                    <span class="info-value user" th:text="${userName}">Dr. Amit Sharma</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Filter Section -->
+        <div class="filter-section">
+            <div class="filter-row">
+                <div class="filter-group">
+                    <label class="filter-label">एक्शन टाइप</label>
+                    <select class="filter-select" id="actionTypeFilter">
+                        <option value="all">सभी (All Actions)</option>
+                        <option value="EDIT_HOSPITAL">अस्पताल संपादित (Edit Hospital)</option>
+                        <option value="ADD_DOCTOR">डॉक्टर जोड़ें (Add Doctor)</option>
+                        <option value="EDIT_DOCTOR">डॉक्टर संपादित (Edit Doctor)</option>
+                        <option value="DELETE_DOCTOR">डॉक्टर हटाएं (Delete Doctor)</option>
+                        <option value="ADD_HOSPITAL_IMAGE">छवि जोड़ें (Add Image)</option>
+                        <option value="EDIT_HOSPITAL_IMAGE">छवि संपादित (Edit Image)</option>
+                        <option value="DELETE_HOSPITAL_IMAGE">छवि हटाएं (Delete Image)</option>
+                    </select>
+                </div>
+
+                <div class="filter-group">
+                    <label class="filter-label">एंटिटी टाइप</label>
+                    <select class="filter-select" id="entityTypeFilter">
+                        <option value="all">सभी (All Entities)</option>
+                        <option value="HOSPITAL">अस्पताल (Hospital)</option>
+                        <option value="DOCTOR">डॉक्टर (Doctor)</option>
+                        <option value="IMAGE">छवि (Image)</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <!-- Table Container -->
+        <div class="table-container">
+            <div class="table-wrapper">
+                <table id="auditTable">
+                    <thead>
+                        <tr>
+                            <th>लॉग ID</th>
+                            <th>एक्शन टाइप (Action)</th>
+                            <th>एंटिटी टाइप (Entity)</th>
+                            <th>विवरण (Description)</th>
+                            <th>समय (Time)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Example Row - Replace with Thymeleaf iteration -->
+                        <tr th:each="log : ${auditLogs}" th:if="${log != null}">
+                            <td th:text="${log.id}">#123</td>
+                            <td>
+                                <span class="action-badge"
+                                    th:classappend="${'action-' + #strings.toLowerCase(#strings.replace(log.actionType.name(), '_', '-'))}"
+                                    th:text="${log.actionType.name()}">
+                                    EDIT_HOSPITAL
+                                </span>
+                            </td>
+                            <td>
+                                <span class="entity-badge"
+                                    th:classappend="${'entity-' + #strings.toLowerCase(log.entityType.name())}"
+                                    th:text="${log.entityType.name()}">
+                                    HOSPITAL
+                                </span>
+                            </td>
+                            <td class="description-cell" th:text="${log.description}" th:title="${log.description}">
+                                Updated hospital contact information
+                            </td>
+                            <td class="time-cell" th:text="${#temporals.format(log.actionTime, 'dd MMM yyyy, HH:mm')}">
+                                10 Feb 2026, 14:30
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Pagination -->
+            <div class="pagination" th:if="${totalPages > 1}">
+                <button class="page-btn" th:disabled="${currentPage == 0}" onclick="goToPage(0)">
+                    <span class="material-symbols-outlined">first_page</span>
+                </button>
+                <button class="page-btn" th:disabled="${currentPage == 0}"
+                    th:onclick="'goToPage(' + ${currentPage - 1} + ')'">
+                    <span class="material-symbols-outlined">chevron_left</span>
+                </button>
+
+                <span th:text="${'Page ' + (currentPage + 1) + ' of ' + totalPages}">Page 1 of 5</span>
+
+                <button class="page-btn" th:disabled="${currentPage == totalPages - 1}"
+                    th:onclick="'goToPage(' + ${currentPage + 1} + ')'">
+                    <span class="material-symbols-outlined">chevron_right</span>
+                </button>
+                <button class="page-btn" th:disabled="${currentPage == totalPages - 1}"
+                    th:onclick="'goToPage(' + ${totalPages - 1} + ')'">
+                    <span class="material-symbols-outlined">last_page</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- Empty State -->
+        <div id="emptyState" class="empty-state" style="display: none;">
+            <span class="material-symbols-outlined">history</span>
+            <h3>कोई लॉग नहीं मिला</h3>
+            <p>चयनित फ़िल्टर के लिए कोई ऑडिट लॉग उपलब्ध नहीं है</p>
+        </div>
+
+    </main>
+
+    <script th:inline="javascript">
+        /*<![CDATA[*/
+        const csrfToken = /*[[${_csrf.token}]]*/ '';
+        const csrfHeader = /*[[${_csrf.headerName}]]*/ '';
+        /*]]>*/
+
+        function toggleSidebar() {
+            const sidebar = document.querySelector('.sidebar');
+            const overlay = document.querySelector('.sidebar-overlay');
+            const hamburger = document.querySelector('.hamburger');
+
+            sidebar.classList.toggle('active');
+            overlay.classList.toggle('active');
+            hamburger.classList.toggle('active');
+        }
+
+        // Filter functionality
+        const actionTypeFilter = document.getElementById('actionTypeFilter');
+        const entityTypeFilter = document.getElementById('entityTypeFilter');
+
+        if (actionTypeFilter) {
+            actionTypeFilter.addEventListener('change', applyFilters);
+        }
+
+        if (entityTypeFilter) {
+            entityTypeFilter.addEventListener('change', applyFilters);
+        }
+
+        function applyFilters() {
+            const actionType = actionTypeFilter.value;
+            const entityType = entityTypeFilter.value;
+
+            const rows = document.querySelectorAll('#auditTable tbody tr');
+            let visibleCount = 0;
+
+            rows.forEach(row => {
+                const rowActionType = row.querySelector('.action-badge').textContent.trim();
+                const rowEntityType = row.querySelector('.entity-badge').textContent.trim();
+
+                const actionMatch = actionType === 'all' || rowActionType === actionType;
+                const entityMatch = entityType === 'all' || rowEntityType === entityType;
+
+                if (actionMatch && entityMatch) {
+                    row.style.display = '';
+                    visibleCount++;
+                } else {
+                    row.style.display = 'none';
+                }
+            });
+
+            // Show/hide empty state
+            const emptyState = document.getElementById('emptyState');
+            const tableContainer = document.querySelector('.table-container');
+
+            if (visibleCount === 0) {
+                emptyState.style.display = 'block';
+                tableContainer.style.display = 'none';
+            } else {
+                emptyState.style.display = 'none';
+                tableContainer.style.display = 'block';
+            }
+        }
+
+        // Pagination function
+        function goToPage(pageNumber) {
+            const currentUrl = new URL(window.location.href);
+            currentUrl.searchParams.set('page', pageNumber);
+            window.location.href = currentUrl.toString();
+        }
+
+        // Close sidebar when clicking on a nav link on mobile
+        document.querySelectorAll('.nav-link').forEach(link => {
+            link.addEventListener('click', () => {
+                if (window.innerWidth <= 768) {
+                    toggleSidebar();
+                }
+            });
+        });
+
+        // Initialize - check if table is empty
+        window.addEventListener('DOMContentLoaded', function () {
+            const rows = document.querySelectorAll('#auditTable tbody tr');
+            if (rows.length === 0) {
+                document.getElementById('emptyState').style.display = 'block';
+                document.querySelector('.table-container').style.display = 'none';
+            }
+        });
+    </script>
+
+</body>
+
+</html>

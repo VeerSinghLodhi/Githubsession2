@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>मेरे अनुरोध - हेल्थ साथी</title>
+
+    <link href="https://fonts.googleapis.com" rel="preconnect" />
+    <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect" />
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Devanagari:wght@400;500;600;700&display=swap"
+        rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap"
+        rel="stylesheet" />
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <script id="tailwind-config">
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#0058ba",
+                        "primary-dark": "#155a96",
+                        "primary-light": "#e3f2fd",
+                        "text-main": "#1e293b",
+                        "text-secondary": "#64748b",
+                        "border-light": "#e2e8f0",
+                        "surface": "#ffffff",
+                        "background": "#f8fafc",
+                    },
+                    fontFamily: {
+                        "display": ["Noto Sans Devanagari", "sans-serif"],
+                        "hindi": ["Noto Sans Devanagari", "sans-serif"]
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0.75rem",
+                        "xl": "1rem",
+                        "2xl": "1.25rem",
+                        "3xl": "1.5rem"
+                    },
+                    boxShadow: {
+                        'soft': '0 4px 20px -4px rgba(30, 115, 190, 0.1)',
+                        'card': '0 2px 12px rgba(0, 0, 0, 0.06)',
+                        'hover': '0 8px 25px rgba(30, 115, 190, 0.15)',
+                    }
+                },
+            },
+        }
+    </script>
+    <style>
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            padding: 6px 12px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .status-pending {
+            background: #fef3c7;
+            color: #92400e;
+        }
+
+        .status-approved {
+            background: #d1fae5;
+            color: #065f46;
+        }
+
+        .status-rejected {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+        .request-card {
+            transition: all 0.3s ease;
+        }
+
+        .request-card:hover {
+            transform: translateY(-2px);
+        }
+
+        .empty-state {
+            animation: fadeIn 0.5s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+    </style>
+</head>
+
+<body class="bg-background antialiased text-text-main">
+    <div class="relative flex min-h-screen w-full flex-col overflow-hidden pb-6">
+
+        <!-- Header -->
+        <header class="sticky top-0 z-20 bg-white/90 backdrop-blur-md px-5 py-4 border-b border-slate-100">
+            <div class="flex items-center gap-4">
+                <button id="backBtn"
+                    class="flex items-center justify-center size-10 rounded-full bg-slate-50 text-slate-600 hover:bg-slate-100 transition-colors">
+                    <span class="material-symbols-outlined text-[24px]">arrow_back</span>
+                </button>
+                <div class="flex-1">
+                    <h1 class="text-xl font-bold text-slate-900">मेरे एक्सेस अनुरोध</h1>
+                    <p class="text-xs text-slate-500">My Claim Requests</p>
+                </div>
+                <div class="flex items-center gap-2">
+                    <span class="material-symbols-outlined text-primary text-[24px]">receipt_long</span>
+                    <span class="text-sm font-semibold text-slate-900"
+                        th:text="${claimRequests != null ? #lists.size(claimRequests) : 0}">0</span>
+                </div>
+            </div>
+        </header>
+
+        <main class="flex-1 flex flex-col gap-4 p-5">
+
+            <!-- Stats Cards -->
+            <div class="grid grid-cols-3 gap-3" th:if="${claimRequests != null && !#lists.isEmpty(claimRequests)}">
+                <div class="bg-amber-50 rounded-xl p-3 text-center">
+                    <div class="text-xl font-bold text-amber-600"
+                        th:text="${#lists.size(claimRequests.?[status.name() == 'PENDING'])}">0</div>
+                    <div class="text-xs text-amber-800">समीक्षाधीन</div>
+                </div>
+                <div class="bg-green-50 rounded-xl p-3 text-center">
+                    <div class="text-xl font-bold text-green-600"
+                        th:text="${#lists.size(claimRequests.?[status.name() == 'APPROVED'])}">0</div>
+                    <div class="text-xs text-green-800">स्वीकृत</div>
+                </div>
+                <div class="bg-red-50 rounded-xl p-3 text-center">
+                    <div class="text-xl font-bold text-red-600"
+                        th:text="${#lists.size(claimRequests.?[status.name() == 'REJECTED'])}">0</div>
+                    <div class="text-xs text-red-800">अस्वीकृत</div>
+                </div>
+            </div>
+
+            <!-- Request Cards -->
+            <div th:if="${claimRequests != null && !#lists.isEmpty(claimRequests)}" class="space-y-3">
+
+                <div th:each="claim : ${claimRequests}"
+                    class="request-card bg-white rounded-2xl overflow-hidden border border-slate-100 shadow-soft hover:shadow-hover">
+
+                    <div class="p-5">
+                        <!-- Header -->
+                        <div class="flex justify-between items-start mb-3">
+                            <div class="flex-1 min-w-0 pr-3">
+                                <h3 class="text-base font-bold text-slate-900 mb-1 line-clamp-2"
+                                    th:text="${claim.hospital.name}">Hospital Name</h3>
+                                <p class="text-xs text-slate-500"
+                                    th:text="${#temporals.format(claim.requestedOn, 'dd MMM yyyy, hh:mm a')}">
+                                    Request Date
+                                </p>
+                            </div>
+
+                            <span class="status-badge flex-shrink-0" th:classappend="${claim.status.name() == 'PENDING' ? 'status-pending' :
+                                   (claim.status.name() == 'APPROVED' ? 'status-approved' : 'status-rejected')}">
+                                <span class="material-symbols-outlined text-[16px]">
+                                    <span th:if="${claim.status.name() == 'PENDING'}">schedule</span>
+                                    <span th:if="${claim.status.name() == 'APPROVED'}">check_circle</span>
+                                    <span th:if="${claim.status.name() == 'REJECTED'}">cancel</span>
+                                </span>
+                                <span th:text="${claim.status.name() == 'PENDING' ? 'समीक्षाधीन' :
+                             (claim.status.name() == 'APPROVED' ? 'स्वीकृत' : 'अस्वीकृत')}">
+                                    Status
+                                </span>
+                            </span>
+                        </div>
+
+                        <!-- Hospital Info -->
+                        <div class="flex items-start gap-2 mb-3 text-sm text-slate-600">
+                            <span class="material-symbols-outlined text-[16px] mt-0.5">location_on</span>
+                            <p class="line-clamp-2" th:text="${claim.hospital.address}">Address</p>
+                        </div>
+
+                        <!-- Message Preview -->
+                        <div th:if="${claim.message}" class="mb-4">
+                            <div class="bg-slate-50 rounded-xl p-3">
+                                <p class="text-xs text-slate-600 mb-1 font-semibold">आपका संदेश:</p>
+                                <p class="text-sm text-slate-900 line-clamp-3" th:text="${claim.message}">Message</p>
+                            </div>
+                        </div>
+
+                        <!-- Rejection Reason -->
+                        <div th:if="${claim.status.name() == 'REJECTED' && claim.rejectionReason}" class="mb-4">
+                            <div class="bg-red-50 border border-red-200 rounded-xl p-3">
+                                <div class="flex items-start gap-2">
+                                    <span class="material-symbols-outlined text-red-600 text-[18px] mt-0.5">info</span>
+                                    <div class="flex-1">
+                                        <p class="text-xs text-red-700 mb-1 font-semibold">अस्वीकृति का कारण:</p>
+                                        <p class="text-sm text-red-900" th:text="${claim.rejectionReason}">Rejection
+                                            reason</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Proof Document -->
+                        <div th:if="${claim.proofDocument}" class="mb-4">
+                            <div class="bg-blue-50 border border-blue-200 rounded-xl p-3">
+                                <div class="flex items-center justify-between">
+                                    <div class="flex items-center gap-2 flex-1 min-w-0">
+                                        <span
+                                            class="material-symbols-outlined text-blue-600 text-[20px]">description</span>
+                                        <div class="flex-1 min-w-0">
+                                            <p class="text-xs text-blue-700 mb-0.5 font-semibold">प्रमाण दस्तावेज़:</p>
+                                            <p class="text-sm text-blue-900 truncate" th:text="${claim.proofDocument}">
+                                                Document name</p>
+                                        </div>
+                                    </div>
+                                    <a th:href="@{'/uploads/claim-proofs/' + ${claim.proofDocument}}" download
+                                        target="_blank"
+                                        class="flex-shrink-0 p-2 bg-blue-100 hover:bg-blue-200 rounded-lg transition-colors">
+                                        <span
+                                            class="material-symbols-outlined text-blue-700 text-[20px]">download</span>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Actions -->
+                        <div class="flex gap-2">
+                            <button
+                                th:onclick="'window.location.href=\'/user/hospital/' + ${claim.hospital.hospitalId} + '\';'"
+                                class="flex-1 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 text-sm font-semibold rounded-xl transition-colors flex items-center justify-center gap-1">
+                                <span class="material-symbols-outlined text-[16px]">visibility</span>
+                                अस्पताल देखें
+                            </button>
+
+                            <!-- Manage Button (if approved) -->
+                            <button th:if="${claim.status.name() == 'APPROVED'}"
+                                th:onclick="'window.location.href=\'/user/hospital/manage/' + ${claim.hospital.hospitalId} + '\';'"
+                                class="flex-1 py-2 bg-green-500 hover:bg-green-600 text-white text-sm font-semibold rounded-xl transition-colors flex items-center justify-center gap-1">
+                                <span class="material-symbols-outlined text-[16px]">dashboard</span>
+                                प्रबंधित करें
+                            </button>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+            <!-- Empty State -->
+            <div th:if="${claimRequests == null || #lists.isEmpty(claimRequests)}"
+                class="empty-state text-center py-16">
+                <div class="w-24 h-24 bg-slate-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <span class="material-symbols-outlined text-slate-300 text-[64px]">receipt_long</span>
+                </div>
+                <h3 class="text-lg font-bold text-slate-900 mb-2">कोई अनुरोध नहीं</h3>
+                <p class="text-slate-600 text-sm mb-6">
+                    आपने अभी तक कोई एक्सेस अनुरोध नहीं भेजा है
+                </p>
+                <button onclick="window.location.href='/user/hospitals'"
+                    class="px-6 py-3 bg-primary hover:bg-primary-dark text-white text-sm font-semibold rounded-xl transition-colors inline-flex items-center gap-2">
+                    <span class="material-symbols-outlined text-[20px]">local_hospital</span>
+                    अस्पताल खोजें
+                </button>
+            </div>
+
+        </main>
+
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            // Back button
+            const backBtn = document.getElementById('backBtn');
+            if (backBtn) {
+                backBtn.addEventListener('click', () => {
+                    if (window.history.length > 1) {
+                        window.history.back();
+                    } else {
+                        window.location.href = '/user/dashboard';
+                    }
+                });
+            }
+        });
+    </script>
+</body>
+
+</html>

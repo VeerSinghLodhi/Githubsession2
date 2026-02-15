@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html lang="hi" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>मेरे अस्पताल - हेल्थ साथी</title>
+    <meta name="_csrf" th:content="${_csrf.token}">
+    <meta name="_csrf_header" th:content="${_csrf.headerName}">
+
+    <link href="https://fonts.googleapis.com" rel="preconnect" />
+    <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect" />
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Devanagari:wght@400;500;600;700&display=swap"
+        rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap"
+        rel="stylesheet" />
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <script id="tailwind-config">
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#0058ba",
+                        "primary-dark": "#155a96",
+                        "primary-light": "#e3f2fd",
+                        "text-main": "#1e293b",
+                        "text-secondary": "#64748b",
+                        "border-light": "#e2e8f0",
+                        "surface": "#ffffff",
+                        "background": "#f8fafc",
+                    },
+                    fontFamily: {
+                        "display": ["Noto Sans Devanagari", "sans-serif"],
+                        "hindi": ["Noto Sans Devanagari", "sans-serif"]
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0.75rem",
+                        "xl": "1rem",
+                        "2xl": "1.25rem",
+                        "3xl": "1.5rem"
+                    },
+                    boxShadow: {
+                        'soft': '0 4px 20px -4px rgba(30, 115, 190, 0.1)',
+                        'glow': '0 8px 30px rgba(30, 115, 190, 0.2)',
+                        'card': '0 2px 12px rgba(0, 0, 0, 0.06)',
+                        'hover': '0 8px 25px rgba(30, 115, 190, 0.15)',
+                    }
+                },
+            },
+        }
+    </script>
+    <style>
+        .hospital-card {
+            transition: all 0.3s ease;
+        }
+
+        .hospital-card:hover {
+            transform: translateY(-4px);
+        }
+
+        .hospital-image {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+        }
+
+        .hospital-placeholder {
+            width: 100%;
+            height: 200px;
+            background: linear-gradient(135deg, #e3f2fd 0%, #f8fafc 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .search-box {
+            position: relative;
+        }
+
+        .search-icon {
+            position: absolute;
+            left: 16px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #64748b;
+        }
+
+        .search-input {
+            padding-left: 48px;
+        }
+
+        .info-row {
+            display: flex;
+            align-items: start;
+            gap: 8px;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+    </style>
+</head>
+
+<body class="bg-background antialiased text-text-main">
+    <div class="relative flex min-h-screen w-full flex-col overflow-hidden pb-6">
+
+        <!-- Header -->
+        <header class="sticky top-0 z-20 bg-white/90 backdrop-blur-md px-5 py-4 border-b border-slate-100">
+            <div class="flex items-center gap-4">
+                <button id="backBtn"
+                    class="flex items-center justify-center size-10 rounded-full bg-slate-50 text-slate-600 hover:bg-slate-100 transition-colors">
+                    <span class="material-symbols-outlined text-[24px]">arrow_back</span>
+                </button>
+                <div class="flex-1">
+                    <h1 class="text-xl font-bold text-slate-900">मेरे अस्पताल</h1>
+                    <p class="text-xs text-slate-500">My Hospitals</p>
+                </div>
+                <div class="flex items-center gap-2">
+                    <span class="material-symbols-outlined text-green-600 text-[24px]">verified</span>
+                    <span class="text-sm font-semibold text-slate-900" id="hospitalCount"
+                        th:text="${accessedHospitals != null ? #lists.size(accessedHospitals) : 0}">0</span>
+                </div>
+            </div>
+        </header>
+
+        <main class="flex-1 flex flex-col gap-6 p-5">
+
+            <!-- Quick Actions Card -->
+            <div class="bg-gradient-to-r from-blue-500 to-blue-600 rounded-2xl p-6 text-white shadow-lg">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <h2 class="text-lg font-bold mb-1">क्लेम अनुरोध देखें</h2>
+                        <p class="text-sm text-blue-100">अपने सभी क्लेम अनुरोधों को प्रबंधित करें</p>
+                    </div>
+                    <a th:href="@{/user/hospital/my-claim-requests}"
+                        class="px-6 py-3 bg-white text-blue-600 rounded-xl font-semibold hover:bg-blue-50 transition-colors flex items-center gap-2">
+                        <span class="material-symbols-outlined text-[20px]">receipt_long</span>
+                        My Claim Requests
+                    </a>
+                </div>
+            </div>
+
+            <!-- Search Bar -->
+            <div class="search-box">
+                <span class="material-symbols-outlined search-icon text-[20px]">search</span>
+                <input type="text" id="searchInput"
+                    class="search-input w-full px-4 py-3 bg-white border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all"
+                    placeholder="अस्पताल खोजें... (Search hospitals)">
+            </div>
+
+            <!-- Stats Cards -->
+            <div class="grid grid-cols-2 gap-4">
+                <div class="bg-green-50 rounded-xl p-5 border border-green-100">
+                    <div class="flex items-center gap-3 mb-2">
+                        <span class="material-symbols-outlined text-green-600 text-[32px]">check_circle</span>
+                        <div>
+                            <div class="text-2xl font-bold text-green-700"
+                                th:text="${accessedHospitals != null ? #lists.size(accessedHospitals) : 0}">0</div>
+                            <div class="text-xs text-green-800">Approved Access</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="bg-orange-50 rounded-xl p-5 border border-orange-100">
+                    <div class="flex items-center gap-3 mb-2">
+                        <span class="material-symbols-outlined text-orange-600 text-[32px]">pending</span>
+                        <div>
+                            <div class="text-2xl font-bold text-orange-700"
+                                th:text="${pendingRequests != null ? pendingRequests : 0}">0</div>
+                            <div class="text-xs text-orange-800">Pending Requests</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Hospitals Grid -->
+            <div id="hospitals-container" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+
+                <!-- Hospital Card -->
+                <div th:each="hospital : ${accessedHospitals}"
+                    th:if="${hospital != null && hospital.hospitalId != null}"
+                    class="hospital-card bg-white rounded-2xl overflow-hidden border border-slate-100 shadow-soft hover:shadow-hover"
+                    th:attr="data-hospital-name=${hospital.name != null && !#strings.isEmpty(hospital.name) ? hospital.name : 'Unknown Hospital'}">
+
+                    <!-- Hospital Image -->
+                    <div class="relative">
+                        <div th:if="${hospital.images != null && !#lists.isEmpty(hospital.images)}">
+                            <img th:src="@{'/user/api/hospital/image/' + ${hospital.images[0].imageId}}"
+                                th:alt="${hospital.name}" class="hospital-image"
+                                onerror="this.parentElement.innerHTML='<div class=\'hospital-placeholder\'><span class=\'material-symbols-outlined text-slate-300 text-[64px]\'>local_hospital</span><span class=\'text-xs text-slate-400\'>कोई चित्र नहीं</span></div>';">
+                        </div>
+                        <div th:unless="${hospital.images != null && !#lists.isEmpty(hospital.images)}"
+                            class="hospital-placeholder">
+                            <span class="material-symbols-outlined text-slate-300 text-[64px]">local_hospital</span>
+                            <span class="text-xs text-slate-400">कोई चित्र नहीं</span>
+                        </div>
+
+                        <!-- Approved Badge -->
+                        <div class="absolute top-3 right-3">
+                            <span
+                                class="px-3 py-1 bg-green-600/95 backdrop-blur-sm rounded-full text-xs font-bold text-white flex items-center gap-1 shadow-md">
+                                <span class="material-symbols-outlined text-[14px]">check_circle</span>
+                                Approved
+                            </span>
+                        </div>
+
+                        <!-- Type Badge -->
+                        <div class="absolute top-3 left-3"
+                            th:if="${hospital.type != null && hospital.type.type != null && !#strings.isEmpty(hospital.type.type)}">
+                            <span
+                                class="px-3 py-1 bg-white/90 backdrop-blur-sm rounded-full text-xs font-semibold text-primary"
+                                th:text="${hospital.type.type}">प्रकार</span>
+                        </div>
+                    </div>
+
+                    <!-- Hospital Info -->
+                    <div class="p-5 flex flex-col">
+                        <h3 class="text-lg font-bold text-slate-900 mb-2 line-clamp-2"
+                            th:text="${hospital.name != null && !#strings.isEmpty(hospital.name) ? hospital.name : 'नाम उपलब्ध नहीं'}">
+                            अस्पताल का नाम
+                        </h3>
+
+                        <!-- Contact Info -->
+                        <div class="space-y-2 mb-4">
+                            <!-- Address -->
+                            <div class="info-row"
+                                th:if="${hospital.address != null && !#strings.isEmpty(hospital.address)}">
+                                <span
+                                    class="material-symbols-outlined text-slate-400 text-[18px] mt-0.5 flex-shrink-0">location_on</span>
+                                <p class="text-sm text-slate-600 flex-1 line-clamp-2" th:text="${hospital.address}">पता
+                                </p>
+                            </div>
+
+                            <!-- Phone -->
+                            <div class="info-row" th:if="${hospital.contact != null}">
+                                <span
+                                    class="material-symbols-outlined text-slate-400 text-[18px] flex-shrink-0">call</span>
+                                <p class="text-sm text-slate-600" th:text="${hospital.contact}">संपर्क</p>
+                            </div>
+
+                            <!-- Timings -->
+                            <div class="info-row"
+                                th:if="${hospital.timings != null && !#strings.isEmpty(hospital.timings)}">
+                                <span
+                                    class="material-symbols-outlined text-slate-400 text-[18px] flex-shrink-0">schedule</span>
+                                <p class="text-sm text-slate-600" th:text="${hospital.timings}">समय</p>
+                            </div>
+                        </div>
+
+                        <!-- Action Buttons -->
+                        <div class="flex flex-col gap-2 mt-auto">
+                            <a th:href="@{'/user/hospital/manage/' + ${hospital.hospitalId}}"
+                                class="w-full py-2.5 bg-green-600 hover:bg-green-700 text-white text-sm font-semibold rounded-xl transition-colors flex items-center justify-center gap-2">
+                                <span class="material-symbols-outlined text-[18px]">dashboard</span>
+                                Manage Hospital
+                            </a>
+                            <a th:href="@{'/user/hospital/' + ${hospital.hospitalId}}"
+                                class="w-full py-2.5 bg-primary hover:bg-primary-dark text-white text-sm font-semibold rounded-xl transition-colors flex items-center justify-center gap-2">
+                                <span class="material-symbols-outlined text-[18px]">info</span>
+                                View Details
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- Empty State -->
+            <div id="empty-state" class="hidden text-center py-16">
+                <span class="material-symbols-outlined text-slate-300 text-[80px] mb-4">search_off</span>
+                <h3 class="text-lg font-bold text-slate-900 mb-2">कोई अस्पताल नहीं मिला</h3>
+                <p class="text-slate-500 text-sm mb-6">कृपया अपनी खोज बदलें</p>
+                <button id="clearSearchBtn"
+                    class="px-6 py-3 bg-primary hover:bg-primary-dark text-white text-sm font-semibold rounded-xl transition-colors">
+                    खोज साफ़ करें
+                </button>
+            </div>
+
+            <!-- No Hospitals State -->
+            <div th:if="${accessedHospitals == null || #lists.isEmpty(accessedHospitals)}"
+                class="text-center py-16 bg-white rounded-2xl border border-slate-100">
+                <span class="material-symbols-outlined text-slate-300 text-[80px] mb-4">medical_services</span>
+                <h3 class="text-lg font-bold text-slate-900 mb-2">आपके पास कोई अस्पताल नहीं है</h3>
+                <p class="text-slate-500 text-sm mb-6">अस्पताल का उपयोग शुरू करने के लिए पहुंच का दावा करें</p>
+                <a th:href="@{/user/hospitals}"
+                    class="inline-flex items-center gap-2 px-6 py-3 bg-primary hover:bg-primary-dark text-white text-sm font-semibold rounded-xl transition-colors">
+                    <span class="material-symbols-outlined text-[20px]">add_circle</span>
+                    Browse Hospitals
+                </a>
+            </div>
+
+        </main>
+
+    </div>
+
+    <script>
+        // Search functionality
+        function filterHospitals() {
+            const searchTerm = document.getElementById('searchInput').value.toLowerCase().trim();
+            const hospitals = document.querySelectorAll('.hospital-card');
+            const emptyState = document.getElementById('empty-state');
+            const hospitalCount = document.getElementById('hospitalCount');
+            let visibleCount = 0;
+
+            hospitals.forEach(hospital => {
+                const name = (hospital.getAttribute('data-hospital-name') || '').toLowerCase();
+
+                if (!searchTerm || name.includes(searchTerm)) {
+                    hospital.style.display = 'block';
+                    visibleCount++;
+                } else {
+                    hospital.style.display = 'none';
+                }
+            });
+
+            // Update count
+            if (hospitalCount) {
+                hospitalCount.textContent = visibleCount;
+            }
+
+            // Show/hide empty state
+            if (visibleCount === 0 && hospitals.length > 0) {
+                emptyState.classList.remove('hidden');
+            } else {
+                emptyState.classList.add('hidden');
+            }
+        }
+
+        function clearSearch() {
+            const searchInput = document.getElementById('searchInput');
+            if (searchInput) {
+                searchInput.value = '';
+                filterHospitals();
+            }
+        }
+
+        // Initialize on page load
+        document.addEventListener('DOMContentLoaded', function () {
+            // Back button
+            const backBtn = document.getElementById('backBtn');
+            if (backBtn) {
+                backBtn.addEventListener('click', () => {
+                    if (window.history.length > 1) {
+                        window.history.back();
+                    } else {
+                        window.location.href = '/user/dashboard';
+                    }
+                });
+            }
+
+            // Search input
+            const searchInput = document.getElementById('searchInput');
+            if (searchInput) {
+                searchInput.addEventListener('input', filterHospitals);
+                searchInput.addEventListener('keyup', function (e) {
+                    if (e.key === 'Escape') {
+                        clearSearch();
+                    }
+                });
+            }
+
+            // Clear search button
+            const clearSearchBtn = document.getElementById('clearSearchBtn');
+            if (clearSearchBtn) {
+                clearSearchBtn.addEventListener('click', clearSearch);
+            }
+        });
+    </script>
+</body>
+
+</html>
