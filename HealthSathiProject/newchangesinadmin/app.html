@@ -1,0 +1,1098 @@
+<!DOCTYPE html>
+<html lang="hi" xmlns:th="http://www.thymeleaf.org" th:classappend="${seniorMode} ? 'senior-mode' : ''">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" name="viewport" />
+    <meta name="_csrf" th:content="${_csrf.token}" />
+    <meta name="_csrf_header" th:content="${_csrf.headerName}" />
+    <title>App Settings – Health Sathi</title>
+
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Devanagari:wght@400;500;600;700&display=swap"
+        rel="stylesheet" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200"
+        rel="stylesheet" />
+    <link rel="stylesheet" th:href="@{/css/senior-mode.css}" />
+
+    <style>
+        /* ───────────────────────────────────────── TOKENS ───────────────────────────────────────── */
+        :root {
+            --primary: #0058ba;
+            --primary-dark: #004494;
+            --primary-light: #e3f2fd;
+            --primary-glow: rgba(0, 88, 186, .18);
+            --sidebar-bg: #ffffff;
+            --sidebar-hover: #f8fafc;
+            --sidebar-active: #0058ba;
+            --bg: #f8fafc;
+            --card-bg: #ffffff;
+            --text-dark: #0f172a;
+            --text-mid: #334155;
+            --text-muted: #64748b;
+            --border: #e2e8f0;
+            --success: #10b981;
+            --success-light: #d1fae5;
+            --success-dark: #065f46;
+            --warning: #f59e0b;
+            --warning-light: #fef3c7;
+            --danger: #ef4444;
+            --danger-light: #fee2e2;
+            --shadow-sm: 0 1px 3px rgba(0, 0, 0, .07);
+            --shadow-md: 0 4px 16px rgba(0, 88, 186, .10);
+            --shadow-lg: 0 8px 32px rgba(0, 88, 186, .14);
+            --radius: 16px;
+            --radius-sm: 12px;
+            --sidebar-w: 280px;
+            --topbar-h: 60px;
+            --transition: .22s cubic-bezier(.4, 0, .2, 1);
+        }
+
+        *,
+        *::before,
+        *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Plus Jakarta Sans', 'Noto Sans Devanagari', sans-serif;
+            background: var(--bg);
+            color: var(--text-dark);
+            min-height: 100vh;
+            display: flex;
+            -webkit-font-smoothing: antialiased;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        /* ───────────────────────────────────────── SIDEBAR ───────────────────────────────────────── */
+        .sidebar {
+            position: fixed;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 280px;
+            background: var(--sidebar-bg);
+            border-right: 1px solid var(--border);
+            box-shadow: 4px 0 24px rgba(0, 88, 186, 0.10);
+            padding: 24px;
+            overflow-y: auto;
+            z-index: 100;
+            transition: transform 0.3s ease;
+        }
+
+        /* ───────────────────────────────────────── HAMBURGER ───────────────────────────────────────── */
+        .hamburger {
+            display: none;
+            position: fixed;
+            top: 12px;
+            left: 12px;
+            z-index: 300;
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            cursor: pointer;
+            padding: 10px;
+            flex-direction: column;
+            gap: 4px;
+            border-radius: 10px;
+            transition: all var(--transition);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .hamburger span {
+            display: block;
+            width: 20px;
+            height: 2.5px;
+            background: var(--primary);
+            border-radius: 3px;
+            transition: all .28s cubic-bezier(.4, 0, .2, 1);
+            transform-origin: center;
+        }
+
+        /* ───────────────────────────────────────── OVERLAY ───────────────────────────────────────── */
+        .sidebar-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.4);
+            backdrop-filter: blur(2px);
+            z-index: 150;
+            opacity: 0;
+            transition: opacity .3s ease;
+            pointer-events: none;
+        }
+
+        .sidebar-overlay.active {
+            display: block;
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        /* ───────────────────────────────────────── MAIN ───────────────────────────────────────── */
+        .main-wrapper {
+            margin-left: var(--sidebar-w);
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            transition: margin-left var(--transition);
+        }
+
+        /* ───────────────────────────────────────── TOPBAR (Mobile Optimized) ───────────────────────────────────────── */
+        .topbar {
+            height: var(--topbar-h);
+            background: var(--card-bg);
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0 16px;
+            position: sticky;
+            top: 0;
+            z-index: 50;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .topbar-title {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: var(--text-dark);
+            text-align: center;
+        }
+
+        /* ───────────────────────────────────────── CONTENT (Mobile First) ───────────────────────────────────────── */
+        .content {
+            padding: 16px;
+            flex: 1;
+            max-width: 100%;
+            padding-bottom: 24px;
+        }
+
+        /* ───────────────────────────────────────── TABS (Bottom Navigation Style) ───────────────────────────────────────── */
+        .tabs-container {
+            display: flex;
+            flex-direction: column;
+            height: calc(100vh - var(--topbar-h) - 32px);
+        }
+
+        .tabs-header {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+            margin-bottom: 16px;
+            position: sticky;
+            top: 60px;
+            z-index: 40;
+            background: var(--bg);
+            padding: 8px 0;
+        }
+
+        .tab-btn {
+            padding: 14px 16px;
+            border: 2px solid var(--border);
+            background: var(--card-bg);
+            border-radius: var(--radius-sm);
+            font-family: inherit;
+            font-size: .9rem;
+            font-weight: 600;
+            color: var(--text-muted);
+            cursor: pointer;
+            transition: all var(--transition);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .tab-btn .material-symbols-outlined {
+            font-size: 22px;
+        }
+
+        .tab-btn.active {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+            transform: scale(1.02);
+        }
+
+        .tab-content {
+            display: none;
+            flex: 1;
+            overflow-y: auto;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        .tab-content.active {
+            display: block;
+            animation: fadeIn .3s ease;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* ───────────────────────────────────────── INFO DISPLAY (Mobile Optimized) ───────────────────────────────────────── */
+        .section-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 12px;
+            padding: 12px;
+            background: var(--primary-light);
+            border-radius: var(--radius-sm);
+        }
+
+        .section-header .material-symbols-outlined {
+            font-size: 24px;
+            color: var(--primary);
+        }
+
+        .section-header h3 {
+            font-size: 1rem;
+            font-weight: 700;
+            color: var(--primary-dark);
+        }
+
+        .info-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .info-item {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            padding: 14px;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .info-header {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 8px;
+        }
+
+        .info-icon {
+            width: 36px;
+            height: 36px;
+            background: var(--primary-light);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .info-icon .material-symbols-outlined {
+            font-size: 20px;
+            color: var(--primary);
+        }
+
+        .info-label {
+            font-size: .8rem;
+            font-weight: 600;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: .3px;
+        }
+
+        .info-value {
+            font-size: .95rem;
+            font-weight: 500;
+            color: var(--text-dark);
+            word-break: break-word;
+            line-height: 1.5;
+            padding-left: 44px;
+        }
+
+        .info-value.empty {
+            color: var(--text-muted);
+            font-style: italic;
+            opacity: 0.7;
+        }
+
+        /* ───────────────────────────────────────── FORM (Mobile Optimized) ───────────────────────────────────────── */
+        .form-section {
+            margin-bottom: 20px;
+        }
+
+        .form-group {
+            margin-bottom: 16px;
+        }
+
+        .form-label {
+            font-size: .85rem;
+            font-weight: 600;
+            color: var(--text-dark);
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .form-label .material-symbols-outlined {
+            font-size: 20px;
+            color: var(--primary);
+        }
+
+        .form-input,
+        .form-textarea {
+            width: 100%;
+            padding: 14px;
+            border: 2px solid var(--border);
+            border-radius: var(--radius-sm);
+            font-family: inherit;
+            font-size: .95rem;
+            color: var(--text-dark);
+            background: var(--card-bg);
+            outline: none;
+            transition: all var(--transition);
+            -webkit-appearance: none;
+        }
+
+        .form-input:focus,
+        .form-textarea:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px var(--primary-glow);
+        }
+
+        .form-textarea {
+            min-height: 100px;
+            resize: vertical;
+        }
+
+        /* ───────────────────────────────────────── BUTTONS (Mobile Optimized) ───────────────────────────────────────── */
+        .form-actions {
+            position: sticky;
+            bottom: 0;
+            background: var(--bg);
+            padding: 16px 0;
+            display: flex;
+            gap: 10px;
+            border-top: 1px solid var(--border);
+            margin: 0 -16px;
+            padding: 16px;
+            box-shadow: 0 -4px 12px rgba(0, 0, 0, 0.05);
+        }
+
+        .btn {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            padding: 16px 20px;
+            border-radius: var(--radius-sm);
+            font-family: inherit;
+            font-size: .95rem;
+            font-weight: 600;
+            cursor: pointer;
+            border: none;
+            transition: all var(--transition);
+            text-decoration: none;
+            touch-action: manipulation;
+        }
+
+        .btn .material-symbols-outlined {
+            font-size: 22px;
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: #ffffff;
+            box-shadow: 0 4px 12px rgba(0, 88, 186, .25);
+        }
+
+        .btn-primary:active {
+            transform: scale(0.98);
+            box-shadow: 0 2px 8px rgba(0, 88, 186, .2);
+        }
+
+        .btn-secondary {
+            background: var(--card-bg);
+            color: var(--text-dark);
+            border: 2px solid var(--border);
+        }
+
+        .btn-secondary:active {
+            background: var(--border);
+            transform: scale(0.98);
+        }
+
+        /* ───────────────────────────────────────── SUCCESS MESSAGE (Mobile) ───────────────────────────────────────── */
+        .success-message {
+            position: fixed;
+            top: 70px;
+            left: 16px;
+            right: 16px;
+            background: linear-gradient(135deg, #16a34a 0%, #059669 100%);
+            color: white;
+            padding: 16px;
+            border-radius: 12px;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+            font-size: .9rem;
+            font-weight: 600;
+            z-index: 9999;
+            animation: slideDown 0.4s ease forwards;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .success-message::before {
+            content: '✓';
+            width: 28px;
+            height: 28px;
+            background: rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            flex-shrink: 0;
+        }
+
+        .success-message.hide {
+            animation: slideUp 0.4s ease forwards;
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-100%);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 1;
+                transform: translateY(0);
+            }
+
+            to {
+                opacity: 0;
+                transform: translateY(-100%);
+            }
+        }
+
+        /* ───────────────────────────────────────── MOBILE OPTIMIZATIONS ───────────────────────────────────────── */
+        @media (max-width: 768px) {
+            .hamburger {
+                display: flex;
+            }
+
+            .sidebar {
+                transform: translateX(-100%);
+            }
+
+            .sidebar.open {
+                transform: translateX(0);
+            }
+
+            .main-wrapper {
+                margin-left: 0;
+            }
+
+            .topbar {
+                padding: 0 60px 0 16px;
+            }
+
+            .content {
+                padding: 12px;
+            }
+
+            .section-header {
+                padding: 10px 12px;
+            }
+
+            .section-header h3 {
+                font-size: .9rem;
+            }
+
+            .info-item {
+                padding: 12px;
+            }
+
+            .info-icon {
+                width: 32px;
+                height: 32px;
+            }
+
+            .info-icon .material-symbols-outlined {
+                font-size: 18px;
+            }
+
+            .info-label {
+                font-size: .75rem;
+            }
+
+            .info-value {
+                font-size: .9rem;
+                padding-left: 40px;
+            }
+
+            .form-input,
+            .form-textarea {
+                font-size: 16px;
+                /* Prevents zoom on iOS */
+            }
+
+            .btn {
+                font-size: .9rem;
+                padding: 14px 16px;
+            }
+        }
+
+        /* Extra small phones */
+        @media (max-width: 375px) {
+            .topbar-title {
+                font-size: 1rem;
+            }
+
+            .tab-btn {
+                padding: 12px;
+                font-size: .85rem;
+            }
+
+            .tab-btn .material-symbols-outlined {
+                font-size: 20px;
+            }
+
+            .info-item {
+                padding: 10px;
+            }
+        }
+
+        .hamburger.hidden {
+            display: none !important;
+        }
+
+        /* Safe areas for notched devices */
+        .content {
+            padding-bottom: max(24px, env(safe-area-inset-bottom));
+        }
+
+        .form-actions {
+            padding-bottom: max(16px, env(safe-area-inset-bottom));
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- OVERLAY -->
+    <div class="sidebar-overlay" id="sidebarOverlay" onclick="closeSidebar()"></div>
+
+    <!-- HAMBURGER -->
+    <button class="hamburger" id="hamburgerBtn" onclick="toggleSidebar()" aria-label="Toggle menu">
+        <span></span>
+        <span></span>
+        <span></span>
+    </button>
+
+    <!-- SIDEBAR -->
+    <div th:replace="~{fragments/admin-sidebar::adminSidebar}"></div>
+
+    <!-- MAIN -->
+    <div class="main-wrapper">
+
+        <!-- Topbar -->
+        <header class="topbar">
+            <h1 class="topbar-title">App Settings</h1>
+        </header>
+
+        <!-- Success Message -->
+        <div th:if="${successMessage}" class="success-message">
+            <span th:text="${successMessage}"></span>
+        </div>
+
+        <!-- Content -->
+        <main class="content">
+
+            <!-- Tabs Container -->
+            <div class="tabs-container">
+
+                <!-- Tabs Header -->
+                <div class="tabs-header">
+                    <button class="tab-btn active" onclick="switchTab('view')">
+                        <span class="material-symbols-outlined">visibility</span>
+                        View
+                    </button>
+                    <button class="tab-btn" onclick="switchTab('update')">
+                        <span class="material-symbols-outlined">edit</span>
+                        Update
+                    </button>
+                </div>
+
+                <!-- VIEW TAB -->
+                <div id="viewTab" class="tab-content active">
+
+                    <!-- App Basic Info -->
+                    <div class="form-section">
+                        <div class="section-header">
+                            <span class="material-symbols-outlined">info</span>
+                            <h3>App Information</h3>
+                        </div>
+                        <div class="info-list">
+                            <div class="info-item">
+                                <div class="info-header">
+                                    <div class="info-icon">
+                                        <span class="material-symbols-outlined">badge</span>
+                                    </div>
+                                    <div class="info-label">App Name</div>
+                                </div>
+                                <div class="info-value" th:text="${settings?.appName ?: 'Not Set'}"
+                                    th:classappend="${settings?.appName == null ? 'empty' : ''}">
+                                    Health Saathi
+                                </div>
+                            </div>
+
+                            <div class="info-item">
+                                <div class="info-header">
+                                    <div class="info-icon">
+                                        <span class="material-symbols-outlined">image</span>
+                                    </div>
+                                    <div class="info-label">Logo URL</div>
+                                </div>
+                                <div class="info-value" th:text="${settings?.appLogoUrl ?: 'Not Set'}"
+                                    th:classappend="${settings?.appLogoUrl == null ? 'empty' : ''}">
+                                    /images/logo.png
+                                </div>
+                            </div>
+
+                            <div class="info-item">
+                                <div class="info-header">
+                                    <div class="info-icon">
+                                        <span class="material-symbols-outlined">description</span>
+                                    </div>
+                                    <div class="info-label">Tagline</div>
+                                </div>
+                                <div class="info-value" th:text="${settings?.tagline ?: 'Not Set'}"
+                                    th:classappend="${settings?.tagline == null ? 'empty' : ''}">
+                                    Your Health, Our Priority
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Contact Information -->
+                    <div class="form-section">
+                        <div class="section-header">
+                            <span class="material-symbols-outlined">contact_mail</span>
+                            <h3>Contact Information</h3>
+                        </div>
+                        <div class="info-list">
+                            <div class="info-item">
+                                <div class="info-header">
+                                    <div class="info-icon">
+                                        <span class="material-symbols-outlined">email</span>
+                                    </div>
+                                    <div class="info-label">Support Email</div>
+                                </div>
+                                <div class="info-value" th:text="${settings?.supportEmail ?: 'Not Set'}"
+                                    th:classappend="${settings?.supportEmail == null ? 'empty' : ''}">
+                                    support@healthsaathi.com
+                                </div>
+                            </div>
+
+                            <div class="info-item">
+                                <div class="info-header">
+                                    <div class="info-icon">
+                                        <span class="material-symbols-outlined">call</span>
+                                    </div>
+                                    <div class="info-label">Contact Number</div>
+                                </div>
+                                <div class="info-value" th:text="${settings?.contactNumber ?: 'Not Set'}"
+                                    th:classappend="${settings?.contactNumber == null ? 'empty' : ''}">
+                                    +91 1234567890
+                                </div>
+                            </div>
+
+                            <div class="info-item">
+                                <div class="info-header">
+                                    <div class="info-icon">
+                                        <span class="material-symbols-outlined">location_on</span>
+                                    </div>
+                                    <div class="info-label">Address</div>
+                                </div>
+                                <div class="info-value" th:text="${settings?.address ?: 'Not Set'}"
+                                    th:classappend="${settings?.address == null ? 'empty' : ''}">
+                                    123 Health Street, Medical City, India
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Social Media Links -->
+                    <div class="form-section">
+                        <div class="section-header">
+                            <span class="material-symbols-outlined">share</span>
+                            <h3>Social Media</h3>
+                        </div>
+                        <div class="info-list">
+                            <div class="info-item">
+                                <div class="info-header">
+                                    <div class="info-icon">
+                                        <span class="material-symbols-outlined">facebook</span>
+                                    </div>
+                                    <div class="info-label">Facebook</div>
+                                </div>
+                                <div class="info-value" th:text="${settings?.facebookLink ?: 'Not Set'}"
+                                    th:classappend="${settings?.facebookLink == null ? 'empty' : ''}">
+                                    facebook.com/healthsaathi
+                                </div>
+                            </div>
+
+                            <div class="info-item">
+                                <div class="info-header">
+                                    <div class="info-icon">
+                                        <span class="material-symbols-outlined">camera</span>
+                                    </div>
+                                    <div class="info-label">Instagram</div>
+                                </div>
+                                <div class="info-value" th:text="${settings?.instagramLink ?: 'Not Set'}"
+                                    th:classappend="${settings?.instagramLink == null ? 'empty' : ''}">
+                                    instagram.com/healthsaathi
+                                </div>
+                            </div>
+
+                            <div class="info-item">
+                                <div class="info-header">
+                                    <div class="info-icon">
+                                        <span class="material-symbols-outlined">chat</span>
+                                    </div>
+                                    <div class="info-label">Twitter</div>
+                                </div>
+                                <div class="info-value" th:text="${settings?.twitterLink ?: 'Not Set'}"
+                                    th:classappend="${settings?.twitterLink == null ? 'empty' : ''}">
+                                    twitter.com/healthsaathi
+                                </div>
+                            </div>
+
+                            <div class="info-item">
+                                <div class="info-header">
+                                    <div class="info-icon">
+                                        <span class="material-symbols-outlined">work</span>
+                                    </div>
+                                    <div class="info-label">LinkedIn</div>
+                                </div>
+                                <div class="info-value" th:text="${settings?.linkedinLink ?: 'Not Set'}"
+                                    th:classappend="${settings?.linkedinLink == null ? 'empty' : ''}">
+                                    linkedin.com/company/healthsaathi
+                                </div>
+                            </div>
+
+                            <div class="info-item">
+                                <div class="info-header">
+                                    <div class="info-icon">
+                                        <span class="material-symbols-outlined">play_circle</span>
+                                    </div>
+                                    <div class="info-label">YouTube</div>
+                                </div>
+                                <div class="info-value" th:text="${settings?.youtubeLink ?: 'Not Set'}"
+                                    th:classappend="${settings?.youtubeLink == null ? 'empty' : ''}">
+                                    youtube.com/@healthsaathi
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Footer Information -->
+                    <div class="form-section">
+                        <div class="section-header">
+                            <span class="material-symbols-outlined">text_snippet</span>
+                            <h3>Footer Information</h3>
+                        </div>
+                        <div class="info-list">
+                            <div class="info-item">
+                                <div class="info-header">
+                                    <div class="info-icon">
+                                        <span class="material-symbols-outlined">text_fields</span>
+                                    </div>
+                                    <div class="info-label">Footer Text</div>
+                                </div>
+                                <div class="info-value" th:text="${settings?.footerText ?: 'Not Set'}"
+                                    th:classappend="${settings?.footerText == null ? 'empty' : ''}">
+                                    Your trusted healthcare companion
+                                </div>
+                            </div>
+
+                            <div class="info-item">
+                                <div class="info-header">
+                                    <div class="info-icon">
+                                        <span class="material-symbols-outlined">copyright</span>
+                                    </div>
+                                    <div class="info-label">Copyright Text</div>
+                                </div>
+                                <div class="info-value" th:text="${settings?.copyrightText ?: 'Not Set'}"
+                                    th:classappend="${settings?.copyrightText == null ? 'empty' : ''}">
+                                    © 2025 Health Saathi
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+
+                <!-- UPDATE TAB -->
+                <div id="updateTab" class="tab-content">
+
+                    <form th:action="@{/admin/settings/update}" method="post">
+
+                        <!-- App Basic Info -->
+                        <div class="form-section">
+                            <div class="section-header">
+                                <span class="material-symbols-outlined">info</span>
+                                <h3>App Information</h3>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="form-label">
+                                    <span class="material-symbols-outlined">badge</span>
+                                    App Name
+                                </label>
+                                <input type="text" name="appName" class="form-input" th:value="${settings?.appName}"
+                                    placeholder="Enter app name" required />
+                            </div>
+
+                            <div class="form-group">
+                                <label class="form-label">
+                                    <span class="material-symbols-outlined">image</span>
+                                    Logo URL
+                                </label>
+                                <input type="text" name="appLogoUrl" class="form-input"
+                                    th:value="${settings?.appLogoUrl}" placeholder="Enter logo URL" />
+                            </div>
+
+                            <div class="form-group">
+                                <label class="form-label">
+                                    <span class="material-symbols-outlined">description</span>
+                                    Tagline
+                                </label>
+                                <input type="text" name="tagline" class="form-input" th:value="${settings?.tagline}"
+                                    placeholder="Enter tagline" />
+                            </div>
+                        </div>
+
+                        <!-- Contact Information -->
+                        <div class="form-section">
+                            <div class="section-header">
+                                <span class="material-symbols-outlined">contact_mail</span>
+                                <h3>Contact Information</h3>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="form-label">
+                                    <span class="material-symbols-outlined">email</span>
+                                    Support Email
+                                </label>
+                                <input type="email" name="supportEmail" class="form-input"
+                                    th:value="${settings?.supportEmail}" placeholder="support@example.com" required />
+                            </div>
+
+                            <div class="form-group">
+                                <label class="form-label">
+                                    <span class="material-symbols-outlined">call</span>
+                                    Contact Number
+                                </label>
+                                <input type="tel" name="contactNumber" class="form-input"
+                                    th:value="${settings?.contactNumber}" placeholder="+91 1234567890" />
+                            </div>
+
+                            <div class="form-group">
+                                <label class="form-label">
+                                    <span class="material-symbols-outlined">location_on</span>
+                                    Address
+                                </label>
+                                <textarea name="address" class="form-textarea" th:text="${settings?.address}"
+                                    placeholder="Enter full address"></textarea>
+                            </div>
+                        </div>
+
+                        <!-- Social Media Links -->
+                        <div class="form-section">
+                            <div class="section-header">
+                                <span class="material-symbols-outlined">share</span>
+                                <h3>Social Media</h3>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="form-label">
+                                    <span class="material-symbols-outlined">facebook</span>
+                                    Facebook
+                                </label>
+                                <input type="url" name="facebookLink" class="form-input"
+                                    th:value="${settings?.facebookLink}" placeholder="https://facebook.com/yourpage" />
+                            </div>
+
+                            <div class="form-group">
+                                <label class="form-label">
+                                    <span class="material-symbols-outlined">camera</span>
+                                    Instagram
+                                </label>
+                                <input type="url" name="instagramLink" class="form-input"
+                                    th:value="${settings?.instagramLink}"
+                                    placeholder="https://instagram.com/yourpage" />
+                            </div>
+
+                            <div class="form-group">
+                                <label class="form-label">
+                                    <span class="material-symbols-outlined">chat</span>
+                                    Twitter
+                                </label>
+                                <input type="url" name="twitterLink" class="form-input"
+                                    th:value="${settings?.twitterLink}" placeholder="https://twitter.com/yourpage" />
+                            </div>
+
+                            <div class="form-group">
+                                <label class="form-label">
+                                    <span class="material-symbols-outlined">work</span>
+                                    LinkedIn
+                                </label>
+                                <input type="url" name="linkedinLink" class="form-input"
+                                    th:value="${settings?.linkedinLink}"
+                                    placeholder="https://linkedin.com/company/yourpage" />
+                            </div>
+
+                            <div class="form-group">
+                                <label class="form-label">
+                                    <span class="material-symbols-outlined">play_circle</span>
+                                    YouTube
+                                </label>
+                                <input type="url" name="youtubeLink" class="form-input"
+                                    th:value="${settings?.youtubeLink}" placeholder="https://youtube.com/@yourpage" />
+                            </div>
+                        </div>
+
+                        <!-- Footer Information -->
+                        <div class="form-section">
+                            <div class="section-header">
+                                <span class="material-symbols-outlined">text_snippet</span>
+                                <h3>Footer Information</h3>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="form-label">
+                                    <span class="material-symbols-outlined">text_fields</span>
+                                    Footer Text
+                                </label>
+                                <input type="text" name="footerText" class="form-input"
+                                    th:value="${settings?.footerText}"
+                                    placeholder="Your trusted healthcare companion" />
+                            </div>
+
+                            <div class="form-group">
+                                <label class="form-label">
+                                    <span class="material-symbols-outlined">copyright</span>
+                                    Copyright Text
+                                </label>
+                                <input type="text" name="copyrightText" class="form-input"
+                                    th:value="${settings?.copyrightText}" placeholder="© 2025 Your Company" />
+                            </div>
+                        </div>
+
+                        <!-- Form Actions (Sticky Bottom) -->
+                        <div class="form-actions">
+                            <button type="button" class="btn btn-secondary" onclick="switchTab('view')">
+                                <span class="material-symbols-outlined">close</span>
+                                Cancel
+                            </button>
+                            <button type="submit" class="btn btn-primary">
+                                <span class="material-symbols-outlined">save</span>
+                                Save
+                            </button>
+                        </div>
+
+                    </form>
+
+                </div>
+
+            </div>
+
+        </main>
+    </div>
+
+    <!-- JAVASCRIPT -->
+    <script>
+        /* Sidebar toggle */
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            const overlay = document.getElementById('sidebarOverlay');
+            const btn = document.getElementById('hamburgerBtn');
+            const isOpen = sidebar.classList.contains('open');
+
+            if (isOpen) {
+                closeSidebar();
+            } else {
+                sidebar.classList.add('open');
+                overlay.classList.add('active');
+                btn.classList.add('hidden');
+                document.body.style.overflow = 'hidden';
+            }
+        }
+
+        function closeSidebar() {
+            document.getElementById('sidebar').classList.remove('open');
+            document.getElementById('sidebarOverlay').classList.remove('active');
+            document.getElementById('hamburgerBtn').classList.remove('hidden');
+            document.body.style.overflow = '';
+        }
+
+        /* Tab switching */
+        function switchTab(tabName) {
+            // Hide all tabs
+            document.querySelectorAll('.tab-content').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+
+            // Show selected tab and scroll to top
+            if (tabName === 'view') {
+                document.getElementById('viewTab').classList.add('active');
+                document.querySelectorAll('.tab-btn')[0].classList.add('active');
+            } else {
+                document.getElementById('updateTab').classList.add('active');
+                document.querySelectorAll('.tab-btn')[1].classList.add('active');
+            }
+
+            // Scroll to top smoothly
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        /* Success message auto-hide */
+        setTimeout(() => {
+            document.querySelectorAll('.success-message').forEach(msg => {
+                msg.classList.add('hide');
+                setTimeout(() => msg.remove(), 500);
+            });
+        }, 3000);
+
+        /* Prevent zoom on input focus (iOS) */
+        document.addEventListener('touchstart', function () { }, true);
+    </script>
+
+</body>
+
+</html>
