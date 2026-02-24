@@ -1,0 +1,1654 @@
+<!DOCTYPE html>
+<html lang="hi" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <title>Hospital Images - Health Saathi</title>
+    <meta name="_csrf" th:content="${_csrf.token}">
+    <meta name="_csrf_header" th:content="${_csrf.headerName}">
+
+    <link href="https://fonts.googleapis.com" rel="preconnect" />
+    <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700&display=swap"
+        rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Devanagari:wght@400;500;600;700&display=swap"
+        rel="stylesheet" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200"
+        rel="stylesheet" />
+
+    <style>
+        *,
+        *::before,
+        *::after {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        :root {
+            --primary: #0058ba;
+            --primary-dark: #004a9e;
+            --primary-light: #e8f1fd;
+            --primary-mid: #c5d9f7;
+            --secondary: #10b981;
+            --secondary-light: #d1fae5;
+            --accent: #f59e0b;
+            --accent-light: #fef3c7;
+            --danger: #ef4444;
+            --danger-light: #fef2f2;
+            --text-main: #0f172a;
+            --text-sub: #475569;
+            --text-muted: #94a3b8;
+            --border: #e2e8f0;
+            --surface: #ffffff;
+            --bg: #f1f5f9;
+            --safe-top: env(safe-area-inset-top, 0px);
+            --safe-bottom: env(safe-area-inset-bottom, 16px);
+            --nav-h: 64px;
+            --topbar-h: 60px;
+        }
+
+        html,
+        body {
+            height: 100%;
+            overflow-x: hidden;
+        }
+
+        body {
+            font-family: 'DM Sans', 'Noto Sans Devanagari', sans-serif;
+            background: var(--bg);
+            color: var(--text-main);
+            line-height: 1.5;
+            -webkit-font-smoothing: antialiased;
+            overscroll-behavior: none;
+        }
+
+        .ms {
+            font-family: 'Material Symbols Rounded';
+            font-weight: normal;
+            font-style: normal;
+            font-size: 24px;
+            display: inline-block;
+            line-height: 1;
+            text-transform: none;
+            letter-spacing: normal;
+            white-space: nowrap;
+            -webkit-font-smoothing: antialiased;
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            vertical-align: middle;
+            user-select: none;
+        }
+
+        .ms.fill {
+            font-variation-settings: 'FILL' 1, 'wght' 500, 'GRAD' 0, 'opsz' 24;
+        }
+
+        /* ── App ── */
+        .app {
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            min-height: 100dvh;
+        }
+
+        /* ── Topbar ── */
+        .topbar {
+            position: sticky;
+            top: 0;
+            z-index: 200;
+            background: var(--primary);
+            padding-top: var(--safe-top);
+        }
+
+        .topbar-inner {
+            height: var(--topbar-h);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 0.85rem;
+            gap: 0.5rem;
+        }
+
+        .tb-left {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            min-width: 0;
+            flex: 1;
+        }
+
+        .tb-back {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.15);
+            border: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            text-decoration: none;
+            color: white;
+            flex-shrink: 0;
+            transition: background 0.15s;
+        }
+
+        .tb-back:active {
+            background: rgba(255, 255, 255, 0.28);
+        }
+
+        .tb-label {
+            font-size: 0.62rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            color: rgba(255, 255, 255, 0.65);
+            display: block;
+            line-height: 1.1;
+        }
+
+        .tb-title {
+            font-size: 0.97rem;
+            font-weight: 700;
+            color: white;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            display: block;
+            max-width: 200px;
+        }
+
+        .tb-right {
+            display: flex;
+            gap: 0.35rem;
+            flex-shrink: 0;
+        }
+
+        .icon-btn {
+            width: 38px;
+            height: 38px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.15);
+            border: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            color: white;
+            transition: background 0.15s;
+        }
+
+        .icon-btn:active {
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        .icon-btn:disabled {
+            opacity: 0.42;
+            pointer-events: none;
+        }
+
+        /* ── Scroll Body ── */
+        .scroll-body {
+            flex: 1;
+            overflow-y: auto;
+            overflow-x: hidden;
+            padding-bottom: calc(var(--nav-h) + var(--safe-bottom) + 0.5rem);
+            -webkit-overflow-scrolling: touch;
+        }
+
+        /* ── Hero ── */
+        .hero {
+            background: var(--primary);
+            padding: 0 1rem 2rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 26px;
+            background: var(--bg);
+            border-radius: 20px 20px 0 0;
+        }
+
+        .hero-glow {
+            position: absolute;
+            top: -80px;
+            right: -50px;
+            width: 240px;
+            height: 240px;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(255, 255, 255, 0.09) 0%, transparent 65%);
+            pointer-events: none;
+        }
+
+        .hero-inner {
+            position: relative;
+            z-index: 1;
+            display: flex;
+            align-items: center;
+            gap: 0.9rem;
+            padding-bottom: 0.75rem;
+        }
+
+        .hero-av {
+            width: 52px;
+            height: 52px;
+            border-radius: 14px;
+            flex-shrink: 0;
+            background: rgba(255, 255, 255, 0.16);
+            border: 2px solid rgba(255, 255, 255, 0.22);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .hero-info h2 {
+            font-size: 1.05rem;
+            font-weight: 800;
+            color: white;
+        }
+
+        .hero-info p {
+            font-size: 0.76rem;
+            color: rgba(255, 255, 255, 0.72);
+            margin-top: 0.18rem;
+            font-weight: 500;
+        }
+
+        .hero-chip {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.28rem;
+            background: rgba(255, 255, 255, 0.14);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 50px;
+            padding: 0.22rem 0.7rem;
+            font-size: 0.7rem;
+            font-weight: 700;
+            color: white;
+            margin-top: 0.5rem;
+        }
+
+        .hero-chip.warn {
+            background: rgba(245, 158, 11, 0.3);
+            border-color: rgba(245, 158, 11, 0.5);
+        }
+
+        /* ── Content ── */
+        .content {
+            padding: 1rem 1rem 0;
+        }
+
+        /* ── Info Bar ── */
+        .info-bar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 0.85rem 1rem;
+            margin-bottom: 1rem;
+            gap: 0.75rem;
+        }
+
+        .ib-left {
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+        }
+
+        .ib-icon {
+            width: 36px;
+            height: 36px;
+            border-radius: 10px;
+            background: var(--primary-light);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .ib-icon .ms {
+            font-size: 18px;
+            color: var(--primary);
+        }
+
+        .ib-t {
+            font-size: 0.82rem;
+            font-weight: 700;
+            color: var(--text-main);
+        }
+
+        .ib-s {
+            font-size: 0.7rem;
+            color: var(--text-muted);
+            font-weight: 500;
+        }
+
+        .up-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.35rem;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            padding: 0.55rem 1rem;
+            font-size: 0.82rem;
+            font-weight: 700;
+            cursor: pointer;
+            font-family: inherit;
+            white-space: nowrap;
+            transition: transform 0.13s;
+            flex-shrink: 0;
+        }
+
+        .up-btn:active {
+            transform: scale(0.96);
+        }
+
+        .up-btn:disabled {
+            background: var(--text-muted);
+            pointer-events: none;
+        }
+
+        .up-btn .ms {
+            font-size: 17px;
+        }
+
+        /* ── Limit Warn ── */
+        .limit-warn {
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+            background: var(--accent-light);
+            border: 1px solid rgba(245, 158, 11, 0.28);
+            border-radius: 12px;
+            padding: 0.7rem 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .limit-warn .ms {
+            color: var(--accent);
+            font-size: 18px;
+            flex-shrink: 0;
+        }
+
+        .limit-warn p {
+            font-size: 0.78rem;
+            font-weight: 600;
+            color: #92400e;
+        }
+
+        /* ── Gallery Grid ── */
+        .gallery-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 0.75rem;
+        }
+
+        .image-card {
+            position: relative;
+            aspect-ratio: 4/3;
+            border-radius: 16px;
+            overflow: hidden;
+            border: 1.5px solid var(--border);
+            background: var(--bg);
+            transition: transform 0.15s;
+        }
+
+        .image-card:active {
+            transform: scale(0.97);
+        }
+
+        .image-card img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+
+        .image-overlay {
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(to top, rgba(0, 0, 0, 0.72) 0%, rgba(0, 0, 0, 0.2) 55%, transparent 100%);
+            display: flex;
+            align-items: flex-end;
+            justify-content: flex-end;
+            padding: 0.6rem;
+            gap: 0.45rem;
+            opacity: 0;
+            transition: opacity 0.2s;
+        }
+
+        .image-card:hover .image-overlay {
+            opacity: 1;
+        }
+
+        @media (hover:none) {
+            .image-overlay {
+                opacity: 1;
+            }
+        }
+
+        .ovr-btn {
+            width: 34px;
+            height: 34px;
+            border-radius: 50%;
+            border: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            backdrop-filter: blur(8px);
+            transition: transform 0.13s;
+        }
+
+        .ovr-btn:active {
+            transform: scale(0.9);
+        }
+
+        .ovr-btn.view {
+            background: rgba(0, 88, 186, 0.88);
+            color: white;
+        }
+
+        .ovr-btn.del {
+            background: rgba(239, 68, 68, 0.88);
+            color: white;
+        }
+
+        .ovr-btn .ms {
+            font-size: 17px;
+        }
+
+        /* ── Empty State ── */
+        .empty-state {
+            text-align: center;
+            padding: 3rem 1.5rem;
+            background: var(--surface);
+            border: 2px dashed var(--border);
+            border-radius: 20px;
+        }
+
+        .empty-ring {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: var(--primary-light);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 1.1rem;
+        }
+
+        .empty-ring .ms {
+            font-size: 38px;
+            color: var(--primary);
+        }
+
+        .empty-state h3 {
+            font-size: 1.05rem;
+            font-weight: 800;
+            color: var(--text-main);
+            margin-bottom: 0.3rem;
+        }
+
+        .empty-state p {
+            font-size: 0.82rem;
+            color: var(--text-muted);
+            margin-bottom: 1.4rem;
+            line-height: 1.65;
+        }
+
+        .empty-up-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            padding: 0.8rem 1.5rem;
+            font-size: 0.88rem;
+            font-weight: 700;
+            cursor: pointer;
+            font-family: inherit;
+            transition: transform 0.13s;
+        }
+
+        .empty-up-btn:active {
+            transform: scale(0.97);
+        }
+
+        .empty-up-btn .ms {
+            font-size: 19px;
+        }
+
+        /* ── Bottom Nav ── */
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            z-index: 200;
+            background: var(--surface);
+            border-top: 1px solid var(--border);
+            padding-bottom: var(--safe-bottom);
+            display: flex;
+            align-items: stretch;
+            height: calc(var(--nav-h) + var(--safe-bottom));
+        }
+
+        .nav-tab {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 0.18rem;
+            text-decoration: none;
+            color: var(--text-muted);
+            font-size: 0.63rem;
+            font-weight: 600;
+            border: none;
+            background: none;
+            cursor: pointer;
+            position: relative;
+            padding: 0.4rem 0;
+            transition: color 0.15s;
+        }
+
+        .nav-tab .ms {
+            font-size: 22px;
+        }
+
+        .nav-tab.active {
+            color: var(--primary);
+        }
+
+        .nav-tab.active .ms {
+            font-variation-settings: 'FILL' 1, 'wght' 600, 'GRAD' 0, 'opsz' 24;
+        }
+
+        .nav-pip {
+            position: absolute;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 28px;
+            height: 3px;
+            border-radius: 2px;
+            background: var(--primary);
+            opacity: 0;
+            transition: opacity 0.15s;
+        }
+
+        .nav-tab.active .nav-pip {
+            opacity: 1;
+        }
+
+        /* ═══════════════════════════════════════════════
+       SHARED ANIMATION KEYFRAMES
+    ═══════════════════════════════════════════════ */
+        @keyframes oin {
+            from {
+                opacity: 0
+            }
+
+            to {
+                opacity: 1
+            }
+        }
+
+        @keyframes sheetup {
+            to {
+                transform: translateY(0)
+            }
+        }
+
+        /* ── Upload Modal ── */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(15, 23, 42, 0.5);
+            backdrop-filter: blur(5px);
+            -webkit-backdrop-filter: blur(5px);
+            z-index: 400;
+            align-items: flex-end;
+            justify-content: center;
+        }
+
+        .modal-overlay.active {
+            display: flex;
+            animation: oin 0.22s ease;
+        }
+
+        .modal-sheet {
+            background: var(--surface);
+            border-radius: 26px 26px 0 0;
+            width: 100%;
+            max-width: 480px;
+            padding: 1.25rem 1.25rem calc(1.5rem + var(--safe-bottom));
+            max-height: 92vh;
+            overflow-y: auto;
+            transform: translateY(100%);
+            animation: sheetup 0.38s cubic-bezier(0.34, 1.3, 0.64, 1) forwards;
+        }
+
+        .sheet-bar {
+            width: 38px;
+            height: 4px;
+            border-radius: 2px;
+            background: var(--border);
+            margin: 0 auto 1.2rem;
+        }
+
+        .sheet-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 1.15rem;
+        }
+
+        .sheet-header h2 {
+            font-size: 1.1rem;
+            font-weight: 800;
+            color: var(--text-main);
+        }
+
+        .sheet-close {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: var(--bg);
+            border: none;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background 0.13s;
+        }
+
+        .sheet-close:active {
+            background: var(--border);
+        }
+
+        .upload-zone {
+            border: 2px dashed var(--border);
+            border-radius: 16px;
+            padding: 1.75rem 1rem;
+            text-align: center;
+            cursor: pointer;
+            background: var(--bg);
+            transition: all 0.2s;
+            margin-bottom: 1rem;
+        }
+
+        .upload-zone.dragover {
+            border-color: var(--primary);
+            background: var(--primary-light);
+        }
+
+        .uz-icon {
+            width: 58px;
+            height: 58px;
+            border-radius: 50%;
+            background: var(--primary-light);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 0.8rem;
+        }
+
+        .uz-icon .ms {
+            font-size: 28px;
+            color: var(--primary);
+        }
+
+        .upload-zone h3 {
+            font-size: 0.92rem;
+            font-weight: 700;
+            color: var(--text-main);
+            margin-bottom: 0.22rem;
+        }
+
+        .upload-zone p {
+            font-size: 0.76rem;
+            color: var(--text-muted);
+        }
+
+        .preview-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(88px, 1fr));
+            gap: 0.6rem;
+            margin-bottom: 1rem;
+        }
+
+        .preview-item {
+            position: relative;
+            aspect-ratio: 1;
+            border-radius: 12px;
+            overflow: hidden;
+            border: 2px solid var(--border);
+        }
+
+        .preview-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+
+        .preview-remove {
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            width: 22px;
+            height: 22px;
+            border-radius: 50%;
+            background: rgba(239, 68, 68, 0.95);
+            border: none;
+            color: white;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .preview-remove .ms {
+            font-size: 13px;
+        }
+
+        .sheet-actions {
+            display: flex;
+            gap: 0.65rem;
+        }
+
+        .s-btn {
+            flex: 1;
+            padding: 0.88rem;
+            border: none;
+            border-radius: 13px;
+            font-weight: 700;
+            font-size: 0.88rem;
+            cursor: pointer;
+            font-family: inherit;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.45rem;
+            transition: transform 0.13s;
+        }
+
+        .s-btn:active {
+            transform: scale(0.97);
+        }
+
+        .s-btn.primary {
+            background: var(--primary);
+            color: white;
+        }
+
+        .s-btn.primary:disabled {
+            background: var(--text-muted);
+            pointer-events: none;
+        }
+
+        .s-btn.secondary {
+            background: var(--bg);
+            color: var(--text-sub);
+            border: 1px solid var(--border);
+        }
+
+        .s-btn .ms {
+            font-size: 18px;
+        }
+
+        /* ── Confirm Delete Sheet ── */
+        .confirm-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(15, 23, 42, 0.5);
+            backdrop-filter: blur(5px);
+            -webkit-backdrop-filter: blur(5px);
+            z-index: 500;
+            align-items: flex-end;
+            justify-content: center;
+        }
+
+        .confirm-overlay.active {
+            display: flex;
+            animation: oin 0.22s ease;
+        }
+
+        .confirm-sheet {
+            background: var(--surface);
+            border-radius: 26px 26px 0 0;
+            width: 100%;
+            max-width: 480px;
+            text-align: center;
+            padding: 1.25rem 1.5rem calc(1.75rem + var(--safe-bottom));
+            transform: translateY(100%);
+            animation: sheetup 0.36s cubic-bezier(0.34, 1.3, 0.64, 1) forwards;
+        }
+
+        .danger-ring {
+            width: 64px;
+            height: 64px;
+            border-radius: 50%;
+            background: var(--danger-light);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 1rem;
+            box-shadow: 0 0 0 8px rgba(239, 68, 68, 0.07);
+        }
+
+        .danger-ring .ms {
+            font-size: 32px;
+            color: var(--danger);
+            font-variation-settings: 'FILL' 1, 'wght' 500, 'GRAD' 0, 'opsz' 48;
+        }
+
+        .confirm-sheet h3 {
+            font-size: 1.05rem;
+            font-weight: 800;
+            color: var(--text-main);
+            margin-bottom: 0.38rem;
+        }
+
+        .confirm-sheet p {
+            font-size: 0.82rem;
+            color: var(--text-sub);
+            line-height: 1.65;
+            margin-bottom: 1.5rem;
+        }
+
+        .confirm-btns {
+            display: flex;
+            gap: 0.65rem;
+        }
+
+        .c-btn {
+            flex: 1;
+            padding: 0.85rem;
+            border: none;
+            border-radius: 13px;
+            font-weight: 700;
+            font-size: 0.88rem;
+            cursor: pointer;
+            font-family: inherit;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.42rem;
+            transition: transform 0.13s;
+        }
+
+        .c-btn:active {
+            transform: scale(0.97);
+        }
+
+        .c-btn.danger {
+            background: var(--danger);
+            color: white;
+        }
+
+        .c-btn.cancel {
+            background: var(--bg);
+            color: var(--text-sub);
+            border: 1px solid var(--border);
+        }
+
+        .c-btn .ms {
+            font-size: 18px;
+        }
+
+        /* ═══════════════════════════════════════════════
+       SUCCESS / ERROR POPUP SHEET
+       — same z-index layer as confirm (500),
+         sits above everything except lightbox (600)
+    ═══════════════════════════════════════════════ */
+        .status-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(15, 23, 42, 0.5);
+            backdrop-filter: blur(5px);
+            -webkit-backdrop-filter: blur(5px);
+            z-index: 550;
+            /* above confirm, below lightbox */
+            align-items: flex-end;
+            justify-content: center;
+        }
+
+        .status-overlay.active {
+            display: flex;
+            animation: oin 0.22s ease;
+        }
+
+        .status-sheet {
+            background: var(--surface);
+            border-radius: 26px 26px 0 0;
+            width: 100%;
+            max-width: 480px;
+            text-align: center;
+            padding: 1.25rem 1.5rem calc(1.75rem + var(--safe-bottom));
+            transform: translateY(100%);
+            animation: sheetup 0.38s cubic-bezier(0.34, 1.4, 0.64, 1) forwards;
+        }
+
+        /* success ring */
+        .ok-ring {
+            width: 68px;
+            height: 68px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #d1fae5, #6ee7b7);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 1.1rem;
+            box-shadow: 0 0 0 10px rgba(16, 185, 129, 0.1);
+        }
+
+        .ok-ring .ms {
+            font-size: 36px;
+            color: #059669;
+            font-variation-settings: 'FILL' 1, 'wght' 600, 'GRAD' 0, 'opsz' 48;
+        }
+
+        /* error ring */
+        .err-ring {
+            width: 68px;
+            height: 68px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #fee2e2, #fca5a5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 1.1rem;
+            box-shadow: 0 0 0 10px rgba(239, 68, 68, 0.1);
+        }
+
+        .err-ring .ms {
+            font-size: 36px;
+            color: #dc2626;
+            font-variation-settings: 'FILL' 1, 'wght' 600, 'GRAD' 0, 'opsz' 48;
+        }
+
+        .status-sheet h2 {
+            font-size: 1.15rem;
+            font-weight: 800;
+            color: var(--text-main);
+            margin-bottom: 0.4rem;
+        }
+
+        .status-sheet p {
+            font-size: 0.875rem;
+            color: var(--text-sub);
+            line-height: 1.6;
+            margin-bottom: 1.6rem;
+        }
+
+        .ok-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.45rem;
+            width: 100%;
+            padding: 0.9rem;
+            border: none;
+            border-radius: 14px;
+            font-size: 0.93rem;
+            font-weight: 700;
+            cursor: pointer;
+            font-family: inherit;
+            transition: transform 0.13s;
+        }
+
+        .ok-btn:active {
+            transform: scale(0.97);
+        }
+
+        .ok-btn.green {
+            background: var(--secondary);
+            color: white;
+        }
+
+        .ok-btn.red {
+            background: var(--danger);
+            color: white;
+        }
+
+        .ok-btn .ms {
+            font-size: 20px;
+        }
+
+        /* ── Lightbox ── */
+        .lightbox {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.95);
+            z-index: 600;
+            align-items: center;
+            justify-content: center;
+            padding: 1rem;
+        }
+
+        .lightbox.active {
+            display: flex;
+            animation: oin 0.2s ease;
+        }
+
+        .lb-wrap {
+            position: relative;
+            max-width: 92vw;
+            max-height: 88vh;
+        }
+
+        .lb-wrap img {
+            max-width: 100%;
+            max-height: 88vh;
+            object-fit: contain;
+            border-radius: 14px;
+            animation: lbz 0.26s ease;
+        }
+
+        @keyframes lbz {
+            from {
+                opacity: 0;
+                transform: scale(0.88)
+            }
+
+            to {
+                opacity: 1;
+                transform: scale(1)
+            }
+        }
+
+        .lb-close {
+            position: absolute;
+            top: -44px;
+            right: 0;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.18);
+            border: none;
+            color: white;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background 0.15s;
+        }
+
+        .lb-close:active {
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        /* ── Toast (used by delete AJAX response) ── */
+        .toast {
+            position: fixed;
+            top: calc(var(--safe-top) + 68px);
+            right: 1rem;
+            left: 1rem;
+            max-width: 360px;
+            margin: 0 auto;
+            background: var(--surface);
+            border-radius: 14px;
+            box-shadow: 0 8px 28px rgba(0, 0, 0, 0.16);
+            display: flex;
+            align-items: center;
+            gap: 0.7rem;
+            padding: 0.85rem 1rem;
+            z-index: 700;
+            animation: tin 0.28s ease;
+        }
+
+        @keyframes tin {
+            from {
+                opacity: 0;
+                transform: translateY(-10px)
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0)
+            }
+        }
+
+        .toast.success {
+            border-left: 4px solid var(--secondary);
+        }
+
+        .toast.error {
+            border-left: 4px solid var(--danger);
+        }
+
+        .t-ico {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .toast.success .t-ico {
+            background: var(--secondary-light);
+        }
+
+        .toast.success .t-ico .ms {
+            color: var(--secondary);
+            font-size: 17px;
+            font-variation-settings: 'FILL' 1, 'wght' 500, 'GRAD' 0, 'opsz' 24;
+        }
+
+        .toast.error .t-ico {
+            background: var(--danger-light);
+        }
+
+        .toast.error .t-ico .ms {
+            color: var(--danger);
+            font-size: 17px;
+            font-variation-settings: 'FILL' 1, 'wght' 500, 'GRAD' 0, 'opsz' 24;
+        }
+
+        .toast-msg {
+            font-size: 0.82rem;
+            font-weight: 600;
+            color: var(--text-main);
+            flex: 1;
+        }
+
+        /* ── Responsive ── */
+        @media (min-width:540px) {
+            .gallery-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+
+            .topbar,
+            .bottom-nav {
+                max-width: 480px;
+                left: 50%;
+                right: auto;
+                transform: translateX(-50%);
+            }
+
+            .scroll-body {
+                max-width: 480px;
+                margin: 0 auto;
+            }
+
+            /* centre sheets on wider screens */
+            .modal-overlay,
+            .confirm-overlay,
+            .status-overlay {
+                align-items: center;
+                padding-bottom: 0;
+            }
+
+            .modal-sheet,
+            .confirm-sheet,
+            .status-sheet {
+                border-radius: 26px;
+                max-width: 390px;
+                margin-bottom: 2.5rem;
+            }
+        }
+
+        @media (min-width:900px) {
+            .gallery-grid {
+                grid-template-columns: repeat(4, 1fr);
+            }
+        }
+
+        /* ── Stagger anims ── */
+        @keyframes fup {
+            from {
+                opacity: 0;
+                transform: translateY(12px)
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0)
+            }
+        }
+
+        .image-card {
+            animation: fup 0.42s ease backwards;
+        }
+
+        .image-card:nth-child(1) {
+            animation-delay: 0.04s;
+        }
+
+        .image-card:nth-child(2) {
+            animation-delay: 0.08s;
+        }
+
+        .image-card:nth-child(3) {
+            animation-delay: 0.12s;
+        }
+
+        .image-card:nth-child(4) {
+            animation-delay: 0.16s;
+        }
+
+        .image-card:nth-child(5) {
+            animation-delay: 0.20s;
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- ══════════════════════════════════════════════
+       SUCCESS POPUP SHEET
+  ══════════════════════════════════════════════ -->
+    <div class="status-overlay" id="successPopup" th:if="${successMessage}" style="display:none;">
+        <div class="status-sheet">
+            <div class="sheet-bar"></div>
+            <div class="ok-ring"><span class="ms">check_circle</span></div>
+            <h2>Done Successfully!</h2>
+            <p th:text="${successMessage}">Operation completed successfully.</p>
+            <button class="ok-btn green" onclick="closeStatusPopup('successPopup')">
+                <span class="ms">done_all</span> OK, Got It
+            </button>
+        </div>
+    </div>
+
+    <!-- ══════════════════════════════════════════════
+       ERROR POPUP SHEET
+  ══════════════════════════════════════════════ -->
+    <div class="status-overlay" id="errorPopup" th:if="${errorMessage}" style="display:none;">
+        <div class="status-sheet">
+            <div class="sheet-bar"></div>
+            <div class="err-ring"><span class="ms">error</span></div>
+            <h2>Something Went Wrong</h2>
+            <p th:text="${errorMessage}">An error occurred. Please try again.</p>
+            <button class="ok-btn red" onclick="closeStatusPopup('errorPopup')">
+                <span class="ms">close</span> Close
+            </button>
+        </div>
+    </div>
+
+    <!-- ── Lightbox ── -->
+    <div id="imageLightbox" class="lightbox" onclick="closeLightbox(event)">
+        <div class="lb-wrap">
+            <button class="lb-close" onclick="closeLightbox(event)">
+                <span class="ms">close</span>
+            </button>
+            <img id="lightboxImage" src="" alt="Full size image">
+        </div>
+    </div>
+
+    <!-- ── Upload Modal ── -->
+    <div id="uploadModal" class="modal-overlay">
+        <div class="modal-sheet">
+            <div class="sheet-bar"></div>
+            <div class="sheet-header">
+                <h2>Upload Image</h2>
+                <button class="sheet-close" onclick="closeUploadModal()">
+                    <span class="ms">close</span>
+                </button>
+            </div>
+            <form id="uploadForm" th:action="@{'/user/sub/hospital/upload-images/' + ${hospital.hospitalId}}"
+                method="post" enctype="multipart/form-data">
+                <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+                <div class="upload-zone" id="uploadArea">
+                    <div class="uz-icon"><span class="ms">cloud_upload</span></div>
+                    <h3>Tap to choose a photo</h3>
+                    <p>JPG, PNG, WEBP supported</p>
+                    <input type="file" id="imageInput" name="image" required accept="image/*" style="display:none;">
+                </div>
+                <div id="previewGrid" class="preview-grid"></div>
+                <div class="sheet-actions">
+                    <button type="submit" class="s-btn primary" id="uploadBtn" disabled>
+                        <span class="ms">upload</span> Upload
+                    </button>
+                    <button type="button" class="s-btn secondary" onclick="closeUploadModal()">
+                        <span class="ms">close</span> Cancel
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- ── Confirm Delete ── -->
+    <div id="confirmDialog" class="confirm-overlay">
+        <div class="confirm-sheet">
+            <div class="sheet-bar"></div>
+            <div class="danger-ring"><span class="ms">delete_forever</span></div>
+            <h3>Delete Image?</h3>
+            <p>Are you sure you want to delete this image? This action cannot be undone.</p>
+            <div class="confirm-btns">
+                <button class="c-btn danger" onclick="confirmDelete()">
+                    <span class="ms">delete</span> Delete
+                </button>
+                <button class="c-btn cancel" onclick="closeConfirmDialog()">
+                    <span class="ms">close</span> Cancel
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ── App Shell ── -->
+    <div class="app">
+
+        <!-- Topbar -->
+        <header class="topbar">
+            <div class="topbar-inner">
+                <div class="tb-left">
+                    <a th:href="@{'/user/hospital/manage/' + ${hospital.hospitalId}}" class="tb-back">
+                        <span class="ms" style="font-size:20px;">arrow_back</span>
+                    </a>
+                    <div>
+                        <span class="tb-label">Hospital Gallery</span>
+                        <span class="tb-title" th:text="${hospital.name}">Hospital Name</span>
+                    </div>
+                </div>
+                <div class="tb-right">
+                    <button class="icon-btn" onclick="openUploadModal()" th:disabled="${hospital.images.size() >= 5}"
+                        title="Upload image">
+                        <span class="ms" style="font-size:20px;">add_photo_alternate</span>
+                    </button>
+                </div>
+            </div>
+        </header>
+
+        <!-- Scroll Body -->
+        <div class="scroll-body">
+
+            <!-- Hero -->
+            <div class="hero">
+                <div class="hero-glow"></div>
+                <div class="hero-inner">
+                    <div class="hero-av">
+                        <span class="ms fill" style="font-size:26px;color:white;">photo_library</span>
+                    </div>
+                    <div class="hero-info">
+                        <h2>Hospital Images</h2>
+                        <p>Manage &amp; showcase your facilities</p>
+                        <div class="hero-chip" th:classappend="${hospital.images.size() >= 5} ? 'warn' : ''">
+                            <span class="ms" style="font-size:12px;"
+                                th:text="${hospital.images.size() >= 5} ? 'warning' : 'collections'">collections</span>
+                            <span th:text="${hospital.images.size()} + ' / 5 uploaded'">0 / 5 uploaded</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Content -->
+            <div class="content">
+
+                <!-- Info + Upload Bar -->
+                <div class="info-bar">
+                    <div class="ib-left">
+                        <div class="ib-icon"><span class="ms">photo_library</span></div>
+                        <div>
+                            <div class="ib-t"
+                                th:text="${hospital.images != null ? #lists.size(hospital.images) : 0} + ' Images Uploaded'">
+                                0 Images Uploaded</div>
+                            <div class="ib-s">Max 5 images allowed</div>
+                        </div>
+                    </div>
+                    <button class="up-btn" onclick="openUploadModal()" th:disabled="${hospital.images.size() >= 5}">
+                        <span class="ms">add</span> Upload
+                    </button>
+                </div>
+
+                <!-- Limit Warning -->
+                <div class="limit-warn" th:if="${hospital.images.size() >= 5}">
+                    <span class="ms fill">info</span>
+                    <p>Limit reached. Delete an image to upload a new one.</p>
+                </div>
+
+                <!-- Gallery -->
+                <div th:if="${hospital.images != null && !#lists.isEmpty(hospital.images)}" class="gallery-grid">
+                    <div th:each="image : ${hospital.images}" class="image-card">
+                        <img th:src="@{'/user/api/hospital/image/' + ${image.imageId}}" th:alt="${hospital.name}"
+                            onerror="this.src='/noprofilepic.png'">
+                        <div class="image-overlay">
+                            <button class="ovr-btn view" th:onclick="'viewImage(\'' + ${image.imageId} + '\')'">
+                                <span class="ms">visibility</span>
+                            </button>
+                            <button class="ovr-btn del" th:onclick="'deleteImage(\'' + ${image.imageId} + '\')'">
+                                <span class="ms">delete</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Empty State -->
+                <div th:unless="${hospital.images != null && !#lists.isEmpty(hospital.images)}" class="empty-state">
+                    <div class="empty-ring"><span class="ms">add_photo_alternate</span></div>
+                    <h3>No Images Yet</h3>
+                    <p>Upload images to showcase your hospital's facilities and environment to patients.</p>
+                    <button class="empty-up-btn" onclick="openUploadModal()">
+                        <span class="ms">add_photo_alternate</span>
+                        Upload First Image
+                    </button>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- Bottom Nav -->
+        <nav class="bottom-nav">
+            <a th:href="@{'/user/hospital/manage/' + ${hospital.hospitalId}}" class="nav-tab">
+                <div class="nav-pip"></div>
+                <span class="ms">dashboard</span>
+                <span>Overview</span>
+            </a>
+            <a href="#" class="nav-tab active">
+                <div class="nav-pip"></div>
+                <span class="ms">photo_library</span>
+                <span>Gallery</span>
+            </a>
+            <a th:href="@{'/user/hospital/doctors/' + ${hospital.hospitalId}}" class="nav-tab">
+                <div class="nav-pip"></div>
+                <span class="ms">medical_services</span>
+                <span>Doctors</span>
+            </a>
+            <a th:href="@{'/user/hospital/edit/' + ${hospital.hospitalId}}" class="nav-tab">
+                <div class="nav-pip"></div>
+                <span class="ms">edit_square</span>
+                <span>Edit</span>
+            </a>
+        </nav>
+
+    </div><!-- /app -->
+
+    <script th:inline="javascript">
+        const csrfToken = /*[[${_csrf.token}]]*/ '';
+        const csrfHeader = /*[[${_csrf.headerName}]]*/ '';
+
+        let selectedFiles = [];
+        let imageToDelete = null;
+
+        /* ── Init: open success/error popup on page load ── */
+        window.addEventListener('DOMContentLoaded', () => {
+            const success = document.getElementById('successPopup');
+            if (success) success.style.display = 'flex';
+
+            const error = document.getElementById('errorPopup');
+            if (error) error.style.display = 'flex';
+        });
+
+        /* ── Status popup close ───────────────────────── */
+        function closeStatusPopup(id) {
+            const el = document.getElementById(id);
+            if (!el) return;
+            el.style.transition = 'opacity 0.2s';
+            el.style.opacity = '0';
+            setTimeout(() => el.remove(), 220);
+        }
+
+        /* Close status popups on backdrop tap */
+        ['successPopup', 'errorPopup'].forEach(id => {
+            const el = document.getElementById(id);
+            if (el) {
+                el.addEventListener('click', function (e) {
+                    if (e.target === this) closeStatusPopup(id);
+                });
+            }
+        });
+
+        /* ── Toast (AJAX delete feedback) ────────────── */
+        function showToast(message, type = 'success') {
+            const icon = type === 'success' ? 'check_circle' : 'error';
+            const t = document.createElement('div');
+            t.className = `toast ${type}`;
+            t.innerHTML = `<div class="t-ico"><span class="ms">${icon}</span></div><span class="toast-msg">${message}</span>`;
+            document.body.appendChild(t);
+            setTimeout(() => {
+                t.style.transition = 'opacity 0.22s';
+                t.style.opacity = '0';
+                setTimeout(() => t.remove(), 240);
+            }, 3000);
+        }
+
+        /* ── Upload Modal ─────────────────────────────── */
+        function openUploadModal() {
+            document.getElementById('uploadModal').classList.add('active');
+        }
+
+        function closeUploadModal() {
+            document.getElementById('uploadModal').classList.remove('active');
+            selectedFiles = [];
+            document.getElementById('previewGrid').innerHTML = '';
+            document.getElementById('imageInput').value = '';
+            document.getElementById('uploadBtn').disabled = true;
+        }
+
+        const uploadArea = document.getElementById('uploadArea');
+        const imageInput = document.getElementById('imageInput');
+
+        uploadArea.addEventListener('click', () => imageInput.click());
+        uploadArea.addEventListener('dragover', (e) => { e.preventDefault(); uploadArea.classList.add('dragover'); });
+        uploadArea.addEventListener('dragleave', () => uploadArea.classList.remove('dragover'));
+        uploadArea.addEventListener('drop', (e) => {
+            e.preventDefault(); uploadArea.classList.remove('dragover');
+            handleFiles(e.dataTransfer.files);
+        });
+
+        imageInput.addEventListener('change', (e) => {
+            handleFiles(e.target.files);
+            document.getElementById('uploadBtn').disabled = e.target.files.length === 0;
+        });
+
+        function handleFiles(files) {
+            selectedFiles = Array.from(files);
+            displayPreviews();
+        }
+
+        function displayPreviews() {
+            const grid = document.getElementById('previewGrid');
+            grid.innerHTML = '';
+            selectedFiles.forEach((file, index) => {
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    const div = document.createElement('div');
+                    div.className = 'preview-item';
+                    div.innerHTML = `
+            <img src="${e.target.result}" alt="Preview">
+            <button type="button" class="preview-remove" onclick="removePreview(${index})">
+              <span class="ms">close</span>
+            </button>`;
+                    grid.appendChild(div);
+                };
+                reader.readAsDataURL(file);
+            });
+        }
+
+        function removePreview(index) {
+            selectedFiles.splice(index, 1);
+            displayPreviews();
+            const dt = new DataTransfer();
+            selectedFiles.forEach(f => dt.items.add(f));
+            imageInput.files = dt.files;
+            document.getElementById('uploadBtn').disabled = selectedFiles.length === 0;
+        }
+
+        /* ── Lightbox ─────────────────────────────────── */
+        function viewImage(imageId) {
+            document.getElementById('lightboxImage').src = '/user/api/hospital/image/' + imageId;
+            document.getElementById('imageLightbox').classList.add('active');
+        }
+
+        function closeLightbox(event) {
+            if (event.target.id === 'imageLightbox' || event.target.closest('.lb-close')) {
+                document.getElementById('imageLightbox').classList.remove('active');
+            }
+        }
+
+        /* ── Delete ───────────────────────────────────── */
+        function deleteImage(imageId) {
+            imageToDelete = imageId;
+            document.getElementById('confirmDialog').classList.add('active');
+        }
+
+        function closeConfirmDialog() {
+            document.getElementById('confirmDialog').classList.remove('active');
+            imageToDelete = null;
+        }
+
+        function confirmDelete() {
+            if (!imageToDelete) return;
+            const imageId = imageToDelete;
+            closeConfirmDialog();
+
+            fetch('/user/sub/hospital/delete-image/' + imageId, {
+                method: 'DELETE',
+                headers: { [csrfHeader]: csrfToken }
+            })
+                .then(r => r.json())
+                .then(data => {
+                    if (data.minImageError) {
+                        showToast('Hospital must have at least one image', 'error');
+                    } else if (data.ok) {
+                        showToast('Image deleted successfully', 'success');
+                        setTimeout(() => location.reload(), 1000);
+                    } else {
+                        showToast('Failed to delete image. Please try again.', 'error');
+                    }
+                })
+                .catch(err => {
+                    console.error('Error:', err);
+                    showToast('Error deleting image. Check your connection.', 'error');
+                });
+        }
+
+        /* ── Close modals on backdrop tap ────────────── */
+        document.getElementById('uploadModal').addEventListener('click', function (e) {
+            if (e.target === this) closeUploadModal();
+        });
+        document.getElementById('confirmDialog').addEventListener('click', function (e) {
+            if (e.target === this) closeConfirmDialog();
+        });
+    </script>
+
+</body>
+
+</html>

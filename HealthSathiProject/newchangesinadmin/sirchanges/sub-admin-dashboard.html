@@ -1,0 +1,1413 @@
+<!DOCTYPE html>
+<html lang="hi" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <title>Hospital Dashboard - Health Saathi</title>
+    <meta name="_csrf" th:content="${_csrf.token}">
+    <meta name="_csrf_header" th:content="${_csrf.headerName}">
+
+    <link href="https://fonts.googleapis.com" rel="preconnect" />
+    <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700&display=swap"
+        rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Devanagari:wght@400;500;600;700&display=swap"
+        rel="stylesheet" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200"
+        rel="stylesheet" />
+
+    <style>
+        *,
+        *::before,
+        *::after {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        :root {
+            --primary: #0058ba;
+            --primary-dark: #004a9e;
+            --primary-light: #e8f1fd;
+            --primary-mid: #c5d9f7;
+            --secondary: #10b981;
+            --secondary-light: #d1fae5;
+            --accent: #f59e0b;
+            --accent-light: #fef3c7;
+            --danger: #ef4444;
+            --text-main: #0f172a;
+            --text-sub: #475569;
+            --text-muted: #94a3b8;
+            --border: #e2e8f0;
+            --surface: #ffffff;
+            --bg: #f1f5f9;
+            --safe-top: env(safe-area-inset-top, 0px);
+            --safe-bottom: env(safe-area-inset-bottom, 16px);
+            --nav-h: 64px;
+            --topbar-h: 60px;
+        }
+
+        html,
+        body {
+            height: 100%;
+            overflow-x: hidden;
+        }
+
+        body {
+            font-family: 'DM Sans', 'Noto Sans Devanagari', sans-serif;
+            background: var(--bg);
+            color: var(--text-main);
+            line-height: 1.5;
+            -webkit-font-smoothing: antialiased;
+            overscroll-behavior: none;
+        }
+
+        .ms {
+            font-family: 'Material Symbols Rounded';
+            font-weight: normal;
+            font-style: normal;
+            font-size: 24px;
+            display: inline-block;
+            line-height: 1;
+            text-transform: none;
+            letter-spacing: normal;
+            word-wrap: normal;
+            white-space: nowrap;
+            direction: ltr;
+            -webkit-font-smoothing: antialiased;
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            vertical-align: middle;
+            user-select: none;
+        }
+
+        .ms.fill {
+            font-variation-settings: 'FILL' 1, 'wght' 500, 'GRAD' 0, 'opsz' 24;
+        }
+
+        /* ── App Shell ── */
+        .app {
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            min-height: 100dvh;
+        }
+
+        /* ── Top Bar ── */
+        .topbar {
+            position: sticky;
+            top: 0;
+            z-index: 200;
+            background: var(--primary);
+            padding-top: var(--safe-top);
+        }
+
+        .topbar-inner {
+            height: var(--topbar-h);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 0.85rem;
+            gap: 0.5rem;
+        }
+
+        .tb-left {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            min-width: 0;
+            flex: 1;
+        }
+
+        .tb-back {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.15);
+            border: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            text-decoration: none;
+            color: white;
+            flex-shrink: 0;
+            transition: background 0.15s;
+        }
+
+        .tb-back:active {
+            background: rgba(255, 255, 255, 0.28);
+        }
+
+        .tb-label {
+            font-size: 0.62rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            color: rgba(255, 255, 255, 0.65);
+            display: block;
+            line-height: 1.1;
+        }
+
+        .tb-title {
+            font-size: 0.97rem;
+            font-weight: 700;
+            color: white;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            display: block;
+            max-width: 170px;
+        }
+
+        .tb-right {
+            display: flex;
+            gap: 0.35rem;
+            flex-shrink: 0;
+        }
+
+        .icon-btn {
+            width: 38px;
+            height: 38px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.15);
+            border: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            color: white;
+            text-decoration: none;
+            transition: background 0.15s;
+        }
+
+        .icon-btn:active {
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        /* ── Scroll Body ── */
+        .scroll-body {
+            flex: 1;
+            overflow-y: auto;
+            overflow-x: hidden;
+            padding-bottom: calc(var(--nav-h) + var(--safe-bottom) + 0.5rem);
+            -webkit-overflow-scrolling: touch;
+        }
+
+        /* ── Hero ── */
+        .hero {
+            background: var(--primary);
+            padding: 0 1rem 2rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 28px;
+            background: var(--bg);
+            border-radius: 22px 22px 0 0;
+        }
+
+        .hero-glow {
+            position: absolute;
+            top: -80px;
+            right: -60px;
+            width: 260px;
+            height: 260px;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(255, 255, 255, 0.1) 0%, transparent 65%);
+            pointer-events: none;
+        }
+
+        .hero-inner {
+            position: relative;
+            z-index: 1;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding-bottom: 0.75rem;
+        }
+
+        .hero-avatar {
+            width: 60px;
+            height: 60px;
+            border-radius: 16px;
+            flex-shrink: 0;
+            background: rgba(255, 255, 255, 0.16);
+            border: 2px solid rgba(255, 255, 255, 0.22);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .hero-info h2 {
+            font-size: 1.1rem;
+            font-weight: 800;
+            color: white;
+            line-height: 1.3;
+        }
+
+        .hero-addr {
+            display: flex;
+            align-items: center;
+            gap: 0.25rem;
+            font-size: 0.76rem;
+            color: rgba(255, 255, 255, 0.75);
+            margin-top: 0.3rem;
+            font-weight: 500;
+        }
+
+        .hero-chips {
+            display: flex;
+            gap: 0.45rem;
+            flex-wrap: wrap;
+            margin-top: 0.55rem;
+        }
+
+        .h-chip {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.28rem;
+            background: rgba(255, 255, 255, 0.14);
+            border: 1px solid rgba(255, 255, 255, 0.18);
+            border-radius: 50px;
+            padding: 0.2rem 0.65rem;
+            font-size: 0.7rem;
+            font-weight: 600;
+            color: white;
+        }
+
+        .h-chip.live {
+            background: rgba(16, 185, 129, 0.28);
+            border-color: rgba(16, 185, 129, 0.45);
+        }
+
+        /* ── Page Content ── */
+        .content {
+            padding: 1rem 1rem 0;
+        }
+
+        .sec-label {
+            font-size: 0.68rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            color: var(--text-muted);
+            margin-bottom: 0.6rem;
+            padding-left: 0.1rem;
+        }
+
+        /* ── Stats ── */
+        .stats-row {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 0.65rem;
+            margin-bottom: 1.2rem;
+        }
+
+        .stat-tile {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 0.9rem 0.6rem;
+            text-align: center;
+            transition: transform 0.15s;
+        }
+
+        .stat-tile:active {
+            transform: scale(0.96);
+        }
+
+        .stat-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            margin: 0 auto 0.45rem;
+        }
+
+        .stat-dot.b {
+            background: var(--primary);
+            box-shadow: 0 0 0 3px var(--primary-light);
+        }
+
+        .stat-dot.a {
+            background: var(--accent);
+            box-shadow: 0 0 0 3px var(--accent-light);
+        }
+
+        .stat-dot.g {
+            background: var(--secondary);
+            box-shadow: 0 0 0 3px var(--secondary-light);
+        }
+
+        .stat-val {
+            font-size: 1.45rem;
+            font-weight: 800;
+            color: var(--text-main);
+            display: block;
+            line-height: 1;
+        }
+
+        .stat-lbl {
+            font-size: 0.65rem;
+            font-weight: 600;
+            color: var(--text-muted);
+            display: block;
+            margin-top: 0.2rem;
+        }
+
+        /* ── Menu Grid ── */
+        .menu-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 0.65rem;
+            margin-bottom: 1.2rem;
+        }
+
+        .m-tile {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 18px;
+            padding: 1rem 1rem 0.85rem;
+            text-decoration: none;
+            color: inherit;
+            display: flex;
+            flex-direction: column;
+            gap: 0.8rem;
+            position: relative;
+            overflow: hidden;
+            transition: transform 0.15s, border-color 0.15s;
+        }
+
+        .m-tile:active {
+            transform: scale(0.97);
+            border-color: var(--primary-mid);
+        }
+
+        .m-icon {
+            width: 42px;
+            height: 42px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .m-icon.bl {
+            background: var(--primary-light);
+        }
+
+        .m-icon.bl .ms {
+            color: var(--primary);
+            font-size: 21px;
+        }
+
+        .m-icon.gn {
+            background: var(--secondary-light);
+        }
+
+        .m-icon.gn .ms {
+            color: var(--secondary);
+            font-size: 21px;
+        }
+
+        .m-icon.am {
+            background: var(--accent-light);
+        }
+
+        .m-icon.am .ms {
+            color: var(--accent);
+            font-size: 21px;
+        }
+
+        .m-text .mt {
+            font-size: 0.85rem;
+            font-weight: 700;
+            color: var(--text-main);
+        }
+
+        .m-text .ms2 {
+            font-size: 0.7rem;
+            color: var(--text-muted);
+            font-weight: 500;
+            margin-top: 0.08rem;
+        }
+
+        .m-arr {
+            position: absolute;
+            bottom: 0.75rem;
+            right: 0.85rem;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background: var(--bg);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .m-arr .ms {
+            font-size: 14px;
+            color: var(--text-muted);
+        }
+
+        /* ── Gallery Card ── */
+        .gallery-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            overflow: hidden;
+            margin-bottom: 1.2rem;
+        }
+
+        .card-head {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0.9rem 1rem 0.75rem;
+        }
+
+        .card-head-l {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .ch-icon {
+            width: 32px;
+            height: 32px;
+            border-radius: 9px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .ch-icon.bl {
+            background: var(--primary-light);
+        }
+
+        .ch-icon.bl .ms {
+            color: var(--primary);
+            font-size: 17px;
+        }
+
+        .card-head-l h3 {
+            font-size: 0.9rem;
+            font-weight: 700;
+            color: var(--text-main);
+        }
+
+        .c-badge {
+            font-size: 0.66rem;
+            font-weight: 700;
+            background: var(--primary-light);
+            color: var(--primary);
+            padding: 0.16rem 0.5rem;
+            border-radius: 50px;
+        }
+
+        .card-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.25rem;
+            font-size: 0.78rem;
+            font-weight: 700;
+            color: var(--primary);
+            text-decoration: none;
+            padding: 0.35rem 0.7rem;
+            border-radius: 8px;
+            background: var(--primary-light);
+        }
+
+        .card-link:active {
+            background: var(--primary-mid);
+        }
+
+        /* ── Carousel ── */
+        .car-wrap {
+            position: relative;
+            touch-action: pan-y;
+        }
+
+        .car-viewport {
+            overflow: hidden;
+            height: 195px;
+            background: var(--bg);
+        }
+
+        .car-track {
+            display: flex;
+            height: 100%;
+            transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            will-change: transform;
+        }
+
+        .car-slide {
+            flex: 0 0 100%;
+            height: 100%;
+        }
+
+        .car-slide img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+
+        .car-empty {
+            height: 195px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 0.45rem;
+            color: var(--text-muted);
+        }
+
+        .car-empty .ms {
+            font-size: 38px;
+            opacity: 0.45;
+        }
+
+        .car-empty p {
+            font-size: 0.78rem;
+            font-weight: 500;
+        }
+
+        .car-counter {
+            position: absolute;
+            top: 9px;
+            right: 10px;
+            background: rgba(0, 0, 0, 0.52);
+            color: white;
+            font-size: 0.68rem;
+            font-weight: 700;
+            padding: 0.2rem 0.55rem;
+            border-radius: 50px;
+            backdrop-filter: blur(5px);
+            z-index: 5;
+            pointer-events: none;
+        }
+
+        .car-btn {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.9);
+            border: none;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.18);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            z-index: 10;
+            transition: transform 0.12s;
+        }
+
+        .car-btn:active {
+            transform: translateY(-50%) scale(0.9);
+        }
+
+        .car-btn.pr {
+            left: 9px;
+        }
+
+        .car-btn.nx {
+            right: 9px;
+        }
+
+        .car-btn:disabled {
+            opacity: 0.35;
+            pointer-events: none;
+        }
+
+        .car-btn .ms {
+            font-size: 18px;
+            color: var(--text-main);
+        }
+
+        .car-dots {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 5px;
+            padding: 0.65rem 0 0.35rem;
+        }
+
+        .c-dot {
+            height: 6px;
+            width: 6px;
+            border-radius: 3px;
+            background: var(--border);
+            transition: all 0.22s ease;
+            border: none;
+            cursor: pointer;
+            padding: 0;
+        }
+
+        .c-dot.on {
+            background: var(--primary);
+            width: 17px;
+        }
+
+        /* ── Doctors List ── */
+        .list-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            overflow: hidden;
+            margin-bottom: 1.2rem;
+        }
+
+        .list-row {
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+            padding: 0.85rem 1rem;
+            border-bottom: 1px solid var(--border);
+            text-decoration: none;
+            color: inherit;
+            transition: background 0.12s;
+        }
+
+        .list-row:last-child {
+            border-bottom: none;
+        }
+
+        .list-row:active {
+            background: var(--bg);
+        }
+
+        .l-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 11px;
+            flex-shrink: 0;
+            background: var(--accent-light);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .l-avatar .ms {
+            color: var(--accent);
+            font-size: 21px;
+        }
+
+        .l-info {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .l-name {
+            font-size: 0.855rem;
+            font-weight: 700;
+            color: var(--text-main);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .l-spec {
+            font-size: 0.72rem;
+            color: var(--text-muted);
+            font-weight: 500;
+            margin-top: 0.1rem;
+        }
+
+        .l-chev .ms {
+            font-size: 17px;
+            color: var(--text-muted);
+        }
+
+        .l-empty {
+            padding: 1.75rem 1rem;
+            text-align: center;
+            color: var(--text-muted);
+        }
+
+        .l-empty .ms {
+            font-size: 34px;
+            opacity: 0.4;
+            display: block;
+            margin-bottom: 0.4rem;
+        }
+
+        .l-empty p {
+            font-size: 0.8rem;
+            font-weight: 500;
+        }
+
+        .see-all {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.3rem;
+            padding: 0.85rem 1rem;
+            font-size: 0.82rem;
+            font-weight: 700;
+            color: var(--primary);
+            text-decoration: none;
+        }
+
+        /* ── Bottom Nav ── */
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            z-index: 200;
+            background: var(--surface);
+            border-top: 1px solid var(--border);
+            padding-bottom: var(--safe-bottom);
+            display: flex;
+            align-items: stretch;
+            height: calc(var(--nav-h) + var(--safe-bottom));
+        }
+
+        .nav-tab {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 0.18rem;
+            text-decoration: none;
+            color: var(--text-muted);
+            font-size: 0.63rem;
+            font-weight: 600;
+            border: none;
+            background: none;
+            cursor: pointer;
+            position: relative;
+            padding: 0.4rem 0;
+            transition: color 0.15s;
+        }
+
+        .nav-tab .ms {
+            font-size: 22px;
+            transition: font-variation-settings 0.15s;
+        }
+
+        .nav-tab.active {
+            color: var(--primary);
+        }
+
+        .nav-tab.active .ms {
+            font-variation-settings: 'FILL' 1, 'wght' 600, 'GRAD' 0, 'opsz' 24;
+        }
+
+        .nav-pip {
+            position: absolute;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 28px;
+            height: 3px;
+            border-radius: 2px;
+            background: var(--primary);
+            opacity: 0;
+            transition: opacity 0.15s;
+        }
+
+        .nav-tab.active .nav-pip {
+            opacity: 1;
+        }
+
+        /* ── FAB ── */
+        .fab {
+            position: fixed;
+            bottom: calc(var(--nav-h) + var(--safe-bottom) + 0.9rem);
+            right: 1rem;
+            z-index: 150;
+            width: 50px;
+            height: 50px;
+            border-radius: 15px;
+            background: var(--primary);
+            border: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 6px 22px rgba(0, 88, 186, 0.38);
+            cursor: pointer;
+            text-decoration: none;
+            color: white;
+            transition: transform 0.15s, box-shadow 0.15s;
+        }
+
+        .fab:active {
+            transform: scale(0.93);
+            box-shadow: 0 3px 12px rgba(0, 88, 186, 0.28);
+        }
+
+        .fab .ms {
+            font-size: 25px;
+        }
+
+        /* ── Success Sheet ── */
+        .overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(15, 23, 42, 0.5);
+            backdrop-filter: blur(5px);
+            -webkit-backdrop-filter: blur(5px);
+            z-index: 500;
+            display: flex;
+            align-items: flex-end;
+            justify-content: center;
+            animation: oin 0.22s ease forwards;
+        }
+
+        @keyframes oin {
+            from {
+                opacity: 0;
+            }
+
+            to {
+                opacity: 1;
+            }
+        }
+
+        .success-sheet {
+            background: var(--surface);
+            border-radius: 26px 26px 0 0;
+            width: 100%;
+            padding: 1.25rem 1.5rem calc(1.5rem + var(--safe-bottom));
+            text-align: center;
+            transform: translateY(100%);
+            animation: sup 0.38s cubic-bezier(0.34, 1.4, 0.64, 1) forwards;
+        }
+
+        @keyframes sup {
+            to {
+                transform: translateY(0);
+            }
+        }
+
+        .sheet-bar {
+            width: 38px;
+            height: 4px;
+            border-radius: 2px;
+            background: var(--border);
+            margin: 0 auto 1.35rem;
+        }
+
+        .s-ring {
+            width: 68px;
+            height: 68px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #d1fae5, #6ee7b7);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 1.1rem;
+            box-shadow: 0 0 0 10px rgba(16, 185, 129, 0.1);
+        }
+
+        .s-ring .ms {
+            font-size: 36px;
+            color: #059669;
+            font-variation-settings: 'FILL' 1, 'wght' 600, 'GRAD' 0, 'opsz' 48;
+        }
+
+        .success-sheet h2 {
+            font-size: 1.15rem;
+            font-weight: 800;
+            color: var(--text-main);
+            margin-bottom: 0.4rem;
+        }
+
+        .success-sheet p {
+            font-size: 0.875rem;
+            color: var(--text-sub);
+            line-height: 1.6;
+            margin-bottom: 1.6rem;
+        }
+
+        .ok-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.45rem;
+            width: 100%;
+            padding: 0.9rem 1.5rem;
+            background: var(--secondary);
+            color: white;
+            border: none;
+            border-radius: 14px;
+            font-size: 0.93rem;
+            font-weight: 700;
+            cursor: pointer;
+            font-family: inherit;
+            transition: transform 0.13s, box-shadow 0.13s;
+        }
+
+        .ok-btn:active {
+            transform: scale(0.97);
+            box-shadow: 0 4px 18px rgba(16, 185, 129, 0.32);
+        }
+
+        .ok-btn .ms {
+            font-size: 20px;
+        }
+
+        /* ── Responsive desktop ── */
+        @media (min-width: 540px) {
+            .scroll-body {
+                max-width: 480px;
+                margin: 0 auto;
+            }
+
+            .topbar,
+            .bottom-nav {
+                max-width: 480px;
+                left: 50%;
+                right: auto;
+                transform: translateX(-50%);
+            }
+
+            .fab {
+                right: calc(50% - 240px + 1rem);
+            }
+
+            .car-viewport {
+                height: 240px;
+            }
+
+            .car-empty {
+                height: 240px;
+            }
+
+            .menu-grid {
+                grid-template-columns: repeat(4, 1fr);
+            }
+
+            .success-sheet {
+                border-radius: 26px;
+                max-width: 390px;
+                margin-bottom: 2.5rem;
+            }
+
+            .overlay {
+                align-items: center;
+                padding-bottom: 0;
+            }
+        }
+
+        /* ── Animations ── */
+        @keyframes fup {
+            from {
+                opacity: 0;
+                transform: translateY(14px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .stat-tile {
+            animation: fup 0.45s ease backwards;
+        }
+
+        .stat-tile:nth-child(1) {
+            animation-delay: 0.05s;
+        }
+
+        .stat-tile:nth-child(2) {
+            animation-delay: 0.1s;
+        }
+
+        .stat-tile:nth-child(3) {
+            animation-delay: 0.15s;
+        }
+
+        .m-tile {
+            animation: fup 0.5s ease backwards;
+        }
+
+        .m-tile:nth-child(1) {
+            animation-delay: 0.1s;
+        }
+
+        .m-tile:nth-child(2) {
+            animation-delay: 0.15s;
+        }
+
+        .m-tile:nth-child(3) {
+            animation-delay: 0.2s;
+        }
+
+        .m-tile:nth-child(4) {
+            animation-delay: 0.25s;
+        }
+
+        .gallery-card {
+            animation: fup 0.5s ease 0.08s backwards;
+        }
+
+        .list-card {
+            animation: fup 0.5s ease 0.13s backwards;
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- ═══ Success Bottom Sheet ═══ -->
+    <div class="overlay" id="successPopup" th:if="${successMessage}" style="display:none;">
+        <div class="success-sheet" id="successSheet">
+            <div class="sheet-bar"></div>
+            <div class="s-ring"><span class="ms">check_circle</span></div>
+            <h2>Updated Successfully!</h2>
+            <p th:text="${successMessage}">Your changes have been saved.</p>
+            <button class="ok-btn" onclick="closePopup()">
+                <span class="ms">done_all</span> OK, Got It
+            </button>
+        </div>
+    </div>
+
+    <div class="app">
+
+        <!-- ─── Top Bar ─── -->
+        <header class="topbar">
+            <div class="topbar-inner">
+                <div class="tb-left">
+                    <a th:href="@{/user/hospitals/all}" class="tb-back">
+                        <span class="ms" style="font-size:20px;">arrow_back</span>
+                    </a>
+                    <div>
+                        <span class="tb-label">Sub Admin Panel</span>
+                        <span class="tb-title" th:text="${hospital.name}">Hospital Name</span>
+                    </div>
+                </div>
+                <div class="tb-right">
+                    <a th:href="@{'/user/hospital/' + ${hospital.hospitalId}}" class="icon-btn">
+                        <span class="ms" style="font-size:19px;">open_in_new</span>
+                    </a>
+                    <a th:href="@{'/user/hospital/edit/' + ${hospital.hospitalId}}" class="icon-btn">
+                        <span class="ms" style="font-size:19px;">edit</span>
+                    </a>
+                </div>
+            </div>
+        </header>
+
+        <!-- ─── Scroll Body ─── -->
+        <div class="scroll-body">
+
+            <!-- Hero -->
+            <div class="hero">
+                <div class="hero-glow"></div>
+                <div class="hero-inner">
+                    <div class="hero-avatar">
+                        <span class="ms fill" style="font-size:32px;color:white;">local_hospital</span>
+                    </div>
+                    <div class="hero-info">
+                        <h2 th:text="${hospital.name}">Hospital Name</h2>
+                        <div class="hero-addr">
+                            <span class="ms" style="font-size:14px;">location_on</span>
+                            <span th:text="${hospital.address}">Address</span>
+                        </div>
+                        <div class="hero-chips">
+                            <div class="h-chip">
+                                <span class="ms" style="font-size:13px;">call</span>
+                                <span th:text="${hospital.contact}">Contact</span>
+                            </div>
+                            <div class="h-chip live">
+                                <span class="ms fill" style="font-size:13px;">verified</span>
+                                Active
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Content -->
+            <div class="content">
+
+                <!-- Stats -->
+                <div class="stats-row">
+                    <div class="stat-tile">
+                        <div class="stat-dot b"></div>
+                        <span class="stat-val"
+                            th:text="${hospital.images != null ? #lists.size(hospital.images) : 0}">0</span>
+                        <span class="stat-lbl">Images</span>
+                    </div>
+                    <div class="stat-tile">
+                        <div class="stat-dot a"></div>
+                        <span class="stat-val" th:text="${doctors != null ? #lists.size(doctors) : 0}">0</span>
+                        <span class="stat-lbl">Doctors</span>
+                    </div>
+                    <div class="stat-tile">
+                        <div class="stat-dot g"></div>
+                        <span class="stat-val" style="font-size:0.9rem;margin-top:0.05rem;">Live</span>
+                        <span class="stat-lbl">Status</span>
+                    </div>
+                </div>
+
+                <!-- Manage Tiles -->
+                <p class="sec-label">Manage</p>
+                <div class="menu-grid">
+                    <a th:href="@{'/user/hospital/images/' + ${hospital.hospitalId}}" class="m-tile">
+                        <div class="m-icon bl"><span class="ms">photo_library</span></div>
+                        <div class="m-text">
+                            <div class="mt">Gallery</div>
+                            <div class="ms2">Manage images</div>
+                        </div>
+                        <div class="m-arr"><span class="ms">arrow_forward</span></div>
+                    </a>
+                    <a th:href="@{'/user/hospital/doctors/' + ${hospital.hospitalId}}" class="m-tile">
+                        <div class="m-icon am"><span class="ms">medical_services</span></div>
+                        <div class="m-text">
+                            <div class="mt">Doctors</div>
+                            <div class="ms2">View all staff</div>
+                        </div>
+                        <div class="m-arr"><span class="ms">arrow_forward</span></div>
+                    </a>
+                    <a th:href="@{'/user/hospital/edit/' + ${hospital.hospitalId}}" class="m-tile">
+                        <div class="m-icon gn"><span class="ms">edit_square</span></div>
+                        <div class="m-text">
+                            <div class="mt">Edit Info</div>
+                            <div class="ms2">Update details</div>
+                        </div>
+                        <div class="m-arr"><span class="ms">arrow_forward</span></div>
+                    </a>
+                    <a th:href="@{'/user/hospital/add/doctor/' + ${hospital.hospitalId}}" class="m-tile">
+                        <div class="m-icon bl"><span class="ms">person_add</span></div>
+                        <div class="m-text">
+                            <div class="mt">Add Doctor</div>
+                            <div class="ms2">New staff</div>
+                        </div>
+                        <div class="m-arr"><span class="ms">arrow_forward</span></div>
+                    </a>
+                </div>
+
+                <!-- Gallery -->
+                <p class="sec-label">Hospital Gallery</p>
+                <div class="gallery-card">
+                    <div class="card-head">
+                        <div class="card-head-l">
+                            <div class="ch-icon bl"><span class="ms">photo_library</span></div>
+                            <h3>Photos</h3>
+                            <span class="c-badge"
+                                th:text="${hospital.images != null ? #lists.size(hospital.images) : 0} + ' photos'">0
+                                photos</span>
+                        </div>
+                        <a th:href="@{'/user/hospital/images/' + ${hospital.hospitalId}}" class="card-link">
+                            <span class="ms" style="font-size:15px;">tune</span> Manage
+                        </a>
+                    </div>
+
+                    <!-- With images -->
+                    <div th:if="${hospital.images != null && !#lists.isEmpty(hospital.images)}" class="car-wrap"
+                        id="carWrap">
+                        <div class="car-viewport">
+                            <div class="car-track" id="carTrack">
+                                <div th:each="image : ${hospital.images}"
+                                    th:if="${image != null && image.imageId != null}" class="car-slide">
+                                    <img th:src="@{'/user/api/hospital/image/' + ${image.imageId}}"
+                                        th:alt="${hospital.name != null ? hospital.name : 'Hospital Image'}"
+                                        onerror="this.closest('.car-slide').remove(); carouselInit();">
+                                </div>
+                            </div>
+                        </div>
+                        <span class="car-counter" id="carCounter">1 / 1</span>
+                        <button class="car-btn pr" id="cPrev" onclick="carouselMove(-1)">
+                            <span class="ms">chevron_left</span>
+                        </button>
+                        <button class="car-btn nx" id="cNext" onclick="carouselMove(1)">
+                            <span class="ms">chevron_right</span>
+                        </button>
+                    </div>
+
+                    <!-- No images -->
+                    <div th:unless="${hospital.images != null && !#lists.isEmpty(hospital.images)}" class="car-empty">
+                        <span class="ms">add_photo_alternate</span>
+                        <p>No images uploaded yet</p>
+                    </div>
+
+                    <div class="car-dots" id="carDots"></div>
+                </div>
+
+                <!-- Doctors -->
+                <p class="sec-label">Medical Staff</p>
+                <div class="list-card">
+                    <div class="card-head">
+                        <div class="card-head-l">
+                            <div class="ch-icon bl"><span class="ms">stethoscope</span></div>
+                            <h3>Doctors</h3>
+                        </div>
+                        <a th:href="@{'/user/hospital/doctors/' + ${hospital.hospitalId}}" class="card-link">
+                            <span class="ms" style="font-size:15px;">manage_accounts</span> All
+                        </a>
+                    </div>
+
+                    <div th:if="${doctors != null && !#lists.isEmpty(doctors)}">
+                        <a th:each="doctor, iter : ${doctors}" th:if="${iter.index < 4}"
+                            th:href="@{'/user/hospital/doctors/' + ${hospital.hospitalId}}" class="list-row">
+                            <div class="l-avatar"><span class="ms fill">person</span></div>
+                            <div class="l-info">
+                                <div class="l-name" th:text="${doctor.name}">Doctor Name</div>
+                                <div class="l-spec"
+                                    th:text="${doctor.specialization != null ? doctor.specialization : 'Specialist'}">
+                                    Specialization</div>
+                            </div>
+                            <div class="l-chev"><span class="ms">chevron_right</span></div>
+                        </a>
+                        <a th:if="${#lists.size(doctors) > 4}"
+                            th:href="@{'/user/hospital/doctors/' + ${hospital.hospitalId}}" class="see-all">
+                            <span class="ms" style="font-size:17px;">expand_more</span>
+                            <span th:text="'View all ' + ${#lists.size(doctors)} + ' doctors'">View all</span>
+                        </a>
+                    </div>
+
+                    <div th:unless="${doctors != null && !#lists.isEmpty(doctors)}" class="l-empty">
+                        <span class="ms">person_add</span>
+                        <p>No doctors added yet</p>
+                    </div>
+                </div>
+
+            </div><!-- /content -->
+        </div><!-- /scroll-body -->
+
+        <!-- ─── Bottom Navigation ─── -->
+        <nav class="bottom-nav">
+            <a href="#" class="nav-tab active">
+                <div class="nav-pip"></div>
+                <span class="ms">dashboard</span>
+                <span>Overview</span>
+            </a>
+            <a th:href="@{'/user/hospital/images/' + ${hospital.hospitalId}}" class="nav-tab">
+                <div class="nav-pip"></div>
+                <span class="ms">photo_library</span>
+                <span>Gallery</span>
+            </a>
+            <a th:href="@{'/user/hospital/doctors/' + ${hospital.hospitalId}}" class="nav-tab">
+                <div class="nav-pip"></div>
+                <span class="ms">medical_services</span>
+                <span>Doctors</span>
+            </a>
+            <a th:href="@{'/user/hospital/edit/' + ${hospital.hospitalId}}" class="nav-tab">
+                <div class="nav-pip"></div>
+                <span class="ms">edit_square</span>
+                <span>Edit</span>
+            </a>
+        </nav>
+
+    </div><!-- /app -->
+
+    <!-- FAB -->
+    <a th:href="@{'/user/hospital/add/doctor/' + ${hospital.hospitalId}}" class="fab">
+        <span class="ms">add</span>
+    </a>
+
+    <script>
+        // ─── Popup ───────────────────────────────────────────
+        window.addEventListener('DOMContentLoaded', function () {
+            const p = document.getElementById('successPopup');
+            if (p) p.style.display = 'flex';
+            carouselInit();
+        });
+
+        function closePopup() {
+            const p = document.getElementById('successPopup');
+            if (!p) return;
+            p.style.transition = 'opacity 0.2s';
+            p.style.opacity = '0';
+            setTimeout(() => p.remove(), 220);
+        }
+
+        document.addEventListener('click', function (e) {
+            const p = document.getElementById('successPopup');
+            const s = document.getElementById('successSheet');
+            if (p && s && e.target === p) closePopup();
+        });
+
+        // ─── Carousel ────────────────────────────────────────
+        let curIdx = 0;
+
+        function carouselInit() {
+            curIdx = 0;
+            carouselRender();
+        }
+
+        function carouselRender() {
+            const track = document.getElementById('carTrack');
+            const counter = document.getElementById('carCounter');
+            const prev = document.getElementById('cPrev');
+            const next = document.getElementById('cNext');
+            const dots = document.getElementById('carDots');
+            if (!track) return;
+
+            const slides = track.querySelectorAll('.car-slide');
+            const total = slides.length;
+
+            if (total === 0) {
+                const wrap = document.getElementById('carWrap');
+                if (wrap) wrap.outerHTML = '<div class="car-empty"><span class="ms">broken_image</span><p>Images unavailable</p></div>';
+                return;
+            }
+
+            curIdx = Math.max(0, Math.min(curIdx, total - 1));
+            track.style.transform = `translateX(-${curIdx * 100}%)`;
+            if (counter) counter.textContent = `${curIdx + 1} / ${total}`;
+            if (prev) prev.disabled = curIdx === 0;
+            if (next) next.disabled = curIdx === total - 1;
+
+            if (dots) {
+                dots.innerHTML = '';
+                for (let i = 0; i < total; i++) {
+                    const d = document.createElement('button');
+                    d.className = 'c-dot' + (i === curIdx ? ' on' : '');
+                    d.setAttribute('aria-label', 'Slide ' + (i + 1));
+                    d.onclick = () => { curIdx = i; carouselRender(); };
+                    dots.appendChild(d);
+                }
+            }
+        }
+
+        function carouselMove(dir) {
+            const t = document.getElementById('carTrack');
+            if (!t) return;
+            curIdx = Math.max(0, Math.min(t.querySelectorAll('.car-slide').length - 1, curIdx + dir));
+            carouselRender();
+        }
+
+        // Touch swipe
+        (function () {
+            let sx = 0, sy = 0;
+            function getWrap() { return document.getElementById('carWrap'); }
+            document.addEventListener('DOMContentLoaded', function () {
+                const w = getWrap(); if (!w) return;
+                w.addEventListener('touchstart', e => { sx = e.touches[0].clientX; sy = e.touches[0].clientY; }, { passive: true });
+                w.addEventListener('touchend', e => {
+                    const dx = sx - e.changedTouches[0].clientX;
+                    const dy = sy - e.changedTouches[0].clientY;
+                    if (Math.abs(dx) > Math.abs(dy) && Math.abs(dx) > 35) carouselMove(dx > 0 ? 1 : -1);
+                }, { passive: true });
+            });
+        })();
+
+        document.addEventListener('keydown', e => {
+            if (e.key === 'ArrowLeft') carouselMove(-1);
+            if (e.key === 'ArrowRight') carouselMove(1);
+        });
+    </script>
+</body>
+
+</html>

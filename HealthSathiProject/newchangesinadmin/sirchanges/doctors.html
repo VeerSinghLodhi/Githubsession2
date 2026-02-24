@@ -1,0 +1,1352 @@
+<!DOCTYPE html>
+<html lang="hi" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <title>Hospital Doctors - Health Saathi</title>
+    <meta name="_csrf" th:content="${_csrf.token}">
+    <meta name="_csrf_header" th:content="${_csrf.headerName}">
+
+    <link href="https://fonts.googleapis.com" rel="preconnect" />
+    <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700&display=swap"
+        rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Devanagari:wght@400;500;600;700&display=swap"
+        rel="stylesheet" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200"
+        rel="stylesheet" />
+
+    <style>
+        *,
+        *::before,
+        *::after {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        :root {
+            --primary: #0058ba;
+            --primary-dark: #004a9e;
+            --primary-light: #e8f1fd;
+            --primary-mid: #c5d9f7;
+            --secondary: #10b981;
+            --secondary-light: #d1fae5;
+            --accent: #f59e0b;
+            --accent-light: #fef3c7;
+            --danger: #ef4444;
+            --danger-light: #fef2f2;
+            --text-main: #0f172a;
+            --text-sub: #475569;
+            --text-muted: #94a3b8;
+            --border: #e2e8f0;
+            --surface: #ffffff;
+            --bg: #f1f5f9;
+            --safe-top: env(safe-area-inset-top, 0px);
+            --safe-bottom: env(safe-area-inset-bottom, 16px);
+            --nav-h: 64px;
+            --topbar-h: 60px;
+        }
+
+        html,
+        body {
+            height: 100%;
+            overflow-x: hidden;
+        }
+
+        body {
+            font-family: 'DM Sans', 'Noto Sans Devanagari', sans-serif;
+            background: var(--bg);
+            color: var(--text-main);
+            line-height: 1.5;
+            -webkit-font-smoothing: antialiased;
+            overscroll-behavior: none;
+        }
+
+        .ms {
+            font-family: 'Material Symbols Rounded';
+            font-weight: normal;
+            font-style: normal;
+            font-size: 24px;
+            display: inline-block;
+            line-height: 1;
+            text-transform: none;
+            letter-spacing: normal;
+            white-space: nowrap;
+            -webkit-font-smoothing: antialiased;
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            vertical-align: middle;
+            user-select: none;
+        }
+
+        .ms.fill {
+            font-variation-settings: 'FILL' 1, 'wght' 500, 'GRAD' 0, 'opsz' 24;
+        }
+
+        /* ── App ── */
+        .app {
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            min-height: 100dvh;
+        }
+
+        /* ── Topbar ── */
+        .topbar {
+            position: sticky;
+            top: 0;
+            z-index: 200;
+            background: var(--primary);
+            padding-top: var(--safe-top);
+        }
+
+        .topbar-inner {
+            height: var(--topbar-h);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 0.85rem;
+            gap: 0.5rem;
+        }
+
+        .tb-left {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            min-width: 0;
+            flex: 1;
+        }
+
+        .tb-back {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.15);
+            border: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            text-decoration: none;
+            color: white;
+            flex-shrink: 0;
+            transition: background 0.15s;
+        }
+
+        .tb-back:active {
+            background: rgba(255, 255, 255, 0.28);
+        }
+
+        .tb-label {
+            font-size: 0.62rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            color: rgba(255, 255, 255, 0.65);
+            display: block;
+            line-height: 1.1;
+        }
+
+        .tb-title {
+            font-size: 0.97rem;
+            font-weight: 700;
+            color: white;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            display: block;
+            max-width: 190px;
+        }
+
+        .tb-right {
+            display: flex;
+            gap: 0.35rem;
+            flex-shrink: 0;
+        }
+
+        .tb-add {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.35rem;
+            background: rgba(255, 255, 255, 0.18);
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.25);
+            border-radius: 9px;
+            padding: 0.45rem 0.9rem;
+            font-size: 0.8rem;
+            font-weight: 700;
+            cursor: pointer;
+            text-decoration: none;
+            transition: background 0.15s;
+            white-space: nowrap;
+        }
+
+        .tb-add:active {
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        .tb-add .ms {
+            font-size: 17px;
+        }
+
+        /* ── Scroll Body ── */
+        .scroll-body {
+            flex: 1;
+            overflow-y: auto;
+            overflow-x: hidden;
+            padding-bottom: calc(var(--nav-h) + var(--safe-bottom) + 0.5rem);
+            -webkit-overflow-scrolling: touch;
+        }
+
+        /* ── Hero ── */
+        .hero {
+            background: var(--primary);
+            padding: 0 1rem 2rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 26px;
+            background: var(--bg);
+            border-radius: 20px 20px 0 0;
+        }
+
+        .hero-glow {
+            position: absolute;
+            top: -80px;
+            right: -50px;
+            width: 240px;
+            height: 240px;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(255, 255, 255, 0.09) 0%, transparent 65%);
+            pointer-events: none;
+        }
+
+        .hero-inner {
+            position: relative;
+            z-index: 1;
+            display: flex;
+            align-items: center;
+            gap: 0.9rem;
+            padding-bottom: 0.75rem;
+        }
+
+        .hero-av {
+            width: 52px;
+            height: 52px;
+            border-radius: 14px;
+            flex-shrink: 0;
+            background: rgba(255, 255, 255, 0.16);
+            border: 2px solid rgba(255, 255, 255, 0.22);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .hero-info h2 {
+            font-size: 1.05rem;
+            font-weight: 800;
+            color: white;
+        }
+
+        .hero-info p {
+            font-size: 0.76rem;
+            color: rgba(255, 255, 255, 0.72);
+            margin-top: 0.18rem;
+            font-weight: 500;
+        }
+
+        .hero-chips {
+            display: flex;
+            gap: 0.45rem;
+            flex-wrap: wrap;
+            margin-top: 0.5rem;
+        }
+
+        .h-chip {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.28rem;
+            background: rgba(255, 255, 255, 0.14);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 50px;
+            padding: 0.22rem 0.7rem;
+            font-size: 0.7rem;
+            font-weight: 700;
+            color: white;
+        }
+
+        /* ── Content ── */
+        .content {
+            padding: 1rem 1rem 0;
+        }
+
+        /* ── Info Bar ── */
+        .info-bar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 0.85rem 1rem;
+            margin-bottom: 1rem;
+            gap: 0.75rem;
+        }
+
+        .ib-l {
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+        }
+
+        .ib-icon {
+            width: 36px;
+            height: 36px;
+            border-radius: 10px;
+            background: var(--accent-light);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .ib-icon .ms {
+            font-size: 18px;
+            color: var(--accent);
+        }
+
+        .ib-t {
+            font-size: 0.82rem;
+            font-weight: 700;
+            color: var(--text-main);
+        }
+
+        .ib-s {
+            font-size: 0.7rem;
+            color: var(--text-muted);
+            font-weight: 500;
+        }
+
+        .add-chip {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.35rem;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            padding: 0.55rem 1rem;
+            font-size: 0.82rem;
+            font-weight: 700;
+            cursor: pointer;
+            text-decoration: none;
+            white-space: nowrap;
+            flex-shrink: 0;
+            transition: transform 0.13s;
+        }
+
+        .add-chip:active {
+            transform: scale(0.96);
+        }
+
+        .add-chip .ms {
+            font-size: 17px;
+        }
+
+        /* ── Doctor Cards ── */
+        .doctors-list {
+            display: flex;
+            flex-direction: column;
+            gap: 0.85rem;
+        }
+
+        .doc-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 18px;
+            overflow: hidden;
+            animation: fup 0.44s ease backwards;
+        }
+
+        .doc-top {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 1rem 1.1rem;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .doc-img {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            object-fit: cover;
+            flex-shrink: 0;
+            border: 2.5px solid var(--primary-light);
+            background: var(--primary-light);
+            display: block;
+        }
+
+        .doc-title {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .doc-name {
+            font-size: 0.95rem;
+            font-weight: 800;
+            color: var(--text-main);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .doc-spec {
+            display: inline-flex;
+            align-items: center;
+            margin-top: 0.3rem;
+            background: var(--primary-light);
+            color: var(--primary);
+            border-radius: 50px;
+            padding: 0.2rem 0.65rem;
+            font-size: 0.72rem;
+            font-weight: 700;
+            border: 1px solid var(--primary-mid);
+        }
+
+        .doc-details {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+            padding: 0.85rem 1.1rem;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .doc-det {
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+            font-size: 0.82rem;
+            color: var(--text-sub);
+            font-weight: 500;
+            overflow: hidden;
+        }
+
+        .doc-det .ms {
+            font-size: 17px;
+            color: var(--primary);
+            flex-shrink: 0;
+        }
+
+        .doc-det span:last-child {
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .doc-actions {
+            display: flex;
+        }
+
+        .doc-btn {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.42rem;
+            padding: 0.82rem;
+            border: none;
+            cursor: pointer;
+            font-family: inherit;
+            font-size: 0.82rem;
+            font-weight: 700;
+            transition: background 0.13s;
+            text-decoration: none;
+            background: var(--surface);
+        }
+
+        .doc-btn:first-child {
+            border-right: 1px solid var(--border);
+            border-radius: 0 0 0 18px;
+        }
+
+        .doc-btn:last-child {
+            border-radius: 0 0 18px 0;
+        }
+
+        .doc-btn.edit {
+            color: var(--primary);
+        }
+
+        .doc-btn.edit:active {
+            background: var(--primary-light);
+        }
+
+        .doc-btn.del {
+            color: var(--danger);
+        }
+
+        .doc-btn.del:active {
+            background: var(--danger-light);
+        }
+
+        .doc-btn .ms {
+            font-size: 18px;
+        }
+
+        /* ── Empty State ── */
+        .empty-state {
+            text-align: center;
+            padding: 3rem 1.5rem;
+            background: var(--surface);
+            border: 2px dashed var(--border);
+            border-radius: 20px;
+        }
+
+        .empty-ring {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: var(--primary-light);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 1.1rem;
+        }
+
+        .empty-ring .ms {
+            font-size: 38px;
+            color: var(--primary);
+        }
+
+        .empty-state h3 {
+            font-size: 1.05rem;
+            font-weight: 800;
+            color: var(--text-main);
+            margin-bottom: 0.3rem;
+        }
+
+        .empty-state p {
+            font-size: 0.82rem;
+            color: var(--text-muted);
+            margin-bottom: 1.4rem;
+            line-height: 1.65;
+        }
+
+        .empty-add {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            padding: 0.8rem 1.5rem;
+            font-size: 0.88rem;
+            font-weight: 700;
+            cursor: pointer;
+            text-decoration: none;
+            font-family: inherit;
+            transition: transform 0.13s;
+        }
+
+        .empty-add:active {
+            transform: scale(0.97);
+        }
+
+        .empty-add .ms {
+            font-size: 19px;
+        }
+
+        /* ── Bottom Nav ── */
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            z-index: 200;
+            background: var(--surface);
+            border-top: 1px solid var(--border);
+            padding-bottom: var(--safe-bottom);
+            display: flex;
+            align-items: stretch;
+            height: calc(var(--nav-h) + var(--safe-bottom));
+        }
+
+        .nav-tab {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 0.18rem;
+            text-decoration: none;
+            color: var(--text-muted);
+            font-size: 0.63rem;
+            font-weight: 600;
+            border: none;
+            background: none;
+            cursor: pointer;
+            position: relative;
+            padding: 0.4rem 0;
+            transition: color 0.15s;
+        }
+
+        .nav-tab .ms {
+            font-size: 22px;
+        }
+
+        .nav-tab.active {
+            color: var(--primary);
+        }
+
+        .nav-tab.active .ms {
+            font-variation-settings: 'FILL' 1, 'wght' 600, 'GRAD' 0, 'opsz' 24;
+        }
+
+        .nav-pip {
+            position: absolute;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 28px;
+            height: 3px;
+            border-radius: 2px;
+            background: var(--primary);
+            opacity: 0;
+            transition: opacity 0.15s;
+        }
+
+        .nav-tab.active .nav-pip {
+            opacity: 1;
+        }
+
+        /* ═══════════════════════════════════════
+           SHARED OVERLAY / SHEET — used by both
+           the confirm-delete sheet AND the
+           success / error popup sheet
+        ═══════════════════════════════════════ */
+        .overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(15, 23, 42, 0.5);
+            backdrop-filter: blur(5px);
+            -webkit-backdrop-filter: blur(5px);
+            z-index: 500;
+            align-items: flex-end;
+            justify-content: center;
+        }
+
+        .overlay.active {
+            display: flex;
+            animation: oin 0.22s ease;
+        }
+
+        @keyframes oin {
+            from {
+                opacity: 0
+            }
+
+            to {
+                opacity: 1
+            }
+        }
+
+        /* ── Confirm-delete sheet ── */
+        .conf-sheet {
+            background: var(--surface);
+            border-radius: 26px 26px 0 0;
+            width: 100%;
+            max-width: 480px;
+            text-align: center;
+            padding: 1.25rem 1.5rem calc(1.75rem + var(--safe-bottom));
+            transform: translateY(100%);
+            animation: sup 0.36s cubic-bezier(0.34, 1.3, 0.64, 1) forwards;
+        }
+
+        @keyframes sup {
+            to {
+                transform: translateY(0)
+            }
+        }
+
+        .s-bar {
+            width: 38px;
+            height: 4px;
+            border-radius: 2px;
+            background: var(--border);
+            margin: 0 auto 1.25rem;
+        }
+
+        .d-ring {
+            width: 64px;
+            height: 64px;
+            border-radius: 50%;
+            background: var(--danger-light);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 1rem;
+            box-shadow: 0 0 0 8px rgba(239, 68, 68, 0.07);
+        }
+
+        .d-ring .ms {
+            font-size: 32px;
+            color: var(--danger);
+            font-variation-settings: 'FILL' 1, 'wght' 500, 'GRAD' 0, 'opsz' 48;
+        }
+
+        .conf-sheet h3 {
+            font-size: 1.05rem;
+            font-weight: 800;
+            color: var(--text-main);
+            margin-bottom: 0.38rem;
+        }
+
+        .conf-sheet p {
+            font-size: 0.82rem;
+            color: var(--text-sub);
+            line-height: 1.65;
+            margin-bottom: 1.5rem;
+        }
+
+        .conf-btns {
+            display: flex;
+            gap: 0.65rem;
+        }
+
+        .cb {
+            flex: 1;
+            padding: 0.85rem;
+            border: none;
+            border-radius: 13px;
+            font-weight: 700;
+            font-size: 0.88rem;
+            cursor: pointer;
+            font-family: inherit;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.42rem;
+            transition: transform 0.13s;
+        }
+
+        .cb:active {
+            transform: scale(0.97);
+        }
+
+        .cb.danger {
+            background: var(--danger);
+            color: white;
+        }
+
+        .cb.cancel {
+            background: var(--bg);
+            color: var(--text-sub);
+            border: 1.5px solid var(--border);
+        }
+
+        .cb .ms {
+            font-size: 18px;
+        }
+
+        /* ── Success / Error popup sheet ── */
+        .s-sheet {
+            background: var(--surface);
+            border-radius: 26px 26px 0 0;
+            width: 100%;
+            max-width: 480px;
+            text-align: center;
+            padding: 1.25rem 1.5rem calc(1.75rem + var(--safe-bottom));
+            transform: translateY(100%);
+            animation: sup 0.38s cubic-bezier(0.34, 1.4, 0.64, 1) forwards;
+        }
+
+        /* success ring */
+        .s-ring {
+            width: 68px;
+            height: 68px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #d1fae5, #6ee7b7);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 1.1rem;
+            box-shadow: 0 0 0 10px rgba(16, 185, 129, 0.1);
+        }
+
+        .s-ring .ms {
+            font-size: 36px;
+            color: #059669;
+            font-variation-settings: 'FILL' 1, 'wght' 600, 'GRAD' 0, 'opsz' 48;
+        }
+
+        /* error ring */
+        .e-ring {
+            width: 68px;
+            height: 68px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #fee2e2, #fca5a5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 1.1rem;
+            box-shadow: 0 0 0 10px rgba(239, 68, 68, 0.1);
+        }
+
+        .e-ring .ms {
+            font-size: 36px;
+            color: #dc2626;
+            font-variation-settings: 'FILL' 1, 'wght' 600, 'GRAD' 0, 'opsz' 48;
+        }
+
+        .s-sheet h2 {
+            font-size: 1.15rem;
+            font-weight: 800;
+            color: var(--text-main);
+            margin-bottom: 0.4rem;
+        }
+
+        .s-sheet p {
+            font-size: 0.875rem;
+            color: var(--text-sub);
+            line-height: 1.6;
+            margin-bottom: 1.6rem;
+        }
+
+        .ok-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.45rem;
+            width: 100%;
+            padding: 0.9rem;
+            background: var(--secondary);
+            color: white;
+            border: none;
+            border-radius: 14px;
+            font-size: 0.93rem;
+            font-weight: 700;
+            cursor: pointer;
+            font-family: inherit;
+            transition: transform 0.13s;
+        }
+
+        .ok-btn.err-btn {
+            background: var(--danger);
+        }
+
+        .ok-btn:active {
+            transform: scale(0.97);
+        }
+
+        .ok-btn .ms {
+            font-size: 20px;
+        }
+
+        /* ── FAB ── */
+        .fab {
+            position: fixed;
+            bottom: calc(var(--nav-h) + var(--safe-bottom) + 0.9rem);
+            right: 1rem;
+            z-index: 150;
+            width: 50px;
+            height: 50px;
+            border-radius: 15px;
+            background: var(--primary);
+            border: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 6px 22px rgba(0, 88, 186, 0.38);
+            cursor: pointer;
+            text-decoration: none;
+            color: white;
+            transition: transform 0.15s;
+        }
+
+        .fab:active {
+            transform: scale(0.93);
+        }
+
+        .fab .ms {
+            font-size: 25px;
+        }
+
+        /* ── Toast ── */
+        .toast {
+            position: fixed;
+            top: calc(var(--safe-top) + 68px);
+            right: 1rem;
+            left: 1rem;
+            max-width: 360px;
+            margin: 0 auto;
+            background: var(--surface);
+            border-radius: 14px;
+            box-shadow: 0 8px 28px rgba(0, 0, 0, 0.16);
+            display: flex;
+            align-items: center;
+            gap: 0.7rem;
+            padding: 0.85rem 1rem;
+            z-index: 700;
+            animation: tin 0.28s ease;
+        }
+
+        @keyframes tin {
+            from {
+                opacity: 0;
+                transform: translateY(-10px)
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0)
+            }
+        }
+
+        .toast.success {
+            border-left: 4px solid var(--secondary);
+        }
+
+        .toast.error {
+            border-left: 4px solid var(--danger);
+        }
+
+        .t-ico {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .toast.success .t-ico {
+            background: var(--secondary-light);
+        }
+
+        .toast.success .t-ico .ms {
+            color: var(--secondary);
+            font-size: 17px;
+            font-variation-settings: 'FILL' 1, 'wght' 500, 'GRAD' 0, 'opsz' 24;
+        }
+
+        .toast.error .t-ico {
+            background: var(--danger-light);
+        }
+
+        .toast.error .t-ico .ms {
+            color: var(--danger);
+            font-size: 17px;
+            font-variation-settings: 'FILL' 1, 'wght' 500, 'GRAD' 0, 'opsz' 24;
+        }
+
+        .toast-msg {
+            font-size: 0.82rem;
+            font-weight: 600;
+            color: var(--text-main);
+            flex: 1;
+        }
+
+        /* ── Responsive ── */
+        @media (min-width:540px) {
+
+            .topbar,
+            .bottom-nav {
+                max-width: 480px;
+                left: 50%;
+                right: auto;
+                transform: translateX(-50%);
+            }
+
+            .scroll-body {
+                max-width: 480px;
+                margin: 0 auto;
+            }
+
+            .fab {
+                right: calc(50% - 240px + 1rem);
+            }
+
+            .overlay {
+                align-items: center;
+                padding-bottom: 0;
+            }
+
+            .conf-sheet,
+            .s-sheet {
+                border-radius: 26px;
+                max-width: 390px;
+                margin-bottom: 2.5rem;
+            }
+        }
+
+        @media (min-width:900px) {
+            .doctors-list {
+                display: grid;
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @keyframes fup {
+            from {
+                opacity: 0;
+                transform: translateY(12px)
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0)
+            }
+        }
+
+        .doc-card:nth-child(1) {
+            animation-delay: 0.04s;
+        }
+
+        .doc-card:nth-child(2) {
+            animation-delay: 0.08s;
+        }
+
+        .doc-card:nth-child(3) {
+            animation-delay: 0.12s;
+        }
+
+        .doc-card:nth-child(4) {
+            animation-delay: 0.16s;
+        }
+
+        .doc-card:nth-child(5) {
+            animation-delay: 0.20s;
+        }
+
+        .doc-card:nth-child(n+6) {
+            animation-delay: 0.24s;
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- ══════════════════════════════════════════
+         SUCCESS POPUP SHEET  (shown when
+         successMessage is set in the model)
+    ══════════════════════════════════════════ -->
+    <div class="overlay" id="successPopup" th:if="${successMessage}" style="display:none;">
+        <div class="s-sheet" id="successSheet">
+            <div class="s-bar"></div>
+            <div class="s-ring"><span class="ms">check_circle</span></div>
+            <h2>Done Successfully!</h2>
+            <p th:text="${successMessage}">Operation completed successfully.</p>
+            <button class="ok-btn" onclick="closeSuccessPopup()">
+                <span class="ms">done_all</span> OK, Got It
+            </button>
+        </div>
+    </div>
+
+    <!-- ══════════════════════════════════════════
+         ERROR POPUP SHEET  (shown when
+         errorMessage is set in the model)
+    ══════════════════════════════════════════ -->
+    <div class="overlay" id="errorPopup" th:if="${errorMessage}" style="display:none;">
+        <div class="s-sheet" id="errorSheet">
+            <div class="s-bar"></div>
+            <div class="e-ring"><span class="ms">error</span></div>
+            <h2>Something Went Wrong</h2>
+            <p th:text="${errorMessage}">An error occurred. Please try again.</p>
+            <button class="ok-btn err-btn" onclick="closeErrorPopup()">
+                <span class="ms">close</span> Close
+            </button>
+        </div>
+    </div>
+
+    <!-- ── Confirm Delete Sheet ── -->
+    <div class="overlay" id="confirmDialog">
+        <div class="conf-sheet">
+            <div class="s-bar"></div>
+            <div class="d-ring"><span class="ms">person_remove</span></div>
+            <h3>Delete Doctor?</h3>
+            <p>Are you sure you want to remove this doctor from the hospital? This action cannot be undone.</p>
+            <div class="conf-btns">
+                <button class="cb cancel" onclick="closeConfirmDialog()">
+                    <span class="ms">close</span> Cancel
+                </button>
+                <button class="cb danger" onclick="confirmDelete()">
+                    <span class="ms">delete</span> Delete
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div class="app">
+
+        <!-- ── Topbar ── -->
+        <header class="topbar">
+            <div class="topbar-inner">
+                <div class="tb-left">
+                    <a th:href="@{'/user/hospital/manage/' + ${hospital.hospitalId}}" class="tb-back">
+                        <span class="ms" style="font-size:20px;">arrow_back</span>
+                    </a>
+                    <div>
+                        <span class="tb-label">Hospital Doctors</span>
+                        <span class="tb-title" th:text="${hospital.name}">Hospital Name</span>
+                    </div>
+                </div>
+                <div class="tb-right">
+                    <a th:href="@{'/user/hospital/add/doctor/' + ${hospital.hospitalId}}" class="tb-add">
+                        <span class="ms">person_add</span> Add
+                    </a>
+                </div>
+            </div>
+        </header>
+
+        <!-- ── Scroll Body ── -->
+        <div class="scroll-body">
+
+            <!-- Hero -->
+            <div class="hero">
+                <div class="hero-glow"></div>
+                <div class="hero-inner">
+                    <div class="hero-av">
+                        <span class="ms fill" style="font-size:26px;color:white;">medical_services</span>
+                    </div>
+                    <div class="hero-info">
+                        <h2>Hospital Doctors</h2>
+                        <p>Manage doctors &amp; medical specialists</p>
+                        <div class="hero-chips">
+                            <div class="h-chip">
+                                <span class="ms" style="font-size:12px;">groups</span>
+                                <span th:text="${doctors != null ? #lists.size(doctors) : 0} + ' Doctors'">0
+                                    Doctors</span>
+                            </div>
+                            <div class="h-chip">
+                                <span class="ms" style="font-size:12px;">local_hospital</span>
+                                <span th:text="${hospital.name}">Hospital</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Content -->
+            <div class="content">
+
+                <!-- Info Bar -->
+                <div class="info-bar">
+                    <div class="ib-l">
+                        <div class="ib-icon"><span class="ms">stethoscope</span></div>
+                        <div>
+                            <div class="ib-t"
+                                th:text="${doctors != null ? #lists.size(doctors) : 0} + ' Doctors on Staff'">0 Doctors
+                                on Staff</div>
+                            <div class="ib-s">Manage medical team below</div>
+                        </div>
+                    </div>
+                    <a th:href="@{'/user/hospital/add/doctor/' + ${hospital.hospitalId}}" class="add-chip">
+                        <span class="ms">add</span> Add Doctor
+                    </a>
+                </div>
+
+                <!-- Doctors List -->
+                <div th:if="${doctors != null && !#lists.isEmpty(doctors)}" class="doctors-list">
+                    <div th:each="doctor : ${doctors}" class="doc-card">
+
+                        <!-- Photo + Name + Specialty -->
+                        <div class="doc-top">
+                            <img th:src="@{'/get/Profilepic/' + ${doctor.doctorId}}" alt="Doctor Image" class="doc-img"
+                                onerror="this.src='/noprofilepic.png'" />
+                            <div class="doc-title">
+                                <div class="doc-name" th:text="${doctor.name}">Doctor Name</div>
+                                <div class="doc-spec" th:text="${doctor.specialization}">Specialty</div>
+                            </div>
+                        </div>
+
+                        <!-- Details -->
+                        <div class="doc-details">
+                            <div class="doc-det">
+                                <span class="ms">call</span>
+                                <span th:text="${doctor.contact}">Contact Number</span>
+                            </div>
+                            <div class="doc-det" th:if="${doctor.qualification}">
+                                <span class="ms">school</span>
+                                <span th:text="${doctor.qualification}">Qualification</span>
+                            </div>
+                        </div>
+
+                        <!-- Actions -->
+                        <div class="doc-actions">
+                            <a class="doc-btn edit" th:href="@{'/user/hospital/edit/doctor/' + ${doctor.doctorId}}">
+                                <span class="ms">edit</span> Edit
+                            </a>
+                            <button class="doc-btn del" th:onclick="'deleteDoctor(\'' + ${doctor.doctorId} + '\')'">
+                                <span class="ms">delete</span> Delete
+                            </button>
+                        </div>
+
+                    </div>
+                </div>
+
+                <!-- Empty State -->
+                <div th:unless="${doctors != null && !#lists.isEmpty(doctors)}" class="empty-state">
+                    <div class="empty-ring">
+                        <span class="ms">medical_services</span>
+                    </div>
+                    <h3>No Doctors Added</h3>
+                    <p>Add doctors to your hospital profile to help patients find the right specialists.</p>
+                    <a class="empty-add" th:href="@{'/user/hospital/add/doctor/' + ${hospital.hospitalId}}">
+                        <span class="ms">person_add</span> Add First Doctor
+                    </a>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- ── Bottom Nav ── -->
+        <nav class="bottom-nav">
+            <a th:href="@{'/user/hospital/manage/' + ${hospital.hospitalId}}" class="nav-tab">
+                <div class="nav-pip"></div>
+                <span class="ms">dashboard</span>
+                <span>Overview</span>
+            </a>
+            <a th:href="@{'/user/hospital/images/' + ${hospital.hospitalId}}" class="nav-tab">
+                <div class="nav-pip"></div>
+                <span class="ms">photo_library</span>
+                <span>Gallery</span>
+            </a>
+            <a href="#" class="nav-tab active">
+                <div class="nav-pip"></div>
+                <span class="ms">medical_services</span>
+                <span>Doctors</span>
+            </a>
+            <a th:href="@{'/user/hospital/edit/' + ${hospital.hospitalId}}" class="nav-tab">
+                <div class="nav-pip"></div>
+                <span class="ms">edit_square</span>
+                <span>Edit</span>
+            </a>
+        </nav>
+
+    </div>
+
+    <!-- ── FAB ── -->
+    <a th:href="@{'/user/hospital/add/doctor/' + ${hospital.hospitalId}}" class="fab">
+        <span class="ms">person_add</span>
+    </a>
+
+    <script th:inline="javascript">
+        const csrfToken = /*[[${_csrf.token}]]*/ '';
+        const csrfHeader = /*[[${_csrf.headerName}]]*/ '';
+
+        /* ── Success popup ───────────────────────────── */
+        function closeSuccessPopup() {
+            const p = document.getElementById('successPopup');
+            if (!p) return;
+            p.style.transition = 'opacity 0.2s';
+            p.style.opacity = '0';
+            setTimeout(() => p.remove(), 220);
+        }
+
+        /* ── Error popup ─────────────────────────────── */
+        function closeErrorPopup() {
+            const p = document.getElementById('errorPopup');
+            if (!p) return;
+            p.style.transition = 'opacity 0.2s';
+            p.style.opacity = '0';
+            setTimeout(() => p.remove(), 220);
+        }
+
+        /* Close on backdrop tap */
+        ['successPopup', 'errorPopup'].forEach(id => {
+            const el = document.getElementById(id);
+            if (el) {
+                el.addEventListener('click', function (e) {
+                    if (e.target === this) {
+                        id === 'successPopup' ? closeSuccessPopup() : closeErrorPopup();
+                    }
+                });
+            }
+        });
+
+        /* ── Toast (used by delete feedback) ─────────── */
+        function showToast(message, type = 'success') {
+            const icon = type === 'success' ? 'check_circle' : 'error';
+            const t = document.createElement('div');
+            t.className = `toast ${type}`;
+            t.innerHTML = `<div class="t-ico"><span class="ms">${icon}</span></div><span class="toast-msg">${message}</span>`;
+            document.body.appendChild(t);
+            setTimeout(() => {
+                t.style.transition = 'opacity 0.22s';
+                t.style.opacity = '0';
+                setTimeout(() => t.remove(), 240);
+            }, 3000);
+        }
+
+        /* ── Delete doctor ───────────────────────────── */
+        let doctorToDelete = null;
+
+        function deleteDoctor(doctorId) {
+            doctorToDelete = doctorId;
+            document.getElementById('confirmDialog').classList.add('active');
+        }
+
+        function closeConfirmDialog() {
+            document.getElementById('confirmDialog').classList.remove('active');
+            doctorToDelete = null;
+        }
+
+        function confirmDelete() {
+            if (!doctorToDelete) return;
+            const doctorId = doctorToDelete;
+            closeConfirmDialog();
+
+            fetch('/user/hospital/delete-doctor/' + doctorId, {
+                method: 'DELETE',
+                headers: { [csrfHeader]: csrfToken }
+            })
+                .then(response => {
+                    if (response.ok) {
+                        showToast('Doctor deleted successfully', 'success');
+                        setTimeout(() => location.reload(), 3000);
+                    } else {
+                        showToast('Failed to delete doctor. Please try again.', 'error');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    showToast('Error deleting doctor. Please check your connection.', 'error');
+                });
+        }
+
+        /* Close confirm on backdrop tap */
+        document.getElementById('confirmDialog').addEventListener('click', function (e) {
+            if (e.target === this) closeConfirmDialog();
+        });
+
+        /* ── Init: show success/error popup on load ─── */
+        window.addEventListener('DOMContentLoaded', () => {
+            const success = document.getElementById('successPopup');
+            if (success) success.style.display = 'flex';
+
+            const error = document.getElementById('errorPopup');
+            if (error) error.style.display = 'flex';
+        });
+    </script>
+
+</body>
+
+</html>

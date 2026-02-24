@@ -1,0 +1,860 @@
+<!DOCTYPE html>
+<html lang="hi" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <title>Add Doctor - Health Saathi</title>
+    <meta name="_csrf" th:content="${_csrf.token}">
+    <meta name="_csrf_header" th:content="${_csrf.headerName}">
+
+    <link href="https://fonts.googleapis.com" rel="preconnect" />
+    <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700&display=swap"
+        rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Devanagari:wght@400;500;600;700&display=swap"
+        rel="stylesheet" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200"
+        rel="stylesheet" />
+
+    <style>
+        *,
+        *::before,
+        *::after {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        :root {
+            --primary: #0058ba;
+            --primary-dark: #004a9e;
+            --primary-light: #e8f1fd;
+            --primary-mid: #c5d9f7;
+            --secondary: #10b981;
+            --secondary-light: #d1fae5;
+            --danger: #ef4444;
+            --danger-light: #fef2f2;
+            --text-main: #0f172a;
+            --text-sub: #475569;
+            --text-muted: #94a3b8;
+            --border: #e2e8f0;
+            --surface: #ffffff;
+            --bg: #f1f5f9;
+            --safe-top: env(safe-area-inset-top, 0px);
+            --safe-bottom: env(safe-area-inset-bottom, 16px);
+            --topbar-h: 60px;
+        }
+
+        html,
+        body {
+            height: 100%;
+            overflow-x: hidden;
+        }
+
+        body {
+            font-family: 'DM Sans', 'Noto Sans Devanagari', sans-serif;
+            background: var(--bg);
+            color: var(--text-main);
+            line-height: 1.5;
+            -webkit-font-smoothing: antialiased;
+            overscroll-behavior: none;
+        }
+
+        .ms {
+            font-family: 'Material Symbols Rounded';
+            font-weight: normal;
+            font-style: normal;
+            font-size: 24px;
+            display: inline-block;
+            line-height: 1;
+            text-transform: none;
+            letter-spacing: normal;
+            white-space: nowrap;
+            -webkit-font-smoothing: antialiased;
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            vertical-align: middle;
+            user-select: none;
+        }
+
+        .ms.fill {
+            font-variation-settings: 'FILL' 1, 'wght' 500, 'GRAD' 0, 'opsz' 24;
+        }
+
+        /* ── App ── */
+        .app {
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            min-height: 100dvh;
+        }
+
+        /* ── Topbar ── */
+        .topbar {
+            position: sticky;
+            top: 0;
+            z-index: 200;
+            background: var(--primary);
+            padding-top: var(--safe-top);
+        }
+
+        .topbar-inner {
+            height: var(--topbar-h);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 0.85rem;
+            gap: 0.5rem;
+        }
+
+        .tb-left {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            min-width: 0;
+            flex: 1;
+        }
+
+        .tb-back {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.15);
+            border: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            text-decoration: none;
+            color: white;
+            flex-shrink: 0;
+            transition: background 0.15s;
+        }
+
+        .tb-back:active {
+            background: rgba(255, 255, 255, 0.28);
+        }
+
+        .tb-label {
+            font-size: 0.62rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            color: rgba(255, 255, 255, 0.65);
+            display: block;
+            line-height: 1.1;
+        }
+
+        .tb-title {
+            font-size: 0.97rem;
+            font-weight: 700;
+            color: white;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            display: block;
+            max-width: 220px;
+        }
+
+        .tb-submit {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.35rem;
+            background: rgba(255, 255, 255, 0.18);
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.25);
+            border-radius: 9px;
+            padding: 0.45rem 0.9rem;
+            font-size: 0.8rem;
+            font-weight: 700;
+            cursor: pointer;
+            font-family: inherit;
+            transition: background 0.15s;
+            white-space: nowrap;
+            flex-shrink: 0;
+        }
+
+        .tb-submit:active {
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        .tb-submit .ms {
+            font-size: 17px;
+        }
+
+        /* ── Scroll Body ── */
+        .scroll-body {
+            flex: 1;
+            overflow-y: auto;
+            overflow-x: hidden;
+            padding-bottom: calc(var(--safe-bottom) + 1rem);
+            -webkit-overflow-scrolling: touch;
+        }
+
+        /* ── Hero ── */
+        .hero {
+            background: var(--primary);
+            padding: 0 1rem 2rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 26px;
+            background: var(--bg);
+            border-radius: 20px 20px 0 0;
+        }
+
+        .hero-glow {
+            position: absolute;
+            top: -80px;
+            right: -50px;
+            width: 240px;
+            height: 240px;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(255, 255, 255, 0.09) 0%, transparent 65%);
+            pointer-events: none;
+        }
+
+        .hero-inner {
+            position: relative;
+            z-index: 1;
+            display: flex;
+            align-items: center;
+            gap: 0.9rem;
+            padding-bottom: 0.75rem;
+        }
+
+        .hero-av {
+            width: 52px;
+            height: 52px;
+            border-radius: 14px;
+            flex-shrink: 0;
+            background: rgba(255, 255, 255, 0.16);
+            border: 2px solid rgba(255, 255, 255, 0.22);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .hero-info h2 {
+            font-size: 1.05rem;
+            font-weight: 800;
+            color: white;
+        }
+
+        .hero-info p {
+            font-size: 0.76rem;
+            color: rgba(255, 255, 255, 0.72);
+            margin-top: 0.18rem;
+            font-weight: 500;
+        }
+
+        .h-chip {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.28rem;
+            background: rgba(255, 255, 255, 0.14);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 50px;
+            padding: 0.22rem 0.7rem;
+            font-size: 0.7rem;
+            font-weight: 700;
+            color: white;
+            margin-top: 0.5rem;
+        }
+
+        /* ── Content ── */
+        .content {
+            padding: 1rem 1rem 0;
+        }
+
+        /* ── Alert messages ── */
+        .alert {
+            display: flex;
+            align-items: center;
+            gap: 0.65rem;
+            padding: 0.85rem 1rem;
+            border-radius: 14px;
+            margin-bottom: 1rem;
+            font-size: 0.83rem;
+            font-weight: 600;
+            animation: fup 0.3s ease;
+        }
+
+        .alert.success {
+            background: var(--secondary-light);
+            border-left: 3.5px solid var(--secondary);
+            color: #065f46;
+        }
+
+        .alert.error {
+            background: var(--danger-light);
+            border-left: 3.5px solid var(--danger);
+            color: #991b1b;
+        }
+
+        .alert .ms {
+            font-size: 19px;
+            flex-shrink: 0;
+        }
+
+        .alert.success .ms {
+            color: var(--secondary);
+            font-variation-settings: 'FILL' 1, 'wght' 500, 'GRAD' 0, 'opsz' 24;
+        }
+
+        .alert.error .ms {
+            color: var(--danger);
+            font-variation-settings: 'FILL' 1, 'wght' 500, 'GRAD' 0, 'opsz' 24;
+        }
+
+        /* ── Photo Upload Card ── */
+        .photo-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            padding: 1.4rem 1.1rem;
+            margin-bottom: 1rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .photo-ring {
+            position: relative;
+        }
+
+        .photo-circle {
+            width: 96px;
+            height: 96px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            border: 3px solid var(--primary-light);
+            box-shadow: 0 4px 18px rgba(0, 88, 186, 0.25);
+        }
+
+        .photo-circle img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: none;
+        }
+
+        .photo-circle .ms {
+            font-size: 48px;
+            color: white;
+        }
+
+        .cam-btn {
+            position: absolute;
+            bottom: 2px;
+            right: 2px;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            background: var(--primary);
+            border: 2px solid white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            box-shadow: 0 2px 8px rgba(0, 88, 186, 0.35);
+        }
+
+        .cam-btn .ms {
+            font-size: 16px;
+            color: white;
+        }
+
+        .photo-text {
+            font-size: 0.83rem;
+            font-weight: 700;
+            color: var(--text-main);
+        }
+
+        .photo-hint {
+            font-size: 0.72rem;
+            color: var(--text-muted);
+            font-weight: 500;
+        }
+
+        /* ── Form Card ── */
+        .form-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            overflow: hidden;
+            margin-bottom: 1rem;
+        }
+
+        .form-card-head {
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+            padding: 0.9rem 1.1rem;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .fch-icon {
+            width: 32px;
+            height: 32px;
+            border-radius: 9px;
+            background: var(--primary-light);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .fch-icon .ms {
+            font-size: 16px;
+            color: var(--primary);
+        }
+
+        .fch-title {
+            font-size: 0.88rem;
+            font-weight: 800;
+            color: var(--text-main);
+        }
+
+        .form-body {
+            padding: 1.1rem;
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        /* ── Field ── */
+        .fg {
+            display: flex;
+            flex-direction: column;
+            gap: 0.38rem;
+        }
+
+        .fl {
+            display: flex;
+            align-items: center;
+            gap: 0.35rem;
+            font-size: 0.77rem;
+            font-weight: 700;
+            color: var(--text-sub);
+        }
+
+        .fl .ms {
+            font-size: 15px;
+            color: var(--primary);
+        }
+
+        .req {
+            color: var(--danger);
+            font-size: 0.7rem;
+        }
+
+        .fi-wrap {
+            position: relative;
+        }
+
+        .fi-ico {
+            position: absolute;
+            left: 0.9rem;
+            top: 50%;
+            transform: translateY(-50%);
+            pointer-events: none;
+        }
+
+        .fi-ico .ms {
+            font-size: 18px;
+            color: var(--text-muted);
+            transition: color 0.15s;
+        }
+
+        .fi-wrap:focus-within .fi-ico .ms {
+            color: var(--primary);
+        }
+
+        .fi {
+            width: 100%;
+            padding: 0.78rem 0.9rem 0.78rem 2.8rem;
+            border: 1.5px solid var(--border);
+            border-radius: 12px;
+            font-size: 0.875rem;
+            font-family: 'DM Sans', 'Noto Sans Devanagari', sans-serif;
+            color: var(--text-main);
+            background: var(--bg);
+            transition: border-color 0.15s, box-shadow 0.15s, background 0.15s;
+            -webkit-appearance: none;
+            appearance: none;
+        }
+
+        .fi:focus {
+            outline: none;
+            border-color: var(--primary);
+            background: var(--surface);
+            box-shadow: 0 0 0 3px rgba(0, 88, 186, 0.1);
+        }
+
+        .fi::placeholder {
+            color: var(--text-muted);
+        }
+
+        /* ── Select arrow ── */
+        select.fi {
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%2394a3b8'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 0.9rem center;
+            background-size: 16px;
+            padding-right: 2.4rem;
+            cursor: pointer;
+        }
+
+        /* ── Form Actions ── */
+        .form-actions {
+            display: flex;
+            gap: 0.7rem;
+            padding: 0 1rem 1rem;
+        }
+
+        .a-btn {
+            flex: 1;
+            padding: 0.9rem;
+            border: none;
+            border-radius: 13px;
+            font-weight: 700;
+            font-size: 0.9rem;
+            cursor: pointer;
+            font-family: inherit;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.45rem;
+            transition: transform 0.13s;
+            text-decoration: none;
+        }
+
+        .a-btn:active {
+            transform: scale(0.97);
+        }
+
+        .a-btn.primary {
+            background: var(--primary);
+            color: white;
+        }
+
+        .a-btn.secondary {
+            background: var(--bg);
+            color: var(--text-sub);
+            border: 1.5px solid var(--border);
+        }
+
+        .a-btn .ms {
+            font-size: 19px;
+        }
+
+        /* ── Responsive ── */
+        @media (min-width:540px) {
+            .topbar {
+                max-width: 480px;
+                left: 50%;
+                right: auto;
+                transform: translateX(-50%);
+            }
+
+            .scroll-body {
+                max-width: 480px;
+                margin: 0 auto;
+            }
+        }
+
+        /* ── Animations ── */
+        @keyframes fup {
+            from {
+                opacity: 0;
+                transform: translateY(12px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .photo-card {
+            animation: fup 0.4s ease 0.04s backwards;
+        }
+
+        .form-card {
+            animation: fup 0.4s ease 0.09s backwards;
+        }
+
+        .form-actions {
+            animation: fup 0.4s ease 0.13s backwards;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="app">
+
+        <!-- ── Topbar ── -->
+        <header class="topbar">
+            <div class="topbar-inner">
+                <div class="tb-left">
+                    <a th:href="@{'/user/hospital/doctors/' + ${hospital.hospitalId}}" class="tb-back">
+                        <span class="ms" style="font-size:20px;">arrow_back</span>
+                    </a>
+                    <div>
+                        <span class="tb-label">Hospital Doctors</span>
+                        <span class="tb-title">Add New Doctor</span>
+                    </div>
+                </div>
+                <button type="submit" form="addDoctorForm" class="tb-submit">
+                    <span class="ms">check</span> Save
+                </button>
+            </div>
+        </header>
+
+        <!-- ── Scroll Body ── -->
+        <div class="scroll-body">
+
+            <!-- Hero -->
+            <div class="hero">
+                <div class="hero-glow"></div>
+                <div class="hero-inner">
+                    <div class="hero-av">
+                        <span class="ms fill" style="font-size:26px;color:white;">person_add</span>
+                    </div>
+                    <div class="hero-info">
+                        <h2>Add New Doctor</h2>
+                        <p>Create a doctor profile for your hospital</p>
+                        <div class="h-chip">
+                            <span class="ms" style="font-size:12px;">local_hospital</span>
+                            <span th:text="${hospital.name}">Hospital Name</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Content -->
+            <div class="content">
+
+                <!-- Success / Error alerts -->
+                <div th:if="${successMessage}" class="alert success">
+                    <span class="ms">check_circle</span>
+                    <span th:text="${successMessage}">Doctor added successfully!</span>
+                </div>
+                <div th:if="${errorMessage}" class="alert error">
+                    <span class="ms">error</span>
+                    <span th:text="${errorMessage}">Something went wrong. Please try again.</span>
+                </div>
+
+                <form id="addDoctorForm" th:action="@{/user/hospital/add-doctor}" method="post"
+                    enctype="multipart/form-data">
+                    <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+                    <input type="hidden" name="hospitalId" th:value="${hospitalId}" />
+
+                    <!-- ── Photo Upload ── -->
+                    <div class="photo-card">
+                        <div class="photo-ring">
+                            <div class="photo-circle" id="photoCircle">
+                                <span class="ms" id="defaultIcon">person</span>
+                                <img id="previewImg" alt="Preview" />
+                            </div>
+                            <label for="profilePicture" class="cam-btn">
+                                <span class="ms">photo_camera</span>
+                            </label>
+                        </div>
+                        <p class="photo-text">Upload Profile Photo</p>
+                        <p class="photo-hint">JPG, PNG or GIF · Max 5 MB</p>
+                        <input type="file" id="profilePicture" name="file" accept="image/*" style="display:none;" />
+                    </div>
+
+                    <!-- ── Doctor Details ── -->
+                    <div class="form-card">
+                        <div class="form-card-head">
+                            <div class="fch-icon"><span class="ms">badge</span></div>
+                            <span class="fch-title">Doctor Information</span>
+                        </div>
+                        <div class="form-body">
+
+                            <!-- Full Name -->
+                            <div class="fg">
+                                <label class="fl" for="name">
+                                    <span class="ms">person</span> Full Name <span class="req">*</span>
+                                </label>
+                                <div class="fi-wrap">
+                                    <span class="fi-ico"><span class="ms">person</span></span>
+                                    <input type="text" id="name" name="name" class="fi title-case"
+                                        placeholder="Dr. Amit Kumar" required>
+                                </div>
+                            </div>
+
+                            <!-- Specialization — dropdown -->
+                            <div class="fg">
+                                <label class="fl" for="specialization">
+                                    <span class="ms">medical_services</span> Specialization <span class="req">*</span>
+                                </label>
+                                <div class="fi-wrap">
+                                    <span class="fi-ico"><span class="ms">medical_services</span></span>
+                                    <select id="specialization" name="specialization" class="fi" required>
+                                        <option value="" disabled selected>Select Specialization</option>
+                                        <option value="Cardiologist">Cardiologist</option>
+                                        <option value="Dermatologist">Dermatologist</option>
+                                        <option value="Neurologist">Neurologist</option>
+                                        <option value="Orthopedic">Orthopedic</option>
+                                        <option value="Pediatrician">Pediatrician</option>
+                                        <option value="Gynecologist">Gynecologist</option>
+                                        <option value="Psychiatrist">Psychiatrist</option>
+                                        <option value="Ophthalmologist">Ophthalmologist</option>
+                                        <option value="ENT Specialist">ENT Specialist</option>
+                                        <option value="General Physician">General Physician</option>
+                                        <option value="Urologist">Urologist</option>
+                                        <option value="Oncologist">Oncologist</option>
+                                        <option value="Radiologist">Radiologist</option>
+                                        <option value="Anesthesiologist">Anesthesiologist</option>
+                                        <option value="Gastroenterologist">Gastroenterologist</option>
+                                        <option value="Nephrologist">Nephrologist</option>
+                                        <option value="Endocrinologist">Endocrinologist</option>
+                                        <option value="Pulmonologist">Pulmonologist</option>
+                                        <option value="Rheumatologist">Rheumatologist</option>
+                                        <option value="Plastic Surgeon">Plastic Surgeon</option>
+                                        <option value="Neurosurgeon">Neurosurgeon</option>
+                                        <option value="Cardiac Surgeon">Cardiac Surgeon</option>
+                                        <option value="Physiotherapist">Physiotherapist</option>
+                                        <option value="Dentist">Dentist</option>
+                                        <option value="Pathologist">Pathologist</option>
+                                        <option value="Immunologist">Immunologist</option>
+                                        <option value="Hematologist">Hematologist</option>
+                                        <option value="Infectious Disease Specialist">Infectious Disease Specialist
+                                        </option>
+                                        <option value="Allergist">Allergist</option>
+                                        <option value="Critical Care Specialist">Critical Care Specialist</option>
+                                        <option value="Other">Other</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <!-- Qualification -->
+                            <div class="fg">
+                                <label class="fl" for="qualification">
+                                    <span class="ms">school</span> Qualification <span class="req">*</span>
+                                </label>
+                                <div class="fi-wrap">
+                                    <span class="fi-ico"><span class="ms">school</span></span>
+                                    <input type="text" id="qualification" name="qualification" class="fi title-case"
+                                        placeholder="MBBS, MD" required>
+                                </div>
+                            </div>
+
+                            <!-- Contact -->
+                            <div class="fg">
+                                <label class="fl" for="contact">
+                                    <span class="ms">call</span> Contact Number <span class="req">*</span>
+                                </label>
+                                <div class="fi-wrap">
+                                    <span class="fi-ico"><span class="ms">call</span></span>
+                                    <input type="tel" id="contact" name="contact" class="fi" placeholder="9876543210"
+                                        pattern="[0-9]{10}" required>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+
+                    <!-- ── Form Actions ── -->
+                    <div class="form-actions">
+                        <a class="a-btn secondary" th:href="@{'/user/hospital/doctors/' + ${hospital.hospitalId}}">
+                            <span class="ms">close</span> Cancel
+                        </a>
+                        <button type="submit" class="a-btn primary">
+                            <span class="ms">person_add</span> Add Doctor
+                        </button>
+                    </div>
+
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        window.addEventListener('DOMContentLoaded', () => {
+
+            // ── Auto-hide alerts ──
+            document.querySelectorAll('.alert').forEach(el => {
+                setTimeout(() => {
+                    el.style.transition = 'opacity 0.3s';
+                    el.style.opacity = '0';
+                    setTimeout(() => el.remove(), 320);
+                }, 3500);
+            });
+
+            // ── Title Case helper ──
+            function toTitleCase(value) {
+                return value
+                    .toLowerCase()
+                    .split(/\s+/)
+                    .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+                    .join(' ');
+            }
+
+            // ── Apply Title Case + Dr. prefix logic on blur ──
+            document.querySelectorAll('.title-case').forEach(input => {
+                input.addEventListener('blur', function () {
+                    let value = this.value.trim();
+                    if (!value) return;
+
+                    value = toTitleCase(value);
+
+                    // Auto-prepend "Dr." for the name field
+                    if (this.id === 'name') {
+                        value = value.replace(/^Dr\.?\s*/i, ''); // remove existing Dr prefix if any
+                        value = 'Dr. ' + value;
+                    }
+
+                    this.value = value;
+                });
+            });
+
+            // ── Trim contact ──
+            document.getElementById('contact')?.addEventListener('blur', function () {
+                this.value = this.value.trim();
+            });
+
+            // ── Profile picture preview ──
+            document.getElementById('profilePicture')?.addEventListener('change', function (e) {
+                const file = e.target.files[0];
+                if (!file) return;
+                const reader = new FileReader();
+                reader.onload = function (ev) {
+                    const img = document.getElementById('previewImg');
+                    const icon = document.getElementById('defaultIcon');
+                    img.src = ev.target.result;
+                    img.style.display = 'block';
+                    icon.style.display = 'none';
+                };
+                reader.readAsDataURL(file);
+            });
+
+        });
+    </script>
+
+</body>
+
+</html>

@@ -1,0 +1,1204 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="hi">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>उपयोगकर्ता विवरण - हेल्थ साथी</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Devanagari:wght@400;500;600;700&display=swap"
+        rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap"
+        rel="stylesheet" />
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #0058ba;
+            --primary-dark: #155a96;
+            --primary-light: #e3f2fd;
+            --success: #10b981;
+            --success-light: #d1fae5;
+            --danger: #ef4444;
+            --danger-light: #fee2e2;
+            --warning: #f59e0b;
+            --warning-light: #fef3c7;
+            --text-main: #1e293b;
+            --text-secondary: #64748b;
+            --border-light: #e2e8f0;
+            --surface: #ffffff;
+            --background: #f8fafc;
+        }
+
+        body {
+            font-family: 'Noto Sans Devanagari', 'Inter', sans-serif;
+            background: var(--background);
+            color: var(--text-main);
+            min-height: 100vh;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        .sidebar {
+            position: fixed;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 280px;
+            background: var(--surface);
+            border-right: 1px solid var(--border-light);
+            padding: 24px;
+            overflow-y: auto;
+            z-index: 100;
+            transition: transform 0.3s ease;
+        }
+
+        .logo-section {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 32px;
+            padding-bottom: 24px;
+            border-bottom: 1px solid var(--border-light);
+        }
+
+        .logo-icon {
+            width: 48px;
+            height: 48px;
+            background: var(--primary);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transform: rotate(3deg);
+            transition: transform 0.3s;
+        }
+
+        .logo-icon:hover {
+            transform: rotate(0deg);
+        }
+
+        .logo-icon .material-symbols-outlined {
+            color: white;
+            font-size: 28px;
+        }
+
+        .logo-text h2 {
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--text-main);
+        }
+
+        .logo-text p {
+            font-size: 12px;
+            color: var(--text-secondary);
+        }
+
+        .nav-menu {
+            list-style: none;
+        }
+
+        .nav-item {
+            margin-bottom: 8px;
+        }
+
+        .nav-link {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 16px;
+            border-radius: 12px;
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 14px;
+            transition: all 0.3s;
+            cursor: pointer;
+        }
+
+        .nav-link:hover {
+            background: var(--primary-light);
+            color: var(--primary);
+        }
+
+        .nav-link.active {
+            background: var(--primary);
+            color: white;
+        }
+
+        .nav-link .material-symbols-outlined {
+            font-size: 22px;
+        }
+
+        .main-content {
+            margin-left: 280px;
+            padding: 24px;
+            min-height: 100vh;
+            transition: margin-left 0.3s ease;
+        }
+
+        .header {
+            background: var(--surface);
+            border-radius: 16px;
+            padding: 20px 24px;
+            margin-bottom: 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .back-btn {
+            width: 40px;
+            height: 40px;
+            background: var(--primary-light);
+            border: none;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-decoration: none;
+        }
+
+        .back-btn:hover {
+            background: var(--primary);
+            transform: translateX(-2px);
+        }
+
+        .back-btn .material-symbols-outlined {
+            color: var(--primary);
+            font-size: 24px;
+            transition: color 0.3s;
+        }
+
+        .back-btn:hover .material-symbols-outlined {
+            color: white;
+        }
+
+        .header h1 {
+            font-size: 28px;
+            font-weight: 700;
+            color: var(--text-main);
+        }
+
+        .user-profile {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            background: var(--primary);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 600;
+        }
+
+        .content-wrapper {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .user-detail-card {
+            background: var(--surface);
+            border-radius: 16px;
+            padding: 32px;
+            box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
+            margin-bottom: 24px;
+        }
+
+        .user-header-section {
+            display: flex;
+            align-items: center;
+            gap: 24px;
+            padding-bottom: 24px;
+            border-bottom: 2px solid var(--border-light);
+            margin-bottom: 32px;
+        }
+
+        .user-large-avatar {
+            width: 100px;
+            height: 100px;
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 700;
+            font-size: 40px;
+            flex-shrink: 0;
+            box-shadow: 0 4px 12px rgba(0, 88, 186, 0.3);
+        }
+
+        .user-header-info {
+            flex: 1;
+        }
+
+        .user-name-status {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 8px;
+            flex-wrap: wrap;
+        }
+
+        .user-name {
+            font-size: 28px;
+            font-weight: 700;
+            color: var(--text-main);
+        }
+
+        .status-badge {
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .status-badge.active {
+            background: var(--success-light);
+            color: #065f46;
+        }
+
+        .status-badge.inactive {
+            background: var(--danger-light);
+            color: #991b1b;
+        }
+
+        .status-badge .material-symbols-outlined {
+            font-size: 16px;
+        }
+
+        .user-email {
+            font-size: 16px;
+            color: var(--text-secondary);
+            margin-bottom: 4px;
+        }
+
+        .user-joined {
+            font-size: 14px;
+            color: var(--text-secondary);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 24px;
+        }
+
+        .info-item {
+            background: var(--background);
+            padding: 20px;
+            border-radius: 12px;
+            border: 1px solid var(--border-light);
+        }
+
+        .info-label {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 13px;
+            color: var(--text-secondary);
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 8px;
+        }
+
+        .info-label .material-symbols-outlined {
+            font-size: 18px;
+        }
+
+        .info-value {
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--text-main);
+        }
+
+        .action-section {
+            background: var(--surface);
+            border-radius: 16px;
+            padding: 24px;
+            box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
+        }
+
+        .action-section h2 {
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--text-main);
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .action-section h2 .material-symbols-outlined {
+            color: var(--primary);
+        }
+
+        .action-buttons {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 16px;
+        }
+
+        .action-btn {
+            padding: 14px 24px;
+            border: none;
+            border-radius: 12px;
+            font-size: 15px;
+            font-weight: 600;
+            font-family: 'Noto Sans Devanagari', 'Inter', sans-serif;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            width: 100%;
+        }
+
+        .action-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        .action-btn:active {
+            transform: translateY(0);
+        }
+
+        .action-btn .material-symbols-outlined {
+            font-size: 22px;
+        }
+
+        .btn-disable {
+            background: var(--primary);
+            color: white;
+        }
+
+        .btn-disable:hover {
+            background: var(--primary-dark);
+        }
+
+        .btn-delete {
+            background: var(--primary);
+            color: white;
+        }
+
+        .btn-delete:hover {
+            background: var(--primary-dark);
+        }
+
+        /* Modal Styles */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.6);
+            z-index: 9999;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .modal-overlay.active {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+
+            to {
+                opacity: 1;
+            }
+        }
+
+        .modal {
+            background: var(--surface);
+            border-radius: 20px;
+            max-width: 500px;
+            width: 100%;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            animation: slideUp 0.3s ease;
+            overflow: hidden;
+        }
+
+        @keyframes slideUp {
+            from {
+                transform: translateY(30px);
+                opacity: 0;
+            }
+
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        .modal-header {
+            padding: 24px 28px;
+            border-bottom: 1px solid var(--border-light);
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .modal-icon {
+            width: 56px;
+            height: 56px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .modal-icon.success {
+            background: var(--primary-light);
+        }
+
+        .modal-icon.warning {
+            background: var(--primary-light);
+        }
+
+        .modal-icon.danger {
+            background: var(--primary-light);
+        }
+
+        .modal-icon .material-symbols-outlined {
+            font-size: 32px;
+        }
+
+        .modal-icon.success .material-symbols-outlined {
+            color: var(--primary);
+        }
+
+        .modal-icon.warning .material-symbols-outlined {
+            color: var(--primary);
+        }
+
+        .modal-icon.danger .material-symbols-outlined {
+            color: var(--primary);
+        }
+
+        .modal-title {
+            font-size: 22px;
+            font-weight: 700;
+            color: var(--text-main);
+        }
+
+        .modal-body {
+            padding: 28px;
+        }
+
+        .modal-message {
+            font-size: 15px;
+            color: var(--text-secondary);
+            line-height: 1.6;
+            margin-bottom: 8px;
+        }
+
+        .modal-user-info {
+            background: var(--background);
+            padding: 16px;
+            border-radius: 12px;
+            margin-top: 16px;
+            border-left: 4px solid var(--primary);
+        }
+
+        .modal-user-name {
+            font-weight: 700;
+            font-size: 16px;
+            color: var(--text-main);
+            margin-bottom: 4px;
+        }
+
+        .modal-user-email {
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        .modal-footer {
+            padding: 20px 28px;
+            background: var(--background);
+            display: flex;
+            gap: 12px;
+            justify-content: center;
+        }
+
+        .modal-btn {
+            padding: 12px 28px;
+            border: none;
+            border-radius: 10px;
+            font-size: 15px;
+            font-weight: 600;
+            font-family: 'Noto Sans Devanagari', 'Inter', sans-serif;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .modal-btn:hover {
+            transform: translateY(-1px);
+        }
+
+        .modal-btn-cancel {
+            background: var(--surface);
+            color: var(--text-main);
+            border: 2px solid var(--border-light);
+        }
+
+        .modal-btn-cancel:hover {
+            background: var(--border-light);
+        }
+
+        .modal-btn-confirm {
+            background: var(--primary);
+            color: white;
+        }
+
+        .modal-btn-confirm:hover {
+            background: var(--primary-dark);
+        }
+
+        /* Enhanced Mobile Responsiveness */
+        @media (max-width: 768px) {
+            .sidebar {
+                transform: translateX(-100%);
+            }
+
+            .sidebar.active {
+                transform: translateX(0);
+                z-index: 101;
+            }
+
+            .main-content {
+                margin-left: 0;
+                padding: 16px 12px;
+            }
+
+            .header {
+                padding: 14px 16px;
+                border-radius: 12px;
+                margin-bottom: 16px;
+                flex-wrap: wrap;
+                gap: 12px;
+            }
+
+            .header-left {
+                gap: 12px;
+            }
+
+            .back-btn {
+                width: 36px;
+                height: 36px;
+            }
+
+            .back-btn .material-symbols-outlined {
+                font-size: 22px;
+            }
+
+            .header h1 {
+                font-size: 20px;
+            }
+
+            .user-profile {
+                gap: 8px;
+            }
+
+            .user-profile>div {
+                display: none;
+            }
+
+            .user-detail-card {
+                padding: 20px 16px;
+                border-radius: 12px;
+                margin-bottom: 16px;
+            }
+
+            .user-header-section {
+                flex-direction: column;
+                text-align: center;
+                gap: 16px;
+                padding-bottom: 20px;
+                margin-bottom: 24px;
+            }
+
+            .user-large-avatar {
+                width: 80px;
+                height: 80px;
+                font-size: 32px;
+            }
+
+            .user-name-status {
+                justify-content: center;
+                gap: 8px;
+            }
+
+            .user-name {
+                font-size: 22px;
+            }
+
+            .status-badge {
+                padding: 5px 12px;
+                font-size: 12px;
+            }
+
+            .user-email {
+                font-size: 14px;
+                word-break: break-word;
+            }
+
+            .user-joined {
+                justify-content: center;
+                font-size: 13px;
+            }
+
+            .info-grid {
+                grid-template-columns: 1fr;
+                gap: 12px;
+            }
+
+            .info-item {
+                padding: 16px;
+            }
+
+            .info-label {
+                font-size: 12px;
+                margin-bottom: 6px;
+            }
+
+            .info-value {
+                font-size: 16px;
+            }
+
+            .action-section {
+                padding: 20px 16px;
+                border-radius: 12px;
+            }
+
+            .action-section h2 {
+                font-size: 18px;
+                margin-bottom: 16px;
+            }
+
+            .action-buttons {
+                grid-template-columns: 1fr;
+                gap: 12px;
+            }
+
+            .action-btn {
+                padding: 12px 20px;
+                font-size: 14px;
+            }
+
+            .modal-overlay.active {
+                padding: 12px;
+                align-items: flex-end;
+            }
+
+            .modal {
+                border-radius: 20px 20px 0 0;
+                max-height: 90vh;
+                overflow-y: auto;
+            }
+
+            .modal-header {
+                padding: 20px;
+                gap: 12px;
+            }
+
+            .modal-icon {
+                width: 48px;
+                height: 48px;
+            }
+
+            .modal-icon .material-symbols-outlined {
+                font-size: 28px;
+            }
+
+            .modal-title {
+                font-size: 18px;
+            }
+
+            .modal-body {
+                padding: 20px;
+            }
+
+            .modal-message {
+                font-size: 14px;
+            }
+
+            .modal-user-info {
+                padding: 14px;
+            }
+
+            .modal-user-name {
+                font-size: 15px;
+            }
+
+            .modal-user-email {
+                font-size: 13px;
+                word-break: break-word;
+            }
+
+            .modal-footer {
+                padding: 16px 20px;
+                flex-direction: column-reverse;
+                gap: 10px;
+            }
+
+            .modal-btn {
+                width: 100%;
+                justify-content: center;
+                padding: 12px 20px;
+                font-size: 14px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .main-content {
+                padding: 12px 8px;
+            }
+
+            .header {
+                padding: 12px 14px;
+                margin-bottom: 12px;
+            }
+
+            .header h1 {
+                font-size: 18px;
+            }
+
+            .back-btn {
+                width: 34px;
+                height: 34px;
+            }
+
+            .user-avatar {
+                width: 34px;
+                height: 34px;
+                font-size: 13px;
+            }
+
+            .user-detail-card {
+                padding: 16px 12px;
+            }
+
+            .user-large-avatar {
+                width: 70px;
+                height: 70px;
+                font-size: 28px;
+            }
+
+            .user-name {
+                font-size: 20px;
+            }
+
+            .status-badge {
+                padding: 4px 10px;
+                font-size: 11px;
+            }
+
+            .user-email {
+                font-size: 13px;
+            }
+
+            .user-joined {
+                font-size: 12px;
+            }
+
+            .info-item {
+                padding: 14px;
+            }
+
+            .info-label {
+                font-size: 11px;
+            }
+
+            .info-label .material-symbols-outlined {
+                font-size: 16px;
+            }
+
+            .info-value {
+                font-size: 15px;
+            }
+
+            .action-section {
+                padding: 16px 12px;
+            }
+
+            .action-section h2 {
+                font-size: 17px;
+                margin-bottom: 14px;
+            }
+
+            .action-btn {
+                padding: 11px 18px;
+                font-size: 13px;
+            }
+
+            .action-btn .material-symbols-outlined {
+                font-size: 20px;
+            }
+
+            .modal-header {
+                padding: 18px 16px;
+            }
+
+            .modal-icon {
+                width: 44px;
+                height: 44px;
+            }
+
+            .modal-icon .material-symbols-outlined {
+                font-size: 26px;
+            }
+
+            .modal-title {
+                font-size: 17px;
+            }
+
+            .modal-body {
+                padding: 18px 16px;
+            }
+
+            .modal-message {
+                font-size: 13px;
+            }
+
+            .modal-user-info {
+                padding: 12px;
+            }
+
+            .modal-user-name {
+                font-size: 14px;
+            }
+
+            .modal-user-email {
+                font-size: 12px;
+            }
+
+            .modal-footer {
+                padding: 14px 16px;
+            }
+
+            .modal-btn {
+                padding: 11px 18px;
+                font-size: 13px;
+            }
+        }
+
+        /* Extra small devices */
+        @media (max-width: 360px) {
+            .header h1 {
+                font-size: 16px;
+            }
+
+            .user-name {
+                font-size: 18px;
+            }
+
+            .user-large-avatar {
+                width: 60px;
+                height: 60px;
+                font-size: 24px;
+            }
+
+            .info-value {
+                font-size: 14px;
+            }
+
+            .action-btn {
+                font-size: 12px;
+                padding: 10px 16px;
+            }
+        }
+
+        .info-value,
+        .info-label span,
+        .user-name,
+        .user-email,
+        .modal-user-name,
+        .modal-user-email,
+        .status-badge span {
+            text-transform: capitalize;
+        }
+
+        .user-email,
+        .modal-user-email,
+        [style*="word-break"] {
+            text-transform: lowercase;
+        }
+
+        .capitalize {
+            text-transform: capitalize;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div th:replace="~{fragments/admin-sidebar :: adminSidebar}"></div>
+
+    <main class="main-content">
+        <div class="header">
+            <div class="header-left">
+                <a href="/admin/show/all/users" class="back-btn">
+                    <span class="material-symbols-outlined">arrow_back</span>
+                </a>
+                <h1 th:text="#{userdetail}">उपयोगकर्ता विवरण</h1>
+            </div>
+            <div class="user-profile">
+                <div class="user-avatar">प्र</div>
+                <div>
+                    <div style="font-weight: 600; font-size: 14px;" th:text="#{administrator}">प्रशासक</div>
+                    <div style="font-size: 12px; color: var(--text-secondary);" th:text="${loggedInUser.email}">
+                        admin@healthsathi.com</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="content-wrapper">
+            <!-- User Detail Card -->
+            <div class="user-detail-card capitalize">
+                <div class="user-header-section">
+                    <div class="user-large-avatar"
+                        th:text="${#strings.substring(userinfo.fullName, 0, 1).toUpperCase()}">र</div>
+                    <div class="user-header-info">
+                        <div class="user-name-status">
+                            <h2 class="user-name" th:text="${userinfo.fullName}">राहुल शर्मा</h2>
+                            <span class="status-badge" th:classappend="${userinfo.enabled} ? 'active' : 'inactive'">
+                                <span class="material-symbols-outlined"
+                                    th:text="${userinfo.enabled} ? 'check_circle' : 'cancel'">check_circle</span>
+                                <span
+                                    th:text="${userinfo.enabled} ? #{status.active} : #{status.inactive}">सक्रिय</span>
+                            </span>
+                        </div>
+                        <p class="user-email" th:text="${userinfo.email}">rahul.sharma@gmail.com</p>
+                        <p class="user-joined">
+                            <span class="material-symbols-outlined" style="font-size: 16px;">schedule</span>
+                            <span><span th:text="#{joinedin}">शामिल हुए:</span> <strong
+                                    th:text="${#temporals.format(userinfo.createdOn, 'dd-MM-yyyy')}">15 दिसंबर
+                                    2024</strong></span>
+                        </p>
+                    </div>
+                </div>
+
+                <div class="info-grid">
+                    <div class="info-item">
+                        <div class="info-label">
+                            <span class="material-symbols-outlined">badge</span>
+                            <span th:text="#{fullname}">पूरा नाम</span>
+                        </div>
+                        <div class="info-value" th:text="${userinfo.fullName}">राहुल शर्मा</div>
+                    </div>
+
+                    <div class="info-item">
+                        <div class="info-label">
+                            <span class="material-symbols-outlined">mail</span>
+                            <span th:text="#{emailaddress}">ईमेल पता</span>
+                        </div>
+                        <div class="info-value" th:text="${userinfo.email}" style="word-break: break-all;">
+                            rahul.sharma@gmail.com</div>
+                    </div>
+
+                    <div class="info-item">
+                        <div class="info-label">
+                            <span class="material-symbols-outlined">phone</span>
+                            <span th:text="#{phonenumber}">संपर्क नंबर</span>
+                        </div>
+                        <div class="info-value" th:text="${userinfo.contact}">+91 98765 43210</div>
+                    </div>
+
+                    <div class="info-item">
+                        <div class="info-label">
+                            <span class="material-symbols-outlined">wc</span>
+                            <span th:text="#{gender}">लिंग</span>
+                        </div>
+                        <div class="info-value" th:text="${userinfo.gender}">पुरुष</div>
+                    </div>
+
+                    <div class="info-item">
+                        <div class="info-label">
+                            <span class="material-symbols-outlined">event</span>
+                            <span th:text="#{registrationdate}">खाता बनाया गया</span>
+                        </div>
+                        <div class="info-value" th:text="${#temporals.format(userinfo.createdOn, 'dd-MM-yyyy')}">15
+                            दिसंबर 2024</div>
+                    </div>
+
+                    <div class="info-item">
+                        <div class="info-label">
+                            <span class="material-symbols-outlined">toggle_on</span>
+                            <span th:text="#{accountstatus}">खाता स्थिति</span>
+                        </div>
+                        <span class="info-value"
+                            th:text="${userinfo.enabled} ? #{status.active} : #{status.inactive}">सक्रिय</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Action Section -->
+            <div class="action-section">
+                <div class="action-buttons">
+                    <form th:if="${userinfo.enabled}" th:action="@{/admin/users/disable/{id}(id=${userinfo.userId})}"
+                        method="post" id="disableUserForm">
+                        <button type="button" class="action-btn btn-disable" onclick="showDisableModal()">
+                            <span class="material-symbols-outlined">block</span>
+                            <span th:text="#{disableaccount}">उपयोगकर्ता निष्क्रिय करें</span>
+                        </button>
+                    </form>
+
+                    <form id="deleteUserForm" th:action="@{/admin/delete/user/{id}(id=${userinfo.userId})}"
+                        method="post">
+                        <button type="button" class="action-btn btn-delete" onclick="showDeleteModal()">
+                            <span class="material-symbols-outlined">delete</span>
+                            <span th:text="#{deleteuser}">उपयोगकर्ता हटाएं</span>
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Disable User Modal -->
+    <div class="modal-overlay" id="disableModal">
+        <div class="modal">
+            <div class="modal-header">
+                <div class="modal-icon warning">
+                    <span class="material-symbols-outlined">warning</span>
+                </div>
+                <h3 class="modal-title" th:text="#{disableaccount}">उपयोगकर्ता निष्क्रिय करें</h3>
+            </div>
+            <div class="modal-body">
+                <p class="modal-message">
+                    क्या आप वाकई इस उपयोगकर्ता को निष्क्रिय करना चाहते हैं? निष्क्रिय होने के बाद, यह उपयोगकर्ता सिस्टम
+                    में लॉग इन नहीं कर सकेगा।
+                </p>
+                <div class="modal-user-info">
+                    <div class="modal-user-name" th:text="${userinfo.fullName}">राहुल शर्मा</div>
+                    <div class="modal-user-email" th:text="${userinfo.email}">rahul.sharma@gmail.com</div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="modal-btn modal-btn-cancel" onclick="closeModal('disableModal')">
+                    <span th:text="#{cancel}">रद्द करें</span>
+                </button>
+                <button type="button" class="modal-btn modal-btn-confirm" onclick="submitDisableForm()">
+                    <span class="material-symbols-outlined">check</span>
+                    <span>हाँ, निष्क्रिय करें</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Delete User Modal -->
+    <div class="modal-overlay" id="deleteModal">
+        <div class="modal">
+            <div class="modal-header">
+                <div class="modal-icon danger">
+                    <span class="material-symbols-outlined">warning</span>
+                </div>
+                <h3 class="modal-title" th:text="#{deleteuser}">उपयोगकर्ता हटाएं</h3>
+            </div>
+            <div class="modal-body">
+                <p class="modal-message"><strong>चेतावनी:</strong> यह क्रिया स्थायी है और इसे पूर्ववत नहीं किया जा सकता।
+                    उपयोगकर्ता का सभी डेटा हमेशा के लिए हटा दिया जाएगा।</p>
+                <div class="modal-user-info">
+                    <div class="modal-user-name" th:text="${userinfo.fullName}">राहुल शर्मा</div>
+                    <div class="modal-user-email" th:text="${userinfo.email}">rahul.sharma@gmail.com</div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="modal-btn modal-btn-cancel" onclick="closeModal('deleteModal')">
+                    <span th:text="#{cancel}">रद्द करें</span>
+                </button>
+                <button type="button" class="modal-btn modal-btn-confirm" onclick="confirmDelete()">
+                    <span class="material-symbols-outlined">delete</span>
+                    <span>हाँ, हटाएं</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function showDisableModal() {
+            document.getElementById('disableModal').classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function showDeleteModal() {
+            document.getElementById('deleteModal').classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeModal(modalId) {
+            document.getElementById(modalId).classList.remove('active');
+            document.body.style.overflow = 'auto';
+        }
+
+        function submitDisableForm() {
+            document.getElementById('disableUserForm').submit();
+        }
+
+        function confirmDelete() {
+            document.getElementById('deleteUserForm').submit();
+        }
+
+        // Close modal on overlay click
+        document.querySelectorAll('.modal-overlay').forEach(overlay => {
+            overlay.addEventListener('click', (e) => {
+                if (e.target === overlay) {
+                    overlay.classList.remove('active');
+                    document.body.style.overflow = 'auto';
+                }
+            });
+        });
+
+        // Close modal on ESC key
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                document.querySelectorAll('.modal-overlay').forEach(modal => {
+                    modal.classList.remove('active');
+                });
+                document.body.style.overflow = 'auto';
+            }
+        });
+    </script>
+
+</body>
+
+</html>

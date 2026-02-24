@@ -1,0 +1,1562 @@
+<!DOCTYPE html>
+<html lang="hi" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <title>Edit Hospital - Health Saathi</title>
+    <meta name="_csrf" th:content="${_csrf.token}">
+    <meta name="_csrf_header" th:content="${_csrf.headerName}">
+
+    <link href="https://fonts.googleapis.com" rel="preconnect" />
+    <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700&display=swap"
+        rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Devanagari:wght@400;500;600;700&display=swap"
+        rel="stylesheet" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200"
+        rel="stylesheet" />
+
+    <style>
+        *,
+        *::before,
+        *::after {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        :root {
+            --primary: #0058ba;
+            --primary-dark: #004a9e;
+            --primary-light: #e8f1fd;
+            --primary-mid: #c5d9f7;
+            --secondary: #10b981;
+            --secondary-light: #d1fae5;
+            --accent: #f59e0b;
+            --accent-light: #fef3c7;
+            --danger: #ef4444;
+            --danger-light: #fef2f2;
+            --text-main: #0f172a;
+            --text-sub: #475569;
+            --text-muted: #94a3b8;
+            --border: #e2e8f0;
+            --surface: #ffffff;
+            --bg: #f1f5f9;
+            --safe-top: env(safe-area-inset-top, 0px);
+            --safe-bottom: env(safe-area-inset-bottom, 16px);
+            --nav-h: 64px;
+            --topbar-h: 60px;
+        }
+
+        html,
+        body {
+            height: 100%;
+            overflow-x: hidden;
+        }
+
+        body {
+            font-family: 'DM Sans', 'Noto Sans Devanagari', sans-serif;
+            background: var(--bg);
+            color: var(--text-main);
+            line-height: 1.5;
+            -webkit-font-smoothing: antialiased;
+            overscroll-behavior: none;
+        }
+
+        .ms {
+            font-family: 'Material Symbols Rounded';
+            font-weight: normal;
+            font-style: normal;
+            font-size: 24px;
+            display: inline-block;
+            line-height: 1;
+            text-transform: none;
+            letter-spacing: normal;
+            white-space: nowrap;
+            -webkit-font-smoothing: antialiased;
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            vertical-align: middle;
+            user-select: none;
+        }
+
+        .ms.fill {
+            font-variation-settings: 'FILL' 1, 'wght' 500, 'GRAD' 0, 'opsz' 24;
+        }
+
+        .app {
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            min-height: 100dvh;
+        }
+
+        /* ── Topbar ── */
+        .topbar {
+            position: sticky;
+            top: 0;
+            z-index: 200;
+            background: var(--primary);
+            padding-top: var(--safe-top);
+        }
+
+        .topbar-inner {
+            height: var(--topbar-h);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 0.85rem;
+            gap: 0.5rem;
+        }
+
+        .tb-left {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            min-width: 0;
+            flex: 1;
+        }
+
+        .tb-back {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.15);
+            border: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            text-decoration: none;
+            color: white;
+            flex-shrink: 0;
+            transition: background 0.15s;
+        }
+
+        .tb-back:active {
+            background: rgba(255, 255, 255, 0.28);
+        }
+
+        .tb-label {
+            font-size: 0.62rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            color: rgba(255, 255, 255, 0.65);
+            display: block;
+            line-height: 1.1;
+        }
+
+        .tb-title {
+            font-size: 0.97rem;
+            font-weight: 700;
+            color: white;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            display: block;
+            max-width: 190px;
+        }
+
+        .tb-save {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.35rem;
+            background: rgba(255, 255, 255, 0.18);
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.25);
+            border-radius: 9px;
+            padding: 0.45rem 0.9rem;
+            font-size: 0.8rem;
+            font-weight: 700;
+            cursor: pointer;
+            font-family: inherit;
+            transition: background 0.15s;
+            white-space: nowrap;
+            flex-shrink: 0;
+        }
+
+        .tb-save:active {
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        .tb-save .ms {
+            font-size: 17px;
+        }
+
+        /* ── Scroll ── */
+        .scroll-body {
+            flex: 1;
+            overflow-y: auto;
+            overflow-x: hidden;
+            padding-bottom: calc(var(--nav-h) + var(--safe-bottom) + 0.5rem);
+            -webkit-overflow-scrolling: touch;
+        }
+
+        /* ── Hero ── */
+        .hero {
+            background: var(--primary);
+            padding: 0 1rem 2rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 26px;
+            background: var(--bg);
+            border-radius: 20px 20px 0 0;
+        }
+
+        .hero-glow {
+            position: absolute;
+            top: -80px;
+            right: -50px;
+            width: 240px;
+            height: 240px;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(255, 255, 255, 0.09) 0%, transparent 65%);
+            pointer-events: none;
+        }
+
+        .hero-inner {
+            position: relative;
+            z-index: 1;
+            display: flex;
+            align-items: center;
+            gap: 0.9rem;
+            padding-bottom: 0.75rem;
+        }
+
+        .hero-av {
+            width: 52px;
+            height: 52px;
+            border-radius: 14px;
+            flex-shrink: 0;
+            background: rgba(255, 255, 255, 0.16);
+            border: 2px solid rgba(255, 255, 255, 0.22);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .hero-info h2 {
+            font-size: 1.05rem;
+            font-weight: 800;
+            color: white;
+        }
+
+        .hero-info p {
+            font-size: 0.76rem;
+            color: rgba(255, 255, 255, 0.72);
+            margin-top: 0.18rem;
+            font-weight: 500;
+        }
+
+        .hero-chip {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.28rem;
+            background: rgba(255, 255, 255, 0.14);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 50px;
+            padding: 0.22rem 0.7rem;
+            font-size: 0.7rem;
+            font-weight: 700;
+            color: white;
+            margin-top: 0.5rem;
+        }
+
+        /* ── Content ── */
+        .content {
+            padding: 1rem 1rem 0;
+        }
+
+        /* ── Section card ── */
+        .sec-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            overflow: hidden;
+            margin-bottom: 1rem;
+        }
+
+        .sec-head {
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+            padding: 1rem 1.1rem 0.85rem;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .sec-icon {
+            width: 34px;
+            height: 34px;
+            border-radius: 9px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .sec-icon.bl {
+            background: var(--primary-light);
+        }
+
+        .sec-icon.bl .ms {
+            color: var(--primary);
+            font-size: 17px;
+        }
+
+        .sec-icon.gn {
+            background: var(--secondary-light);
+        }
+
+        .sec-icon.gn .ms {
+            color: var(--secondary);
+            font-size: 17px;
+        }
+
+        .sec-icon.am {
+            background: var(--accent-light);
+        }
+
+        .sec-icon.am .ms {
+            color: var(--accent);
+            font-size: 17px;
+        }
+
+        .sec-head h3 {
+            font-size: 0.92rem;
+            font-weight: 800;
+            color: var(--text-main);
+        }
+
+        .sec-body {
+            padding: 1.1rem;
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        /* ── Form fields ── */
+        .fg {
+            display: flex;
+            flex-direction: column;
+            gap: 0.38rem;
+        }
+
+        .fg-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0.75rem;
+        }
+
+        .fl {
+            display: flex;
+            align-items: center;
+            gap: 0.35rem;
+            font-size: 0.78rem;
+            font-weight: 700;
+            color: var(--text-sub);
+        }
+
+        .fl .ms {
+            font-size: 15px;
+            color: var(--primary);
+        }
+
+        .req {
+            color: var(--danger);
+            font-size: 0.7rem;
+        }
+
+        .fi,
+        .fs,
+        .ft {
+            width: 100%;
+            padding: 0.78rem 0.9rem;
+            border: 1.5px solid var(--border);
+            border-radius: 12px;
+            font-size: 0.875rem;
+            font-family: 'DM Sans', 'Noto Sans Devanagari', sans-serif;
+            color: var(--text-main);
+            background: var(--bg);
+            transition: border-color 0.15s, box-shadow 0.15s, background 0.15s;
+            -webkit-appearance: none;
+            appearance: none;
+        }
+
+        .fi:focus,
+        .fs:focus,
+        .ft:focus {
+            outline: none;
+            border-color: var(--primary);
+            background: var(--surface);
+            box-shadow: 0 0 0 3px rgba(0, 88, 186, 0.1);
+        }
+
+        .fi:disabled {
+            opacity: 0.45;
+            cursor: not-allowed;
+        }
+
+        .ft {
+            resize: vertical;
+            min-height: 90px;
+        }
+
+        .fs {
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%2394a3b8' stroke-width='2'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 0.85rem center;
+            padding-right: 2.5rem;
+        }
+
+        /* INVALID state — matches Add Hospital red border */
+        .fi.invalid,
+        .fs.invalid,
+        .ft.invalid {
+            border-color: var(--danger) !important;
+            box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1) !important;
+        }
+
+        .f-hint {
+            font-size: 0.7rem;
+            color: var(--text-muted);
+            font-weight: 500;
+        }
+
+        /* Error message — hidden by default, shown via JS */
+        .f-err {
+            font-size: 0.72rem;
+            color: var(--danger);
+            font-weight: 600;
+            display: none;
+            margin-top: 0.15rem;
+        }
+
+        .f-err.show {
+            display: block;
+        }
+
+        /* Rupee wrapper */
+        .rw {
+            position: relative;
+        }
+
+        .rs {
+            position: absolute;
+            left: 0.9rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-sub);
+            font-weight: 700;
+            font-size: 0.88rem;
+            pointer-events: none;
+        }
+
+        .rw .fi {
+            padding-left: 1.9rem;
+        }
+
+        /* ── Toggle row ── */
+        .toggle-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0.82rem 1rem;
+            background: var(--bg);
+            border: 1.5px solid var(--border);
+            border-radius: 12px;
+            cursor: pointer;
+            transition: border-color 0.15s, background 0.15s;
+        }
+
+        .toggle-row.on {
+            border-color: var(--primary);
+            background: var(--primary-light);
+        }
+
+        .tg-left {
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+        }
+
+        .tg-left .ms {
+            font-size: 20px;
+            color: var(--primary);
+        }
+
+        .tg-text .tt {
+            font-size: 0.85rem;
+            font-weight: 700;
+            color: var(--text-main);
+        }
+
+        .tg-text .ts {
+            font-size: 0.7rem;
+            color: var(--text-muted);
+            font-weight: 500;
+        }
+
+        .tg-sw {
+            position: relative;
+            width: 44px;
+            height: 24px;
+            flex-shrink: 0;
+        }
+
+        .tg-sw input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+            position: absolute;
+        }
+
+        .tg-sl {
+            position: absolute;
+            inset: 0;
+            border-radius: 12px;
+            background: var(--border);
+            transition: background 0.2s;
+            cursor: pointer;
+        }
+
+        .tg-sl::before {
+            content: '';
+            position: absolute;
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            background: white;
+            top: 3px;
+            left: 3px;
+            transition: transform 0.2s;
+            box-shadow: 0 1px 4px rgba(0, 0, 0, 0.18);
+        }
+
+        .tg-sw input:checked+.tg-sl {
+            background: var(--primary);
+        }
+
+        .tg-sw input:checked+.tg-sl::before {
+            transform: translateX(20px);
+        }
+
+        /* ── Facilities ── */
+        .fac-row {
+            display: flex;
+            gap: 0.6rem;
+        }
+
+        .fac-row .fi {
+            flex: 1;
+        }
+
+        .fac-add {
+            width: 44px;
+            height: 44px;
+            border-radius: 12px;
+            background: var(--primary);
+            color: white;
+            border: none;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            transition: transform 0.13s;
+        }
+
+        .fac-add:active {
+            transform: scale(0.93);
+        }
+
+        .fac-add .ms {
+            font-size: 21px;
+        }
+
+        .fac-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin-top: 0.5rem;
+        }
+
+        .fac-tag {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.35rem;
+            padding: 0.32rem 0.65rem 0.32rem 0.75rem;
+            background: var(--primary-light);
+            color: var(--primary);
+            border-radius: 50px;
+            font-size: 0.78rem;
+            font-weight: 700;
+            border: 1px solid var(--primary-mid);
+        }
+
+        .fac-rm {
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            background: var(--primary);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            border: none;
+            flex-shrink: 0;
+        }
+
+        .fac-rm .ms {
+            font-size: 12px;
+        }
+
+        /* ── Form Actions ── */
+        .form-actions {
+            display: flex;
+            gap: 0.7rem;
+            padding: 1rem;
+        }
+
+        .a-btn {
+            flex: 1;
+            padding: 0.9rem;
+            border: none;
+            border-radius: 13px;
+            font-weight: 700;
+            font-size: 0.9rem;
+            cursor: pointer;
+            font-family: inherit;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.45rem;
+            transition: transform 0.13s;
+        }
+
+        .a-btn:active {
+            transform: scale(0.97);
+        }
+
+        .a-btn.primary {
+            background: var(--primary);
+            color: white;
+        }
+
+        .a-btn.secondary {
+            background: var(--bg);
+            color: var(--text-sub);
+            border: 1.5px solid var(--border);
+        }
+
+        .a-btn .ms {
+            font-size: 19px;
+        }
+
+        /* ── Bottom Nav ── */
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            z-index: 200;
+            background: var(--surface);
+            border-top: 1px solid var(--border);
+            padding-bottom: var(--safe-bottom);
+            display: flex;
+            align-items: stretch;
+            height: calc(var(--nav-h) + var(--safe-bottom));
+        }
+
+        .nav-tab {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 0.18rem;
+            text-decoration: none;
+            color: var(--text-muted);
+            font-size: 0.63rem;
+            font-weight: 600;
+            border: none;
+            background: none;
+            cursor: pointer;
+            position: relative;
+            padding: 0.4rem 0;
+            transition: color 0.15s;
+        }
+
+        .nav-tab .ms {
+            font-size: 22px;
+        }
+
+        .nav-tab.active {
+            color: var(--primary);
+        }
+
+        .nav-tab.active .ms {
+            font-variation-settings: 'FILL' 1, 'wght' 600, 'GRAD' 0, 'opsz' 24;
+        }
+
+        .nav-pip {
+            position: absolute;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 28px;
+            height: 3px;
+            border-radius: 2px;
+            background: var(--primary);
+            opacity: 0;
+            transition: opacity 0.15s;
+        }
+
+        .nav-tab.active .nav-pip {
+            opacity: 1;
+        }
+
+        /* ── Success Sheet ── */
+        .overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(15, 23, 42, 0.5);
+            backdrop-filter: blur(5px);
+            -webkit-backdrop-filter: blur(5px);
+            z-index: 500;
+            align-items: flex-end;
+            justify-content: center;
+        }
+
+        .overlay.active {
+            display: flex;
+            animation: oin 0.22s ease;
+        }
+
+        @keyframes oin {
+            from {
+                opacity: 0
+            }
+
+            to {
+                opacity: 1
+            }
+        }
+
+        .s-sheet {
+            background: var(--surface);
+            border-radius: 26px 26px 0 0;
+            width: 100%;
+            max-width: 480px;
+            text-align: center;
+            padding: 1.25rem 1.5rem calc(1.75rem + var(--safe-bottom));
+            transform: translateY(100%);
+            animation: sup 0.38s cubic-bezier(0.34, 1.4, 0.64, 1) forwards;
+        }
+
+        @keyframes sup {
+            to {
+                transform: translateY(0)
+            }
+        }
+
+        .s-bar {
+            width: 38px;
+            height: 4px;
+            border-radius: 2px;
+            background: var(--border);
+            margin: 0 auto 1.35rem;
+        }
+
+        .s-ring {
+            width: 68px;
+            height: 68px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #d1fae5, #6ee7b7);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 1.1rem;
+            box-shadow: 0 0 0 10px rgba(16, 185, 129, 0.1);
+        }
+
+        .s-ring .ms {
+            font-size: 36px;
+            color: #059669;
+            font-variation-settings: 'FILL' 1, 'wght' 600, 'GRAD' 0, 'opsz' 48;
+        }
+
+        .s-sheet h2 {
+            font-size: 1.15rem;
+            font-weight: 800;
+            color: var(--text-main);
+            margin-bottom: 0.4rem;
+        }
+
+        .s-sheet p {
+            font-size: 0.875rem;
+            color: var(--text-sub);
+            line-height: 1.6;
+            margin-bottom: 1.6rem;
+        }
+
+        .ok-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.45rem;
+            width: 100%;
+            padding: 0.9rem;
+            background: var(--secondary);
+            color: white;
+            border: none;
+            border-radius: 14px;
+            font-size: 0.93rem;
+            font-weight: 700;
+            cursor: pointer;
+            font-family: inherit;
+            transition: transform 0.13s;
+        }
+
+        .ok-btn:active {
+            transform: scale(0.97);
+        }
+
+        .ok-btn .ms {
+            font-size: 20px;
+        }
+
+        .char-low {
+            color: var(--danger);
+            font-weight: 700;
+        }
+
+        /* ── Responsive ── */
+        @media (min-width:540px) {
+
+            .topbar,
+            .bottom-nav {
+                max-width: 480px;
+                left: 50%;
+                right: auto;
+                transform: translateX(-50%);
+            }
+
+            .scroll-body {
+                max-width: 480px;
+                margin: 0 auto;
+            }
+
+            .overlay {
+                align-items: center;
+                padding-bottom: 0;
+            }
+
+            .s-sheet {
+                border-radius: 26px;
+                max-width: 390px;
+                margin-bottom: 2.5rem;
+            }
+        }
+
+        @keyframes fup {
+            from {
+                opacity: 0;
+                transform: translateY(12px)
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0)
+            }
+        }
+
+        .sec-card {
+            animation: fup 0.44s ease backwards;
+        }
+
+        .sec-card:nth-child(1) {
+            animation-delay: 0.04s;
+        }
+
+        .sec-card:nth-child(2) {
+            animation-delay: 0.09s;
+        }
+
+        .sec-card:nth-child(3) {
+            animation-delay: 0.14s;
+        }
+
+        .form-actions {
+            animation: fup 0.44s ease 0.18s backwards;
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- Success Sheet -->
+    <div class="overlay" id="successPopup" th:if="${successMessage}" style="display:none;">
+        <div class="s-sheet" id="successSheet">
+            <div class="s-bar"></div>
+            <div class="s-ring"><span class="ms">check_circle</span></div>
+            <h2>Saved Successfully!</h2>
+            <p>Hospital details have been updated successfully.</p>
+            <button class="ok-btn" onclick="closePopup()">
+                <span class="ms">done_all</span> OK, Got It
+            </button>
+        </div>
+    </div>
+
+    <div class="app">
+
+        <!-- ── Topbar ── -->
+        <header class="topbar">
+            <div class="topbar-inner">
+                <div class="tb-left">
+                    <a th:href="@{'/user/hospital/manage/' + ${hospital.hospitalId}}" class="tb-back">
+                        <span class="ms" style="font-size:20px;">arrow_back</span>
+                    </a>
+                    <div>
+                        <span class="tb-label">Sub Admin Panel</span>
+                        <span class="tb-title">Edit Hospital</span>
+                    </div>
+                </div>
+                <button type="submit" form="editForm" class="tb-save">
+                    <span class="ms">save</span> Save
+                </button>
+            </div>
+        </header>
+
+        <!-- ── Scroll Body ── -->
+        <div class="scroll-body">
+
+            <!-- ── Hero ── -->
+            <div class="hero">
+                <div class="hero-glow"></div>
+                <div class="hero-inner">
+                    <div class="hero-av">
+                        <span class="ms fill" style="font-size:26px;color:white;">edit_square</span>
+                    </div>
+                    <div class="hero-info">
+                        <h2>Edit Hospital Details</h2>
+                        <p>Update info, contact &amp; facilities</p>
+                        <div class="hero-chip">
+                            <span class="ms" style="font-size:12px;">local_hospital</span>
+                            <span th:text="${hospital.name}">Hospital Name</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="content">
+                <form id="editForm" th:action="@{/user/hospital/update/by/sub/user}" th:object="${hospital}"
+                    method="post" novalidate>
+                    <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+                    <input type="hidden" th:field="*{hospitalId}">
+
+                    <!-- ─── Basic Info ─── -->
+                    <div class="sec-card">
+                        <div class="sec-head">
+                            <div class="sec-icon bl"><span class="ms">business</span></div>
+                            <h3>Basic Information</h3>
+                        </div>
+                        <div class="sec-body">
+
+                            <!-- Hospital Name -->
+                            <div class="fg">
+                                <label class="fl" for="f-name">
+                                    <span class="ms">local_hospital</span> Hospital Name <span class="req">*</span>
+                                </label>
+                                <input type="text" id="f-name" th:field="*{name}" class="fi" required
+                                    placeholder="Enter hospital name">
+                                <span class="f-err" id="nameError">Hospital name is required.</span>
+                            </div>
+
+                            <!-- 24/7 Toggle -->
+                            <div class="fg">
+                                <label class="fl"><span class="ms">schedule</span> Availability</label>
+                                <div class="toggle-row" id="toggleRow" onclick="handleToggleClick(event)">
+                                    <div class="tg-left">
+                                        <span class="ms fill">schedule</span>
+                                        <div class="tg-text">
+                                            <div class="tt">24 / 7 Operation</div>
+                                            <div class="ts">Round the clock availability</div>
+                                        </div>
+                                    </div>
+                                    <div class="tg-sw" onclick="event.stopPropagation()">
+                                        <input type="checkbox" id="is24x7Checkbox" th:field="*{is24x7}"
+                                            onchange="toggle24x7()">
+                                        <span class="tg-sl"></span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Ownership -->
+                            <div class="fg">
+                                <label class="fl" for="f-type">
+                                    <span class="ms">account_balance</span> Ownership <span class="req">*</span>
+                                </label>
+                                <select id="f-type" th:field="*{hospitalType}" class="fs" required>
+                                    <option value="">-- Select Ownership --</option>
+                                    <option value="Government">Government</option>
+                                    <option value="Private">Private</option>
+                                </select>
+                                <span class="f-err" id="ownershipError">Please select ownership type.</span>
+                            </div>
+
+                            <!-- Opening / Closing Time -->
+                            <div class="fg-row">
+                                <div class="fg">
+                                    <label class="fl" for="openingTimeInput">
+                                        <span class="ms">login</span> Opens
+                                        <span class="req" id="openingTimeRequired">*</span>
+                                    </label>
+                                    <input type="time" id="openingTimeInput" th:field="*{openingTime}" class="fi"
+                                        required>
+                                    <span class="f-err" id="openTimeError">Required.</span>
+                                </div>
+                                <div class="fg">
+                                    <label class="fl" for="closingTimeInput">
+                                        <span class="ms">logout</span> Closes
+                                        <span class="req" id="closingTimeRequired">*</span>
+                                    </label>
+                                    <input type="time" id="closingTimeInput" th:field="*{closingTime}" class="fi"
+                                        required>
+                                    <span class="f-err" id="closeTimeError">Required.</span>
+                                </div>
+                            </div>
+
+                            <!-- OPD Charge -->
+                            <div class="fg">
+                                <label class="fl" for="opdCharges">
+                                    <span class="ms">payments</span> OPD Charge
+                                </label>
+                                <div class="rw">
+                                    <span class="rs">₹</span>
+                                    <input type="number" id="opdCharges" th:field="*{opdCharge}" min="0" max="2000"
+                                        step="1" class="fi" placeholder="0" oninput="validateOPD()">
+                                </div>
+                                <!-- Matches Add Hospital: max 2000, same message style -->
+                                <span class="f-err" id="opdError"></span>
+                                <span class="f-hint">Enter 0 if OPD is free of charge</span>
+                            </div>
+
+                        </div>
+                    </div>
+
+                    <!-- ─── Contact Info ─── -->
+                    <div class="sec-card">
+                        <div class="sec-head">
+                            <div class="sec-icon gn"><span class="ms">contact_phone</span></div>
+                            <h3>Contact Information</h3>
+                        </div>
+                        <div class="sec-body">
+
+                            <!-- Address -->
+                            <div class="fg">
+                                <label class="fl" for="f-addr">
+                                    <span class="ms">location_on</span> Address <span class="req">*</span>
+                                </label>
+                                <textarea id="f-addr" th:field="*{address}" class="ft" required
+                                    placeholder="Enter complete address" rows="2"></textarea>
+                                <span class="f-err" id="addressError">Address is required.</span>
+                            </div>
+
+                            <!-- Contact Number -->
+                            <div class="fg">
+                                <label class="fl" for="f-contact">
+                                    <span class="ms">call</span> Contact Number <span class="req">*</span>
+                                </label>
+                                <input type="tel" id="f-contact" th:field="*{contact}" class="fi" required
+                                    placeholder="Enter contact number" maxlength="10" inputmode="numeric">
+                                <span class="f-err" id="contactError">Enter a valid 10-digit mobile number.</span>
+                            </div>
+
+                            <!-- Email — full regex validation from Add Hospital -->
+                            <div class="fg">
+                                <label class="fl" for="f-email">
+                                    <span class="ms">email</span> Email
+                                </label>
+                                <input type="email" id="f-email" th:field="*{email}" class="fi"
+                                    placeholder="hospital@example.com">
+                                <span class="f-err" id="emailError">Please enter a valid email address (e.g.
+                                    user@domain.com).</span>
+                            </div>
+
+                            <!-- Website -->
+                            <div class="fg">
+                                <label class="fl" for="f-web">
+                                    <span class="ms">language</span> Website
+                                </label>
+                                <input type="url" id="f-web" th:field="*{website}" class="fi"
+                                    placeholder="https://www.hospital.com">
+                                <span class="f-err" id="websiteError">Enter a valid URL starting with http:// or
+                                    https://</span>
+                            </div>
+
+                        </div>
+                    </div>
+
+                    <!-- ─── Description & Facilities ─── -->
+                    <div class="sec-card">
+                        <div class="sec-head">
+                            <div class="sec-icon am"><span class="ms">description</span></div>
+                            <h3>Description &amp; Facilities</h3>
+                        </div>
+                        <div class="sec-body">
+
+                            <!-- Description -->
+                            <div class="fg">
+                                <label class="fl" for="f-desc">
+                                    <span class="ms">article</span> Description
+                                </label>
+                                <textarea id="f-desc" th:field="*{description}" class="ft"
+                                    placeholder="Brief description about the hospital, services, and specialties"
+                                    maxlength="1000" rows="4" oninput="updateCharCount(this)"></textarea>
+                                <span class="f-hint">Remaining: <span id="charCount">1000</span> characters</span>
+                            </div>
+
+                            <!-- Facilities -->
+                            <div class="fg">
+                                <label class="fl">
+                                    <span class="ms">medical_services</span> Facilities
+                                </label>
+                                <div class="fac-row">
+                                    <input type="text" id="facilityInput" class="fi"
+                                        placeholder="e.g. ICU, Emergency, Lab">
+                                    <button type="button" class="fac-add" onclick="addFacility()">
+                                        <span class="ms">add</span>
+                                    </button>
+                                </div>
+                                <input type="hidden" th:field="*{facilities}" id="facilitiesHidden">
+                                <div id="facilitiesTags" class="fac-tags"></div>
+                                <span class="f-hint">Add services &amp; facilities available at your hospital</span>
+                            </div>
+
+                        </div>
+                    </div>
+
+                    <!-- ── Actions ── -->
+                    <div class="form-actions">
+                        <button type="submit" class="a-btn primary">
+                            <span class="ms">save</span> Save Changes
+                        </button>
+                        <button type="reset" class="a-btn secondary" onclick="handleReset()">
+                            <span class="ms">refresh</span> Reset
+                        </button>
+                    </div>
+
+                </form>
+            </div>
+        </div>
+
+        <!-- ── Bottom Nav ── -->
+        <nav class="bottom-nav">
+            <a th:href="@{'/user/hospital/manage/' + ${hospital.hospitalId}}" class="nav-tab">
+                <div class="nav-pip"></div>
+                <span class="ms">dashboard</span>
+                <span>Overview</span>
+            </a>
+            <a th:href="@{'/user/hospital/images/' + ${hospital.hospitalId}}" class="nav-tab">
+                <div class="nav-pip"></div>
+                <span class="ms">photo_library</span>
+                <span>Gallery</span>
+            </a>
+            <a th:href="@{'/user/hospital/doctors/' + ${hospital.hospitalId}}" class="nav-tab">
+                <div class="nav-pip"></div>
+                <span class="ms">medical_services</span>
+                <span>Doctors</span>
+            </a>
+            <a href="#" class="nav-tab active">
+                <div class="nav-pip"></div>
+                <span class="ms">edit_square</span>
+                <span>Edit</span>
+            </a>
+        </nav>
+
+    </div>
+
+    <script>
+        /* ═══════════════════════════════════════════════════
+           HELPERS
+        ═══════════════════════════════════════════════════ */
+        function showErr(inputEl, errId, msg) {
+            inputEl.classList.add('invalid');
+            const err = document.getElementById(errId);
+            if (err) { err.textContent = msg; err.classList.add('show'); }
+        }
+
+        function clearErr(inputEl, errId) {
+            inputEl.classList.remove('invalid');
+            const err = document.getElementById(errId);
+            if (err) { err.textContent = ''; err.classList.remove('show'); }
+        }
+
+        /* ═══════════════════════════════════════════════════
+           SUCCESS POPUP
+        ═══════════════════════════════════════════════════ */
+        function closePopup() {
+            const p = document.getElementById('successPopup');
+            if (!p) return;
+            p.style.transition = 'opacity 0.2s';
+            p.style.opacity = '0';
+            setTimeout(() => p.remove(), 220);
+        }
+
+        document.addEventListener('click', function (e) {
+            const p = document.getElementById('successPopup');
+            const s = document.getElementById('successSheet');
+            if (p && s && e.target === p) closePopup();
+        });
+
+        /* ═══════════════════════════════════════════════════
+           24/7 TOGGLE  (from Add Hospital)
+        ═══════════════════════════════════════════════════ */
+        function handleToggleClick(e) {
+            const cb = document.getElementById('is24x7Checkbox');
+            cb.checked = !cb.checked;
+            toggle24x7();
+        }
+
+        function toggle24x7() {
+            const cb = document.getElementById('is24x7Checkbox');
+            const open = document.getElementById('openingTimeInput');
+            const cls = document.getElementById('closingTimeInput');
+            const ro = document.getElementById('openingTimeRequired');
+            const rc = document.getElementById('closingTimeRequired');
+            const row = document.getElementById('toggleRow');
+
+            if (cb.checked) {
+                open.disabled = true; cls.disabled = true;
+                open.required = false; cls.required = false;
+                open.value = ''; cls.value = '';
+                if (ro) ro.style.display = 'none';
+                if (rc) rc.style.display = 'none';
+                row.classList.add('on');
+                // clear any time errors when 24/7 enabled
+                clearErr(open, 'openTimeError');
+                clearErr(cls, 'closeTimeError');
+            } else {
+                open.disabled = false; cls.disabled = false;
+                open.required = true; cls.required = true;
+                if (ro) ro.style.display = 'inline';
+                if (rc) rc.style.display = 'inline';
+                row.classList.remove('on');
+            }
+        }
+
+        /* ═══════════════════════════════════════════════════
+           OPD VALIDATION  (from Add Hospital — max ₹2000)
+        ═══════════════════════════════════════════════════ */
+        const MIN_OPD = 0;
+        const MAX_OPD = 2000;
+
+        function validateOPD() {
+            const input = document.getElementById('opdCharges');
+            const value = input.value;
+            const numValue = parseFloat(value);
+
+            if (value === '') {
+                clearErr(input, 'opdError');
+                return true;
+            }
+            if (numValue < MIN_OPD) {
+                showErr(input, 'opdError', `Charge cannot be less than ₹${MIN_OPD}`);
+                return false;
+            }
+            if (numValue > MAX_OPD) {
+                showErr(input, 'opdError', `Charge cannot exceed ₹${MAX_OPD}`);
+                return false;
+            }
+            clearErr(input, 'opdError');
+            return true;
+        }
+
+        /* ═══════════════════════════════════════════════════
+           EMAIL VALIDATION  (from Add Hospital — full regex)
+        ═══════════════════════════════════════════════════ */
+        const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+        function validateEmail() {
+            const input = document.getElementById('f-email');
+            const email = input.value.trim();
+            if (email.length === 0) { clearErr(input, 'emailError'); return true; }
+            if (!EMAIL_PATTERN.test(email)) {
+                showErr(input, 'emailError', 'Please enter a valid email address (e.g. user@domain.com)');
+                return false;
+            }
+            clearErr(input, 'emailError');
+            return true;
+        }
+
+        /* ═══════════════════════════════════════════════════
+           CONTACT VALIDATION  (10-digit Indian mobile)
+        ═══════════════════════════════════════════════════ */
+        function validateContact() {
+            const input = document.getElementById('f-contact');
+            const val = input.value.trim();
+            if (!val) { showErr(input, 'contactError', 'Contact number is required.'); return false; }
+            if (!/^\d{10}$/.test(val)) {
+                showErr(input, 'contactError', 'Enter a valid 10-digit contact number.');
+                return false;
+            }
+            clearErr(input, 'contactError');
+            return true;
+        }
+
+        /* ═══════════════════════════════════════════════════
+           WEBSITE VALIDATION
+        ═══════════════════════════════════════════════════ */
+        function validateWebsite() {
+            const input = document.getElementById('f-web');
+            const val = input.value.trim();
+            if (!val) { clearErr(input, 'websiteError'); return true; }
+            if (!/^https?:\/\/.+/.test(val)) {
+                showErr(input, 'websiteError', 'Enter a valid URL starting with http:// or https://');
+                return false;
+            }
+            clearErr(input, 'websiteError');
+            return true;
+        }
+
+        /* ═══════════════════════════════════════════════════
+           REQUIRED FIELD VALIDATOR
+        ═══════════════════════════════════════════════════ */
+        function validateRequired(inputId, errId, msg) {
+            const el = document.getElementById(inputId);
+            const val = el.value.trim();
+            if (!val) { showErr(el, errId, msg); return false; }
+            clearErr(el, errId);
+            return true;
+        }
+
+        /* ═══════════════════════════════════════════════════
+           CHAR COUNTER
+        ═══════════════════════════════════════════════════ */
+        function updateCharCount(el) {
+            const rem = 1000 - el.value.length;
+            const span = document.getElementById('charCount');
+            span.textContent = rem;
+            span.className = rem < 100 ? 'char-low' : '';
+        }
+
+        /* ═══════════════════════════════════════════════════
+           FACILITIES
+        ═══════════════════════════════════════════════════ */
+        let facilities = [];
+
+        function addFacility() {
+            const input = document.getElementById('facilityInput');
+            const val = input.value.trim();
+            if (val && !facilities.includes(val)) {
+                facilities.push(val);
+                renderFacilities();
+                input.value = '';
+            }
+        }
+
+        function removeFacility(i) {
+            facilities.splice(i, 1);
+            renderFacilities();
+        }
+
+        function renderFacilities() {
+            const wrap = document.getElementById('facilitiesTags');
+            const hidden = document.getElementById('facilitiesHidden');
+            wrap.innerHTML = facilities.map((f, i) => `
+      <div class="fac-tag">
+        <span>${f}</span>
+        <button type="button" class="fac-rm" onclick="removeFacility(${i})">
+          <span class="ms">close</span>
+        </button>
+      </div>`).join('');
+            hidden.value = facilities.join(',');
+        }
+
+        document.getElementById('facilityInput').addEventListener('keypress', function (e) {
+            if (e.key === 'Enter') { e.preventDefault(); addFacility(); }
+        });
+
+        /* ═══════════════════════════════════════════════════
+           RESET HANDLER
+        ═══════════════════════════════════════════════════ */
+        function handleReset() {
+            setTimeout(() => {
+                const existing = document.getElementById('facilitiesHidden').value;
+                facilities = existing ? existing.split(',').filter(f => f.trim()) : [];
+                renderFacilities();
+                toggle24x7();
+                const desc = document.getElementById('f-desc');
+                if (desc) updateCharCount(desc);
+                // Clear all inline errors on reset
+                document.querySelectorAll('.f-err').forEach(el => el.classList.remove('show'));
+                document.querySelectorAll('.invalid').forEach(el => el.classList.remove('invalid'));
+            }, 60);
+        }
+
+        /* ═══════════════════════════════════════════════════
+           INLINE LISTENERS — live feedback as user types
+           (same behaviour as Add Hospital)
+        ═══════════════════════════════════════════════════ */
+        function attachLiveListeners() {
+            // OPD — on every keystroke
+            document.getElementById('opdCharges')
+                ?.addEventListener('input', validateOPD);
+
+            // Email — on every keystroke
+            document.getElementById('f-email')
+                ?.addEventListener('input', validateEmail);
+
+            // Contact — digits only, max 10  +  live check
+            const contactEl = document.getElementById('f-contact');
+            if (contactEl) {
+                contactEl.addEventListener('input', function () {
+                    this.value = this.value.replace(/\D/g, '').slice(0, 10);
+                    if (this.value.length > 0) validateContact();
+                });
+                contactEl.addEventListener('blur', validateContact);
+            }
+
+            // Website — on blur
+            document.getElementById('f-web')
+                ?.addEventListener('blur', validateWebsite);
+
+            // Name — on blur
+            document.getElementById('f-name')
+                ?.addEventListener('blur', () =>
+                    validateRequired('f-name', 'nameError', 'Hospital name is required.'));
+
+            // Address — on blur
+            document.getElementById('f-addr')
+                ?.addEventListener('blur', () =>
+                    validateRequired('f-addr', 'addressError', 'Address is required.'));
+
+            // Ownership — on change
+            document.getElementById('f-type')
+                ?.addEventListener('change', () =>
+                    validateRequired('f-type', 'ownershipError', 'Please select ownership type.'));
+
+            // Opening / closing time — on blur (only when not 24/7)
+            document.getElementById('openingTimeInput')
+                ?.addEventListener('blur', function () {
+                    if (!this.disabled && !this.value)
+                        showErr(this, 'openTimeError', 'Opening time is required.');
+                    else clearErr(this, 'openTimeError');
+                });
+
+            document.getElementById('closingTimeInput')
+                ?.addEventListener('blur', function () {
+                    if (!this.disabled && !this.value)
+                        showErr(this, 'closeTimeError', 'Closing time is required.');
+                    else clearErr(this, 'closeTimeError');
+                });
+        }
+
+        /* ═══════════════════════════════════════════════════
+           WHITESPACE TRIM  (from Add Hospital)
+        ═══════════════════════════════════════════════════ */
+        function attachTrimListeners() {
+            document.querySelectorAll(
+                'input[type="text"], input[type="email"], input[type="url"], input[type="tel"], textarea'
+            ).forEach(el => {
+                el.addEventListener('input', function () {
+                    this.value = this.value.replace(/^\s+/g, '');
+                });
+                el.addEventListener('blur', function () {
+                    this.value = this.value.trim();
+                });
+            });
+        }
+
+        /* ═══════════════════════════════════════════════════
+           FULL FORM SUBMIT VALIDATION  (all fields at once)
+        ═══════════════════════════════════════════════════ */
+        function validateAll() {
+            const is24x7 = document.getElementById('is24x7Checkbox').checked;
+            const checks = [
+                validateRequired('f-name', 'nameError', 'Hospital name is required.'),
+                validateRequired('f-type', 'ownershipError', 'Please select ownership type.'),
+                validateRequired('f-addr', 'addressError', 'Address is required.'),
+                validateContact(),
+                validateEmail(),
+                validateWebsite(),
+                validateOPD(),
+            ];
+
+            // Time fields only required when not 24/7
+            if (!is24x7) {
+                const openOk = !!document.getElementById('openingTimeInput').value;
+                const clsOk = !!document.getElementById('closingTimeInput').value;
+                if (!openOk) showErr(document.getElementById('openingTimeInput'), 'openTimeError', 'Opening time is required.');
+                else clearErr(document.getElementById('openingTimeInput'), 'openTimeError');
+                if (!clsOk) showErr(document.getElementById('closingTimeInput'), 'closeTimeError', 'Closing time is required.');
+                else clearErr(document.getElementById('closingTimeInput'), 'closeTimeError');
+                checks.push(openOk, clsOk);
+            }
+
+            return checks.every(Boolean);
+        }
+
+        /* ═══════════════════════════════════════════════════
+           INIT
+        ═══════════════════════════════════════════════════ */
+        window.addEventListener('DOMContentLoaded', function () {
+
+            // Show success popup
+            const popup = document.getElementById('successPopup');
+            if (popup) popup.style.display = 'flex';
+
+            // Load facilities
+            const existing = document.getElementById('facilitiesHidden').value;
+            if (existing) {
+                facilities = existing.split(',').filter(f => f.trim());
+                renderFacilities();
+            }
+
+            // Sync 24/7 toggle
+            toggle24x7();
+
+            // Char counter
+            const desc = document.getElementById('f-desc');
+            if (desc) updateCharCount(desc);
+
+            // Attach live listeners
+            attachLiveListeners();
+            attachTrimListeners();
+
+            // Form submit
+            document.getElementById('editForm').addEventListener('submit', function (e) {
+                const ok = validateAll();
+                if (!ok) {
+                    e.preventDefault();
+                    // Scroll to first invalid field
+                    const first = this.querySelector('.invalid');
+                    if (first) {
+                        first.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                        first.focus();
+                    }
+                }
+            });
+        });
+    </script>
+
+</body>
+
+</html>
