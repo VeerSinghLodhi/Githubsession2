@@ -1,0 +1,1212 @@
+<!DOCTYPE html>
+<html lang="hi" xmlns:th="http://www.w3.org/1999/xhtml">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>डॉक्टर सूची - हेल्थ साथी</title>
+    <link href="https://fonts.googleapis.com" rel="preconnect" />
+    <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Devanagari:wght@400;500;600;700&display=swap"
+        rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap"
+        rel="stylesheet" />
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #0058ba;
+            --primary-dark: #155a96;
+            --primary-light: #e3f2fd;
+            --text-main: #1e293b;
+            --text-secondary: #64748b;
+            --border-light: #e2e8f0;
+            --surface: #ffffff;
+            --background: #f8fafc;
+            --success: #10b981;
+            --success-light: #d1fae5;
+            --warning: #f59e0b;
+            --warning-light: #fef3c7;
+            --danger: #ef4444;
+            --danger-light: #fee2e2;
+        }
+
+        body {
+            font-family: 'Noto Sans Devanagari', 'Inter', sans-serif;
+            background: var(--background);
+            color: var(--text-main);
+            min-height: 100vh;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        .font-hindi {
+            font-family: 'Noto Sans Devanagari', sans-serif;
+        }
+
+        /* ── Sidebar overlay ── */
+        .sidebar-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(4px);
+            z-index: 999;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .sidebar-overlay.active {
+            display: block;
+            opacity: 1;
+        }
+
+        /* ── Sidebar ── */
+        .sidebar {
+            position: fixed;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 280px;
+            background: var(--surface);
+            border-right: 1px solid var(--border-light);
+            padding: 24px;
+            overflow-y: auto;
+            z-index: 1000;
+            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .logo-section {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 32px;
+            padding-bottom: 24px;
+            border-bottom: 1px solid var(--border-light);
+        }
+
+        .logo-icon {
+            width: 48px;
+            height: 48px;
+            background: var(--primary);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transform: rotate(3deg);
+            transition: transform 0.3s;
+        }
+
+        .logo-icon:hover {
+            transform: rotate(0deg);
+        }
+
+        .logo-icon .material-symbols-outlined {
+            color: white;
+            font-size: 28px;
+        }
+
+        .logo-text h2 {
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--text-main);
+        }
+
+        .logo-text p {
+            font-size: 12px;
+            color: var(--text-secondary);
+        }
+
+        .nav-menu {
+            list-style: none;
+        }
+
+        .nav-item {
+            margin-bottom: 8px;
+        }
+
+        .nav-link {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 16px;
+            border-radius: 12px;
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 14px;
+            transition: all 0.3s;
+        }
+
+        .nav-link:hover {
+            background: var(--primary-light);
+            color: var(--primary);
+        }
+
+        .nav-link.active {
+            background: var(--primary);
+            color: white;
+        }
+
+        .nav-link .material-symbols-outlined {
+            font-size: 22px;
+        }
+
+        /* ── Main ── */
+        .main-content {
+            margin-left: 280px;
+            padding: 0 24px 24px 24px;
+            min-height: 100vh;
+            transition: margin-left 0.3s;
+        }
+
+        /* ── Sticky Header ── */
+        .header {
+            position: sticky;
+            top: 0;
+            z-index: 50;
+            background: var(--surface);
+            border-radius: 0 0 16px 16px;
+            padding: 16px 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+            gap: 16px;
+        }
+
+        .action-bar {
+            display: flex;
+            justify-content: flex-end;
+            align-items: center;
+            padding: 16px 0;
+            margin-bottom: 8px;
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .hamburger {
+            display: none;
+            background: transparent;
+            border: none;
+            cursor: pointer;
+            padding: 6px;
+            flex-direction: column;
+            gap: 5px;
+            flex-shrink: 0;
+        }
+
+        .hamburger span {
+            display: block;
+            width: 24px;
+            height: 2.5px;
+            background: var(--primary);
+            border-radius: 2px;
+            transition: all 0.3s ease;
+        }
+
+        .header-title-block h1 {
+            font-size: 22px;
+            font-weight: 700;
+            color: var(--text-main);
+        }
+
+        .header-subtitle {
+            font-size: 13px;
+            color: var(--text-secondary);
+            font-weight: 500;
+            margin-top: 2px;
+        }
+
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .user-avatar {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            overflow: hidden;
+        }
+
+        /* ── Buttons ── */
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 12px;
+            font-weight: 600;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            text-decoration: none;
+            white-space: nowrap;
+            font-family: 'Noto Sans Devanagari', 'Inter', sans-serif;
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-dark);
+            transform: scale(0.98);
+        }
+
+        /* ── Alerts ── */
+        .alert {
+            padding: 16px 20px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 14px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+        }
+
+        .alert-success {
+            background: var(--success-light);
+            border-left: 4px solid var(--success);
+            color: #065f46;
+        }
+
+        .alert-error {
+            background: var(--danger-light);
+            border-left: 4px solid var(--danger);
+            color: #991b1b;
+        }
+
+        /* ── Search / Filter ── */
+        .search-filter-section {
+            background: var(--surface);
+            border-radius: 16px;
+            padding: 20px;
+            margin-bottom: 24px;
+            box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
+            border: 1px solid var(--border-light);
+        }
+
+        .search-filter-wrapper {
+            display: flex;
+            gap: 16px;
+            flex-wrap: wrap;
+        }
+
+        .search-input,
+        .filter-select {
+            width: 100%;
+            padding: 12px 16px;
+            background: #f8fafc;
+            border: 1px solid var(--border-light);
+            border-radius: 12px;
+            font-size: 14px;
+            font-family: 'Noto Sans Devanagari', 'Inter', sans-serif;
+            color: var(--text-main);
+            transition: all 0.3s;
+        }
+
+        .search-input:focus,
+        .filter-select:focus {
+            outline: none;
+            border-color: var(--primary);
+            background: white;
+            box-shadow: 0 0 0 3px rgba(0, 88, 186, 0.1);
+        }
+
+        .search-wrapper {
+            position: relative;
+            flex: 1;
+            min-width: 200px;
+        }
+
+        .search-icon {
+            position: absolute;
+            left: 16px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--primary);
+        }
+
+        .search-input {
+            padding-left: 48px;
+        }
+
+        .filter-select {
+            min-width: 200px;
+        }
+
+        /* ══════════════════════════════
+       DOCTOR CARD — Updated Layout
+    ══════════════════════════════ */
+        .doctor-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(520px, 1fr));
+            gap: 20px;
+        }
+
+        .doctor-card {
+            background: var(--surface);
+            border-radius: 16px;
+            border: 1px solid var(--border-light);
+            box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
+            transition: all 0.3s;
+            overflow: hidden;
+        }
+
+        .doctor-card:hover {
+            box-shadow: 0 8px 25px rgba(0, 88, 186, 0.15);
+            transform: translateY(-2px);
+        }
+
+        /* Top section: avatar + core info */
+        .doctor-header {
+            display: flex;
+            gap: 16px;
+            padding: 20px 20px 16px 20px;
+        }
+
+        .doctor-avatar {
+            width: 84px;
+            height: 84px;
+            border-radius: 16px;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 32px;
+            font-weight: 700;
+            flex-shrink: 0;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .doctor-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .status-badge {
+            position: absolute;
+            bottom: -2px;
+            right: -2px;
+            width: 18px;
+            height: 18px;
+            background: var(--success);
+            border: 3px solid white;
+            border-radius: 50%;
+        }
+
+        .doctor-info {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .doctor-name {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--text-main);
+            margin-bottom: 2px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .doctor-spec {
+            font-size: 13px;
+            color: var(--primary);
+            font-weight: 600;
+            margin-bottom: 10px;
+        }
+
+        .badge-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+        }
+
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            padding: 5px 10px;
+            border-radius: 8px;
+            font-size: 11px;
+            font-weight: 600;
+        }
+
+        .badge .material-symbols-outlined {
+            font-size: 14px;
+        }
+
+        .badge-primary {
+            background: var(--primary-light);
+            color: var(--primary);
+            border: 1px solid rgba(0, 88, 186, 0.2);
+        }
+
+        .badge-blue {
+            background: #dbeafe;
+            color: #1e40af;
+            border: 1px solid #93c5fd;
+        }
+
+        .badge-green {
+            background: var(--success-light);
+            color: #065f46;
+            border: 1px solid #6ee7b7;
+        }
+
+        .badge-orange {
+            background: var(--warning-light);
+            color: #92400e;
+            border: 1px solid #fcd34d;
+        }
+
+        /* ── Detail rows ── */
+        .doctor-details {
+            padding: 0 20px 16px 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .detail-row {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 13px;
+            color: var(--text-secondary);
+        }
+
+        .detail-row .material-symbols-outlined {
+            font-size: 18px;
+            color: var(--primary);
+            flex-shrink: 0;
+        }
+
+        .detail-label {
+            font-weight: 600;
+            color: var(--text-main);
+            min-width: 90px;
+            font-size: 12px;
+        }
+
+        .detail-value {
+            color: var(--text-secondary);
+        }
+
+        /* ── Working days row ── */
+        .days-row {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .day-chip {
+            padding: 3px 10px;
+            border-radius: 6px;
+            font-size: 11px;
+            font-weight: 700;
+            background: var(--primary-light);
+            color: var(--primary);
+            border: 1px solid rgba(0, 88, 186, 0.2);
+            letter-spacing: 0.3px;
+        }
+
+        .day-chip.off {
+            background: #f1f5f9;
+            color: #cbd5e1;
+            border-color: #e2e8f0;
+            text-decoration: line-through;
+        }
+
+        /* ── Divider ── */
+        .card-divider {
+            border: none;
+            border-top: 1px solid var(--border-light);
+            margin: 0 20px;
+        }
+
+        /* ── Action buttons ── */
+        .action-buttons {
+            display: flex;
+            gap: 0;
+        }
+
+        .btn-edit,
+        .btn-delete {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            padding: 14px 16px;
+            font-weight: 600;
+            font-size: 13px;
+            cursor: pointer;
+            transition: all 0.3s;
+            border: none;
+            text-decoration: none;
+            font-family: 'Noto Sans Devanagari', 'Inter', sans-serif;
+        }
+
+        .btn-edit {
+            background: var(--primary-light);
+            color: var(--primary);
+            border-radius: 0 0 0 16px;
+            border-right: 1px solid var(--border-light);
+        }
+
+        .btn-edit:hover {
+            background: var(--primary);
+            color: white;
+        }
+
+        .btn-delete {
+            background: var(--danger-light);
+            color: var(--danger);
+            border-radius: 0 0 16px 0;
+        }
+
+        .btn-delete:hover {
+            background: var(--danger);
+            color: white;
+        }
+
+        .btn-edit .material-symbols-outlined,
+        .btn-delete .material-symbols-outlined {
+            font-size: 18px;
+        }
+
+        /* ── Empty state ── */
+        .empty-state {
+            text-align: center;
+            padding: 64px 20px;
+        }
+
+        .empty-icon {
+            width: 96px;
+            height: 96px;
+            background: var(--primary-light);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 20px;
+        }
+
+        /* ── Delete Modal ── */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 2000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(4px);
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: 20px;
+            padding: 32px;
+            max-width: 480px;
+            width: 90%;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        }
+
+        .modal-header {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            margin-bottom: 20px;
+        }
+
+        .modal-icon {
+            width: 56px;
+            height: 56px;
+            background: var(--danger-light);
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .modal-title {
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--text-main);
+        }
+
+        .modal-subtitle {
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        .modal-body {
+            font-size: 14px;
+            color: var(--text-secondary);
+            margin-bottom: 24px;
+            line-height: 1.6;
+        }
+
+        .modal-actions {
+            display: flex;
+            gap: 12px;
+        }
+
+        .btn-cancel-m,
+        .btn-confirm {
+            flex: 1;
+            padding: 14px 20px;
+            border-radius: 12px;
+            font-weight: 600;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.3s;
+            border: none;
+        }
+
+        .btn-cancel-m {
+            background: #f1f5f9;
+            color: var(--text-main);
+        }
+
+        .btn-cancel-m:hover {
+            background: #e2e8f0;
+        }
+
+        .btn-confirm {
+            background: linear-gradient(135deg, var(--danger) 0%, #dc2626 100%);
+            color: white;
+        }
+
+        .btn-confirm:hover {
+            box-shadow: 0 8px 25px rgba(239, 68, 68, 0.3);
+        }
+
+        /* ── Pagination ── */
+        .pagination-wrapper {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 32px;
+            padding: 16px 24px;
+            background: var(--surface);
+            border-radius: 16px;
+            border: 1px solid var(--border-light);
+            box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
+            flex-wrap: wrap;
+            gap: 16px;
+        }
+
+        .pagination-info {
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        .pagination-controls {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .page-btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-secondary);
+            background: var(--background);
+            border: 1px solid var(--border-light);
+            text-decoration: none;
+            transition: all 0.2s;
+            cursor: pointer;
+        }
+
+        .page-btn:hover:not(.disabled):not(.active) {
+            background: var(--primary-light);
+            color: var(--primary);
+            border-color: var(--primary);
+        }
+
+        .page-btn.active {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+
+        .page-btn.disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+            pointer-events: none;
+        }
+
+        .page-ellipsis {
+            width: 40px;
+            text-align: center;
+            color: var(--text-secondary);
+            font-size: 14px;
+        }
+
+        /* ── Responsive ── */
+        @media (max-width: 768px) {
+            .hamburger {
+                display: flex;
+            }
+
+            .sidebar {
+                transform: translateX(-100%);
+                box-shadow: 4px 0 20px rgba(0, 0, 0, 0.1);
+            }
+
+            .sidebar.active {
+                transform: translateX(0);
+            }
+
+            .main-content {
+                margin-left: 0;
+                padding: 0 14px 14px 14px;
+            }
+
+            .header {
+                border-radius: 0;
+                padding: 12px 16px;
+                margin-left: -16px;
+                margin-right: -16px;
+                width: calc(100% + 32px);
+            }
+
+            .header-title-block h1 {
+                font-size: 18px;
+            }
+
+            .action-bar {
+                padding: 12px 0;
+            }
+
+            .btn-primary {
+                padding: 9px 14px;
+                font-size: 13px;
+            }
+
+            .search-filter-wrapper {
+                flex-direction: column;
+            }
+
+            .search-wrapper,
+            .filter-select {
+                width: 100%;
+                min-width: auto;
+            }
+
+            .doctor-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .doctor-header {
+                flex-direction: column;
+                align-items: center;
+                text-align: center;
+            }
+
+            .doctor-avatar {
+                width: 96px;
+                height: 96px;
+            }
+
+            .badge-group {
+                justify-content: center;
+            }
+
+            .detail-row {
+                flex-wrap: wrap;
+            }
+
+            .modal-content {
+                padding: 24px;
+                margin: 16px;
+            }
+
+            .modal-actions {
+                flex-direction: column-reverse;
+            }
+
+            .pagination-wrapper {
+                justify-content: center;
+            }
+        }
+
+        @media (min-width: 769px) and (max-width: 1024px) {
+            .sidebar {
+                width: 240px;
+            }
+
+            .main-content {
+                margin-left: 240px;
+            }
+
+            .doctor-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="sidebar-overlay" onclick="closeSidebar()"></div>
+    <div th:replace="~{fragments/admin-sidebar :: adminSidebar}"></div>
+
+    <main class="main-content">
+
+        <!-- Sticky Header -->
+        <div class="header">
+            <div class="header-left">
+                <button class="hamburger" onclick="toggleSidebar()">
+                    <span></span><span></span><span></span>
+                </button>
+                <div class="header-title-block">
+                    <h1 th:text="#{doctorlist}">डॉक्टर सूची</h1>
+                    <p class="header-subtitle font-hindi" th:text="#{allregistereddoctors}">सभी पंजीकृत डॉक्टर्स</p>
+                </div>
+            </div>
+            <div class="header-right">
+                <div class="user-avatar">
+                    <img th:src="@{/images/app-logo.png}" alt="Logo"
+                        style="width:100%;height:100%;object-fit:contain;" />
+                </div>
+            </div>
+        </div>
+
+        <!-- Add Doctor Button -->
+        <div class="action-bar">
+            <a href="/admin/registerDoctor" class="btn-primary">
+                <span class="material-symbols-outlined">add</span>
+                <span th:text="#{adddoctor}">डॉक्टर जोड़ें</span>
+            </a>
+        </div>
+
+        <!-- Alerts -->
+        <div id="updateAlert" th:if="${update}" class="alert alert-success">
+            <span class="material-symbols-outlined">check_circle</span><span th:text="${update}"></span>
+        </div>
+        <div id="deleteAlert" th:if="${delete}" class="alert alert-success">
+            <span class="material-symbols-outlined">check_circle</span><span th:text="${delete}"></span>
+        </div>
+        <div id="successAlert" th:if="${success}" class="alert alert-success">
+            <span class="material-symbols-outlined">check_circle</span><span th:text="${success}"></span>
+        </div>
+        <div id="errorAlert" th:if="${error}" class="alert alert-error">
+            <span class="material-symbols-outlined">error</span><span th:text="${error}"></span>
+        </div>
+
+        <!-- Search & Filter -->
+        <div class="search-filter-section">
+            <form method="get" action="/admin/getDoctorList" id="filterForm">
+                <div class="search-filter-wrapper">
+                    <div class="search-wrapper">
+                        <span class="search-icon material-symbols-outlined">search</span>
+                        <input type="text" name="search" id="searchInput" th:value="${search}"
+                            th:placeholder="#{finddoctor}" class="search-input font-hindi" />
+                    </div>
+                    <!-- ✅ Fixed: values match entity specialization strings exactly -->
+                    <select name="specialization" id="specializationFilter" class="filter-select font-hindi"
+                        onchange="document.getElementById('filterForm').submit()">
+                        <option value="" th:text="#{allspecialties}">All Specialties</option>
+                        <option value="Cardiologist" th:selected="${specialization == 'Cardiologist'}">Cardiologist
+                        </option>
+                        <option value="Dermatologist" th:selected="${specialization == 'Dermatologist'}">Dermatologist
+                        </option>
+                        <option value="Neurologist" th:selected="${specialization == 'Neurologist'}">Neurologist
+                        </option>
+                        <option value="Orthopedic" th:selected="${specialization == 'Orthopedic'}">Orthopedic</option>
+                        <option value="Pediatrician" th:selected="${specialization == 'Pediatrician'}">Pediatrician
+                        </option>
+                        <option value="Gynecologist" th:selected="${specialization == 'Gynecologist'}">Gynecologist
+                        </option>
+                        <option value="Psychiatrist" th:selected="${specialization == 'Psychiatrist'}">Psychiatrist
+                        </option>
+                        <option value="Ophthalmologist" th:selected="${specialization == 'Ophthalmologist'}">
+                            Ophthalmologist</option>
+                        <option value="ENT Specialist" th:selected="${specialization == 'ENT Specialist'}">ENT
+                            Specialist</option>
+                        <option value="General Physician" th:selected="${specialization == 'General Physician'}">General
+                            Physician</option>
+                        <option value="Urologist" th:selected="${specialization == 'Urologist'}">Urologist</option>
+                        <option value="Oncologist" th:selected="${specialization == 'Oncologist'}">Oncologist</option>
+                        <option value="Radiologist" th:selected="${specialization == 'Radiologist'}">Radiologist
+                        </option>
+                        <option value="Anesthesiologist" th:selected="${specialization == 'Anesthesiologist'}">
+                            Anesthesiologist</option>
+                        <option value="Gastroenterologist" th:selected="${specialization == 'Gastroenterologist'}">
+                            Gastroenterologist</option>
+                        <option value="Nephrologist" th:selected="${specialization == 'Nephrologist'}">Nephrologist
+                        </option>
+                        <option value="Endocrinologist" th:selected="${specialization == 'Endocrinologist'}">
+                            Endocrinologist</option>
+                        <option value="Pulmonologist" th:selected="${specialization == 'Pulmonologist'}">Pulmonologist
+                        </option>
+                        <option value="Rheumatologist" th:selected="${specialization == 'Rheumatologist'}">
+                            Rheumatologist</option>
+                        <option value="Plastic Surgeon" th:selected="${specialization == 'Plastic Surgeon'}">Plastic
+                            Surgeon</option>
+                        <option value="Neurosurgeon" th:selected="${specialization == 'Neurosurgeon'}">Neurosurgeon
+                        </option>
+                        <option value="Cardiac Surgeon" th:selected="${specialization == 'Cardiac Surgeon'}">Cardiac
+                            Surgeon</option>
+                        <option value="Physiotherapist" th:selected="${specialization == 'Physiotherapist'}">
+                            Physiotherapist</option>
+                        <option value="Dentist" th:selected="${specialization == 'Dentist'}">Dentist</option>
+                        <option value="Pathologist" th:selected="${specialization == 'Pathologist'}">Pathologist
+                        </option>
+                        <option value="Immunologist" th:selected="${specialization == 'Immunologist'}">Immunologist
+                        </option>
+                        <option value="Hematologist" th:selected="${specialization == 'Hematologist'}">Hematologist
+                        </option>
+                        <option value="Infectious Disease Specialist"
+                            th:selected="${specialization == 'Infectious Disease Specialist'}">Infectious Disease
+                            Specialist</option>
+                        <option value="Allergist" th:selected="${specialization == 'Allergist'}">Allergist</option>
+                        <option value="Critical Care Specialist"
+                            th:selected="${specialization == 'Critical Care Specialist'}">Critical Care Specialist
+                        </option>
+                        <option value="Other" th:selected="${specialization == 'Other'}">Other</option>
+                    </select>
+                    <input type="hidden" name="page" value="0" />
+                </div>
+            </form>
+        </div>
+
+        <!-- Doctor Cards Grid -->
+        <div class="doctor-grid" id="doctorList">
+            <div th:each="doctor : ${doctorList}" class="doctor-card">
+
+                <!-- Header: Avatar + Name + Spec + Badges -->
+                <div class="doctor-header">
+                    <div class="doctor-avatar">
+                        <img th:src="${doctor.profilePicture != null} ? @{/get/Profilepic/{id}(id=${doctor.doctorId})} : '/noprofilepic.png'"
+                            alt="Profile" />
+                        <div class="status-badge"></div>
+                    </div>
+                    <div class="doctor-info">
+                        <h3 class="doctor-name" th:text="${doctor.name}">Dr. Name</h3>
+                        <p class="doctor-spec" th:text="${doctor.specialization}">Specialization</p>
+                        <div class="badge-group">
+                            <span class="badge badge-primary">
+                                <span class="material-symbols-outlined">school</span>
+                                <span th:text="${doctor.qualification}">MBBS</span>
+                            </span>
+                            <span class="badge badge-blue">
+                                <span class="material-symbols-outlined">local_hospital</span>
+                                <span th:text="${doctor.hospital.name}">Hospital</span>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Detail Rows: Contact, Timing, Working Days -->
+                <div class="doctor-details">
+
+                    <!-- Contact -->
+                    <div class="detail-row">
+                        <span class="material-symbols-outlined">call</span>
+                        <span class="detail-label" th:text="#{contact}">Contact</span>
+                        <span class="detail-value" th:text="${doctor.contact}">9876543210</span>
+                    </div>
+
+                    <!-- Working Hours -->
+                    <div class="detail-row" th:if="${doctor.startTime != null and doctor.endTime != null}">
+                        <span class="material-symbols-outlined">schedule</span>
+                        <span class="detail-label" th:text="#{workinghours}">Working Hours</span>
+                        <span class="detail-value">
+                            <span th:text="${doctor.startTime.toString().substring(0,5)}">09:00</span>
+                            &nbsp;–&nbsp;
+                            <span th:text="${doctor.endTime.toString().substring(0,5)}">17:00</span>
+                        </span>
+                    </div>
+
+                    <!-- Working Days -->
+                    <div class="detail-row" th:if="${doctor.workingDays != null and !doctor.workingDays.isEmpty()}">
+                        <span class="material-symbols-outlined">calendar_month</span>
+                        <span class="detail-label" th:text="#{workingdays}">Working Days</span>
+                        <div class="days-row">
+                            <!-- Show each day as a chip: active if in set, styled differently if not -->
+                            <span class="day-chip"
+                                th:each="day : ${ {'MONDAY','TUESDAY','WEDNESDAY','THURSDAY','FRIDAY','SATURDAY','SUNDAY'} }"
+                                th:classappend="${doctor.workingDays.stream().map(d -> d.name()).anyMatch(n -> n == day)} ? '' : ' off'">
+                                <!-- Short 2–3 letter abbreviation via switch-like inline -->
+                                <span th:switch="${day}">
+                                    <span th:case="'MONDAY'" th:text="#{mon}">Mon</span>
+                                    <span th:case="'TUESDAY'" th:text="#{tue}">Tue</span>
+                                    <span th:case="'WEDNESDAY'" th:text="#{wed}">Wed</span>
+                                    <span th:case="'THURSDAY'" th:text="#{thu}">Thu</span>
+                                    <span th:case="'FRIDAY'" th:text="#{fri}">Fri</span>
+                                    <span th:case="'SATURDAY'" th:text="#{sat}">Sat</span>
+                                    <span th:case="'SUNDAY'" th:text="#{sun}">Sun</span>
+                                </span>
+                            </span>
+                        </div>
+                    </div>
+
+                </div>
+
+                <hr class="card-divider" />
+
+                <!-- Action Buttons -->
+                <div class="action-buttons">
+                    <a th:href="@{/admin/getupdateDoctor/{id}(id=${doctor.doctorId})}" class="btn-edit">
+                        <span class="material-symbols-outlined">edit</span>
+                        <span th:text="#{edit}">संपादित करें</span>
+                    </a>
+                    <button type="button" onclick="confirmDelete(this)"
+                        th:attr="data-id=${doctor.doctorId}, data-name=${doctor.name}" class="btn-delete">
+                        <span class="material-symbols-outlined">delete</span>
+                        <span th:text="#{delete}">हटाएं</span>
+                    </button>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- Empty State -->
+        <div id="emptyState" class="empty-state" th:if="${doctorList == null or doctorList.isEmpty()}">
+            <div class="empty-icon">
+                <span class="material-symbols-outlined" style="font-size:56px;color:var(--primary);">search_off</span>
+            </div>
+            <h3 style="font-size:20px;font-weight:700;margin-bottom:8px;" th:text="#{nodoctorfound}">कोई डॉक्टर नहीं
+                मिला</h3>
+            <p class="font-hindi" style="color:var(--text-secondary);"
+                th:text="#{pleasechangeyoursearchoradjustfilters}">
+                कृपया अपनी खोज बदलें या फ़िल्टर समायोजित करें
+            </p>
+        </div>
+
+        <!-- Pagination -->
+        <div class="pagination-wrapper" th:if="${totalPages > 1}">
+            <div class="pagination-info font-hindi">
+                <span>कुल <strong th:text="${totalElements}"></strong> डॉक्टर</span>
+            </div>
+            <div class="pagination-controls">
+                <a th:href="@{/admin/getDoctorList(page=${currentPage - 1}, size=${pageSize}, search=${search}, specialization=${specialization})}"
+                    class="page-btn" th:classappend="${currentPage == 0} ? 'disabled' : ''">
+                    <span class="material-symbols-outlined">chevron_left</span>
+                </a>
+                <th:block th:each="i : ${#numbers.sequence(0, totalPages - 1)}">
+                    <a th:href="@{/admin/getDoctorList(page=${i}, size=${pageSize}, search=${search}, specialization=${specialization})}"
+                        class="page-btn" th:classappend="${i == currentPage} ? 'active' : ''" th:text="${i + 1}"
+                        th:if="${i == 0 or i == totalPages - 1 or (i >= currentPage - 2 and i <= currentPage + 2)}">
+                    </a>
+                    <span class="page-ellipsis"
+                        th:if="${(i == 1 and currentPage > 3) or (i == totalPages - 2 and currentPage < totalPages - 4)}">...</span>
+                </th:block>
+                <a th:href="@{/admin/getDoctorList(page=${currentPage + 1}, size=${pageSize}, search=${search}, specialization=${specialization})}"
+                    class="page-btn" th:classappend="${currentPage == totalPages - 1} ? 'disabled' : ''">
+                    <span class="material-symbols-outlined">chevron_right</span>
+                </a>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- Delete Confirmation Modal -->
+    <div id="deleteModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-icon">
+                    <span class="material-symbols-outlined" style="font-size:32px;color:var(--danger);">warning</span>
+                </div>
+                <div>
+                    <h3 class="modal-title" th:text="#{removedoctor}">डॉक्टर हटाएं</h3>
+                    <p class="modal-subtitle" th:text="#{areyousure}">क्या आप निश्चित हैं?</p>
+                </div>
+            </div>
+            <p class="modal-body">
+                <span th:text="#{doctor.delete.confirm.start}">क्या आप निश्चित रूप से</span>
+                <strong id="doctorNameToDelete" style="color:var(--text-main);"></strong>
+                <span th:text="#{doctor.delete.confirm.end}">को हटाना चाहते हैं? यह कार्रवाई पूर्ववत नहीं की जा
+                    सकती।</span>
+            </p>
+            <form id="deleteForm" method="post" th:action="@{/admin/deleteDoctor}">
+                <input type="hidden" id="doctorIdToDelete" name="doctorId" />
+                <div class="modal-actions">
+                    <button type="button" onclick="closeDeleteModal()" class="btn-cancel-m">रद्द करें</button>
+                    <button type="submit" class="btn-confirm">हटाएं</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        /* ── Sidebar ── */
+        function toggleSidebar() {
+            document.querySelector('.sidebar').classList.toggle('active');
+            document.querySelector('.sidebar-overlay').classList.toggle('active');
+        }
+        function closeSidebar() {
+            document.querySelector('.sidebar').classList.remove('active');
+            document.querySelector('.sidebar-overlay').classList.remove('active');
+        }
+
+        /* ── Debounced search ── */
+        let searchTimer;
+        document.getElementById('searchInput')?.addEventListener('input', () => {
+            clearTimeout(searchTimer);
+            searchTimer = setTimeout(() => document.getElementById('filterForm').submit(), 400);
+        });
+
+        /* ── Auto-hide alerts ── */
+        window.addEventListener('DOMContentLoaded', () => {
+            ['successAlert', 'errorAlert', 'deleteAlert', 'updateAlert'].forEach(id => {
+                const el = document.getElementById(id);
+                if (el) setTimeout(() => el.style.display = 'none', 3000);
+            });
+        });
+
+        /* ── Delete modal ── */
+        function confirmDelete(button) {
+            document.getElementById('doctorIdToDelete').value = button.getAttribute('data-id');
+            document.getElementById('doctorNameToDelete').textContent = button.getAttribute('data-name');
+            document.getElementById('deleteModal').classList.add('active');
+        }
+        function closeDeleteModal() {
+            document.getElementById('deleteModal').classList.remove('active');
+        }
+        document.getElementById('deleteModal')?.addEventListener('click', function (e) {
+            if (e.target === this) closeDeleteModal();
+        });
+    </script>
+
+</body>
+
+</html>

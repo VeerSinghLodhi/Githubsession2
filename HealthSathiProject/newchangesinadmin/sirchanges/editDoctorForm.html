@@ -1,0 +1,1236 @@
+<!DOCTYPE html>
+<html lang="hi" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>डॉक्टर प्रोफाइल अपडेट - Health Sathi</title>
+    <link href="https://fonts.googleapis.com" rel="preconnect" />
+    <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Devanagari:wght@400;500;600;700&display=swap"
+        rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap"
+        rel="stylesheet" />
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #0058ba;
+            --primary-dark: #155a96;
+            --primary-light: #e3f2fd;
+            --text-main: #1e293b;
+            --text-secondary: #64748b;
+            --border-light: #e2e8f0;
+            --surface: #ffffff;
+            --background: #f8fafc;
+            --success: #10b981;
+            --success-light: #d1fae5;
+            --error: #dc2626;
+            --error-light: #fee2e2;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--background);
+            color: var(--text-main);
+            min-height: 100vh;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        .font-hindi {
+            font-family: 'Noto Sans Devanagari', sans-serif;
+        }
+
+        /* Sidebar Styles */
+        .sidebar {
+            position: fixed;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 280px;
+            background: var(--surface);
+            border-right: 1px solid var(--border-light);
+            padding: 24px;
+            overflow-y: auto;
+            z-index: 100;
+        }
+
+        .logo-section {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 32px;
+            padding-bottom: 24px;
+            border-bottom: 1px solid var(--border-light);
+        }
+
+        .logo-icon {
+            width: 48px;
+            height: 48px;
+            background: var(--primary);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transform: rotate(3deg);
+            transition: transform 0.3s;
+        }
+
+        .logo-icon:hover {
+            transform: rotate(0deg);
+        }
+
+        .logo-icon .material-symbols-outlined {
+            color: white;
+            font-size: 28px;
+        }
+
+        .logo-text h2 {
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--text-main);
+        }
+
+        .logo-text p {
+            font-size: 12px;
+            color: var(--text-secondary);
+        }
+
+        .nav-menu {
+            list-style: none;
+        }
+
+        .nav-item {
+            margin-bottom: 8px;
+        }
+
+        .nav-link {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 16px;
+            border-radius: 12px;
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 14px;
+            transition: all 0.3s;
+            cursor: pointer;
+        }
+
+        .nav-link:hover {
+            background: var(--primary-light);
+            color: var(--primary);
+        }
+
+        .nav-link.active {
+            background: var(--primary);
+            color: white;
+        }
+
+        .nav-link .material-symbols-outlined {
+            font-size: 22px;
+        }
+
+        /* Main Content */
+        .main-content {
+            margin-left: 280px;
+            padding: 24px;
+            min-height: 100vh;
+        }
+
+        .header {
+            background: var(--surface);
+            border-radius: 16px;
+            padding: 20px 24px;
+            margin-bottom: 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .back-button {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 16px;
+            background: var(--background);
+            border: 1px solid var(--border-light);
+            border-radius: 12px;
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 14px;
+            transition: all 0.3s;
+            cursor: pointer;
+        }
+
+        .back-button:hover {
+            background: var(--primary-light);
+            color: var(--primary);
+            border-color: var(--primary);
+        }
+
+        .back-button .material-symbols-outlined {
+            font-size: 20px;
+        }
+
+        .header h1 {
+            font-size: 28px;
+            font-weight: 700;
+            color: var(--text-main);
+            font-family: 'Noto Sans Devanagari', sans-serif;
+        }
+
+        .header-subtitle {
+            font-size: 14px;
+            color: var(--text-secondary);
+            font-weight: 500;
+            margin-top: 4px;
+            font-family: 'Noto Sans Devanagari', sans-serif;
+        }
+
+        .content-section {
+            background: var(--surface);
+            border-radius: 16px;
+            padding: 32px;
+            box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .alert {
+            padding: 16px 20px;
+            border-radius: 12px;
+            margin-bottom: 24px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 14px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+            font-family: 'Noto Sans Devanagari', sans-serif;
+        }
+
+        .alert-success {
+            background: var(--success-light);
+            border-left: 4px solid var(--success);
+            color: #065f46;
+        }
+
+        .alert-error {
+            background: var(--error-light);
+            border-left: 4px solid var(--error);
+            color: #7f1d1d;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-label {
+            display: block;
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--text-main);
+            margin-bottom: 8px;
+            margin-left: 4px;
+            font-family: 'Noto Sans Devanagari', sans-serif;
+        }
+
+        .input-wrapper {
+            position: relative;
+        }
+
+        .input-icon {
+            position: absolute;
+            left: 16px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-secondary);
+            transition: color 0.3s;
+            z-index: 1;
+        }
+
+        .input-wrapper:focus-within .input-icon {
+            color: var(--primary);
+        }
+
+        .form-input,
+        .form-select {
+            width: 100%;
+            padding: 12px 16px 12px 48px;
+            background: #f8fafc;
+            border: 2px solid transparent;
+            border-radius: 12px;
+            font-size: 14px;
+            font-family: 'Inter', sans-serif;
+            color: var(--text-main);
+            transition: all 0.3s;
+            font-weight: 500;
+        }
+
+        .form-input:focus,
+        .form-select:focus {
+            outline: none;
+            border-color: var(--primary);
+            background: white;
+            box-shadow: 0 0 0 3px rgba(0, 88, 186, 0.1);
+        }
+
+        .form-input::placeholder {
+            color: #9ca3af;
+            font-family: 'Noto Sans Devanagari', sans-serif;
+        }
+
+        .profile-upload {
+            padding: 24px;
+            background: rgba(0, 88, 186, 0.05);
+            border: 2px dashed rgba(0, 88, 186, 0.3);
+            border-radius: 12px;
+            text-align: center;
+            transition: all 0.3s;
+        }
+
+        .profile-upload:hover {
+            border-color: rgba(0, 88, 186, 0.5);
+        }
+
+        .preview-container {
+            position: relative;
+            display: inline-block;
+            margin-bottom: 16px;
+        }
+
+        .image-preview {
+            width: 112px;
+            height: 112px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            box-shadow: 0 4px 20px rgba(0, 88, 186, 0.2);
+            cursor: pointer;
+            transition: opacity 0.2s;
+        }
+
+        .image-preview:hover {
+            opacity: 0.9;
+        }
+
+        .image-preview img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .camera-button {
+            position: absolute;
+            bottom: 0;
+            right: 0;
+            width: 40px;
+            height: 40px;
+            background: var(--primary);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 4px 12px rgba(0, 88, 186, 0.3);
+        }
+
+        .camera-button:hover {
+            background: var(--primary-dark);
+            transform: scale(1.1);
+        }
+
+        .upload-text {
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--text-main);
+            margin-bottom: 4px;
+            font-family: 'Noto Sans Devanagari', sans-serif;
+        }
+
+        .upload-hint {
+            font-size: 11px;
+            color: var(--text-secondary);
+        }
+
+        /* Time Slot Styling */
+        .time-slots {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .time-input-wrapper {
+            position: relative;
+        }
+
+        .time-input {
+            width: 100%;
+            padding: 12px 16px 12px 48px;
+            background: #f8fafc;
+            border: 2px solid transparent;
+            border-radius: 12px;
+            font-size: 14px;
+            font-family: 'Inter', sans-serif;
+            color: var(--text-main);
+            transition: all 0.3s;
+            font-weight: 500;
+            cursor: pointer;
+        }
+
+        .time-input:focus {
+            outline: none;
+            border-color: var(--primary);
+            background: white;
+            box-shadow: 0 0 0 3px rgba(0, 88, 186, 0.1);
+        }
+
+        /* Working Days Selection */
+        .days-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+            margin-top: 12px;
+        }
+
+        .day-checkbox {
+            display: none;
+        }
+
+        .day-label {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 20px 12px;
+            background: #f8fafc;
+            border: 2px solid var(--border-light);
+            border-radius: 16px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-weight: 600;
+            font-size: 14px;
+            color: var(--text-secondary);
+            text-align: center;
+            font-family: 'Noto Sans Devanagari', sans-serif;
+            min-height: 90px;
+        }
+
+        .day-label:hover {
+            background: var(--primary-light);
+            border-color: var(--primary);
+            color: var(--primary);
+        }
+
+        .day-checkbox:checked+.day-label {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            border-color: var(--primary);
+            color: white;
+            box-shadow: 0 4px 12px rgba(0, 88, 186, 0.3);
+        }
+
+        .day-label .material-symbols-outlined {
+            font-size: 28px;
+            margin-bottom: 6px;
+        }
+
+        .section-divider {
+            border: none;
+            border-top: 2px solid var(--border-light);
+            margin: 32px 0;
+        }
+
+        .section-subtitle {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--text-main);
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-family: 'Noto Sans Devanagari', sans-serif;
+        }
+
+        .section-subtitle .material-symbols-outlined {
+            color: var(--primary);
+            font-size: 24px;
+        }
+
+        .form-select {
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%2364748b'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 16px center;
+            background-size: 20px;
+            padding-right: 48px;
+            font-family: 'Noto Sans Devanagari', sans-serif;
+        }
+
+        /* Button Row */
+        .btn-row {
+            display: flex;
+            gap: 12px;
+            margin-top: 8px;
+        }
+
+        .btn-cancel {
+            flex: 1;
+            background: #f1f5f9;
+            color: var(--text-main);
+            border: none;
+            padding: 16px 24px;
+            border-radius: 12px;
+            font-weight: 700;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            font-family: 'Noto Sans Devanagari', sans-serif;
+        }
+
+        .btn-cancel:hover {
+            background: #e2e8f0;
+            color: var(--text-main);
+        }
+
+        .btn-submit {
+            flex: 1;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            color: white;
+            border: none;
+            padding: 16px 24px;
+            border-radius: 12px;
+            font-weight: 700;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            box-shadow: 0 4px 12px rgba(0, 88, 186, 0.3);
+            font-family: 'Noto Sans Devanagari', sans-serif;
+        }
+
+        .btn-submit:hover {
+            box-shadow: 0 8px 25px rgba(0, 88, 186, 0.4);
+            transform: scale(0.98);
+        }
+
+        /* Modal/Popup Styles */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(4px);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .modal-overlay.active {
+            display: flex;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+
+            to {
+                opacity: 1;
+            }
+        }
+
+        @keyframes slideUp {
+            from {
+                transform: translateY(30px);
+                opacity: 0;
+            }
+
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: 20px;
+            padding: 32px;
+            max-width: 420px;
+            width: 90%;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            animation: slideUp 0.3s ease;
+            position: relative;
+        }
+
+        .modal-icon {
+            width: 64px;
+            height: 64px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 20px;
+        }
+
+        .modal-icon.error {
+            background: #fee2e2;
+        }
+
+        .modal-icon.warning {
+            background: #fef3c7;
+        }
+
+        .modal-icon.success {
+            background: #d1fae5;
+        }
+
+        .modal-icon .material-symbols-outlined {
+            font-size: 36px;
+        }
+
+        .modal-icon.error .material-symbols-outlined {
+            color: #dc2626;
+        }
+
+        .modal-icon.warning .material-symbols-outlined {
+            color: #d97706;
+        }
+
+        .modal-icon.success .material-symbols-outlined {
+            color: #059669;
+        }
+
+        .modal-title {
+            font-size: 22px;
+            font-weight: 700;
+            color: var(--text-main);
+            text-align: center;
+            margin-bottom: 12px;
+            font-family: 'Noto Sans Devanagari', sans-serif;
+        }
+
+        .modal-message {
+            font-size: 14px;
+            color: var(--text-secondary);
+            text-align: center;
+            margin-bottom: 24px;
+            line-height: 1.6;
+            font-family: 'Noto Sans Devanagari', sans-serif;
+        }
+
+        .modal-actions {
+            display: flex;
+            gap: 12px;
+            justify-content: center;
+        }
+
+        .modal-btn {
+            padding: 12px 28px;
+            border-radius: 12px;
+            font-weight: 600;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.3s;
+            border: none;
+            font-family: 'Noto Sans Devanagari', sans-serif;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .modal-btn-primary {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            color: white;
+            box-shadow: 0 4px 12px rgba(0, 88, 186, 0.3);
+        }
+
+        .modal-btn-primary:hover {
+            box-shadow: 0 6px 20px rgba(0, 88, 186, 0.4);
+            transform: translateY(-2px);
+        }
+
+        .modal-btn-secondary {
+            background: #f1f5f9;
+            color: var(--text-secondary);
+        }
+
+        .modal-btn-secondary:hover {
+            background: #e2e8f0;
+            color: var(--text-main);
+        }
+
+        /* Image View Modal */
+        .img-modal-overlay {
+            position: fixed;
+            inset: 0;
+            z-index: 800;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            background: rgba(0, 0, 0, 0.9);
+            backdrop-filter: blur(4px);
+        }
+
+        .img-modal-overlay.active {
+            display: flex;
+        }
+
+        .img-modal-close {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            width: 48px;
+            height: 48px;
+            background: rgba(255, 255, 255, 0.1);
+            border: none;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .img-modal-close:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .img-modal-close .material-symbols-outlined {
+            color: white;
+            font-size: 28px;
+        }
+
+        .img-modal-img {
+            max-height: 85vh;
+            max-width: 90vw;
+            object-fit: contain;
+            border-radius: 12px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+        }
+
+        @media (max-width: 768px) {
+            .sidebar {
+                transform: translateX(-100%);
+            }
+
+            .main-content {
+                margin-left: 0;
+            }
+
+            .content-section {
+                padding: 24px;
+            }
+
+            .header h1 {
+                font-size: 20px;
+            }
+
+            .modal-content {
+                padding: 24px;
+                max-width: 340px;
+            }
+
+            .modal-actions {
+                flex-direction: column;
+            }
+
+            .modal-btn {
+                width: 100%;
+            }
+
+            .day-label {
+                min-height: 85px;
+                padding: 18px 10px;
+            }
+
+            .btn-row {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <div th:replace="~{fragments/admin-sidebar::adminSidebar}"></div>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <div class="header">
+            <div class="header-left">
+                <a onclick="window.history.back()" class="back-button">
+                    <span class="material-symbols-outlined">arrow_back</span>
+                    <span th:text="#{goback}">वापस जाएं</span>
+                </a>
+                <div>
+                    <h1 th:text="#{profileupdate}">डॉक्टर प्रोफाइल अपडेट</h1>
+                    <p class="header-subtitle" th:text="#{udpatedetails}">डॉक्टर की जानकारी अपडेट करें</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="content-section">
+
+            <!-- Success Alert -->
+            <div id="successAlert" th:if="${success}" class="alert alert-success">
+                <span class="material-symbols-outlined">check_circle</span>
+                <span th:text="${success}"></span>
+            </div>
+
+            <!-- Error Alert -->
+            <div id="errorAlert" th:if="${error}" class="alert alert-error">
+                <span class="material-symbols-outlined">error</span>
+                <span th:text="${error}"></span>
+            </div>
+
+            <form th:action="@{/admin/doctorUpdate}" method="post" enctype="multipart/form-data" th:object="${doctor}">
+
+                <!-- Hidden ID -->
+                <input type="hidden" name="doctorId" th:value="${doctor.doctorId}" />
+
+                <!-- Profile Picture Upload -->
+                <div class="form-group">
+                    <label class="form-label" th:text="#{profilepicture}">प्रोफाइल फोटो</label>
+                    <div class="profile-upload">
+                        <div class="preview-container">
+                            <div class="image-preview" id="imagePreview"
+                                onclick="openImageModal(document.getElementById('previewImg').src, event)">
+                                <img id="previewImg"
+                                    th:src="${doctor.profilePicture != null} ? @{/get/Profilepic/{id}(id=${doctor.doctorId})} : '/noprofilepic.png'"
+                                    alt="Profile Preview" />
+                            </div>
+                            <label for="profilePicture" class="camera-button">
+                                <span class="material-symbols-outlined"
+                                    style="font-size: 20px; color: white;">photo_camera</span>
+                            </label>
+                        </div>
+                        <p class="upload-text" th:text="#{updateprofile}">अपनी फोटो अपडेट करें</p>
+                        <p class="upload-hint" th:text="#{picsize}">JPG, PNG या GIF (अधिकतम 5MB)</p>
+                        <input type="file" id="profilePicture" name="file" accept="image/*" style="display: none;" />
+                    </div>
+                </div>
+
+                <!-- Full Name -->
+                <div class="form-group">
+                    <label class="form-label" th:text="#{fullname}">पूरा नाम</label>
+                    <div class="input-wrapper">
+                        <span class="input-icon material-symbols-outlined">person</span>
+                        <input class="form-input title-case" th:placeholder="#{dr.amitKumar}" type="text" name="name"
+                            id="name" th:value="${doctor.name}" required />
+                    </div>
+                </div>
+
+                <!-- Specialization Dropdown -->
+                <div class="form-group">
+                    <label class="form-label" th:text="#{specialization}">Specialization</label>
+                    <div class="input-wrapper">
+                        <span class="input-icon material-symbols-outlined">medical_services</span>
+                        <select class="form-select" name="specialization" id="specialization" required>
+                            <option value="" disabled>Select Specialization</option>
+                            <option value="Cardiologist" th:selected="${doctor.specialization == 'Cardiologist'}">
+                                Cardiologist</option>
+                            <option value="Dermatologist" th:selected="${doctor.specialization == 'Dermatologist'}">
+                                Dermatologist</option>
+                            <option value="Neurologist" th:selected="${doctor.specialization == 'Neurologist'}">
+                                Neurologist</option>
+                            <option value="Orthopedic" th:selected="${doctor.specialization == 'Orthopedic'}">Orthopedic
+                            </option>
+                            <option value="Pediatrician" th:selected="${doctor.specialization == 'Pediatrician'}">
+                                Pediatrician</option>
+                            <option value="Gynecologist" th:selected="${doctor.specialization == 'Gynecologist'}">
+                                Gynecologist</option>
+                            <option value="Psychiatrist" th:selected="${doctor.specialization == 'Psychiatrist'}">
+                                Psychiatrist</option>
+                            <option value="Ophthalmologist" th:selected="${doctor.specialization == 'Ophthalmologist'}">
+                                Ophthalmologist</option>
+                            <option value="ENT Specialist" th:selected="${doctor.specialization == 'ENT Specialist'}">
+                                ENT Specialist</option>
+                            <option value="General Physician"
+                                th:selected="${doctor.specialization == 'General Physician'}">General Physician</option>
+                            <option value="Urologist" th:selected="${doctor.specialization == 'Urologist'}">Urologist
+                            </option>
+                            <option value="Oncologist" th:selected="${doctor.specialization == 'Oncologist'}">Oncologist
+                            </option>
+                            <option value="Radiologist" th:selected="${doctor.specialization == 'Radiologist'}">
+                                Radiologist</option>
+                            <option value="Anesthesiologist"
+                                th:selected="${doctor.specialization == 'Anesthesiologist'}">Anesthesiologist</option>
+                            <option value="Gastroenterologist"
+                                th:selected="${doctor.specialization == 'Gastroenterologist'}">Gastroenterologist
+                            </option>
+                            <option value="Nephrologist" th:selected="${doctor.specialization == 'Nephrologist'}">
+                                Nephrologist</option>
+                            <option value="Endocrinologist" th:selected="${doctor.specialization == 'Endocrinologist'}">
+                                Endocrinologist</option>
+                            <option value="Pulmonologist" th:selected="${doctor.specialization == 'Pulmonologist'}">
+                                Pulmonologist</option>
+                            <option value="Rheumatologist" th:selected="${doctor.specialization == 'Rheumatologist'}">
+                                Rheumatologist</option>
+                            <option value="Plastic Surgeon" th:selected="${doctor.specialization == 'Plastic Surgeon'}">
+                                Plastic Surgeon</option>
+                            <option value="Neurosurgeon" th:selected="${doctor.specialization == 'Neurosurgeon'}">
+                                Neurosurgeon</option>
+                            <option value="Cardiac Surgeon" th:selected="${doctor.specialization == 'Cardiac Surgeon'}">
+                                Cardiac Surgeon</option>
+                            <option value="Physiotherapist" th:selected="${doctor.specialization == 'Physiotherapist'}">
+                                Physiotherapist</option>
+                            <option value="Dentist" th:selected="${doctor.specialization == 'Dentist'}">Dentist</option>
+                            <option value="Pathologist" th:selected="${doctor.specialization == 'Pathologist'}">
+                                Pathologist</option>
+                            <option value="Immunologist" th:selected="${doctor.specialization == 'Immunologist'}">
+                                Immunologist</option>
+                            <option value="Hematologist" th:selected="${doctor.specialization == 'Hematologist'}">
+                                Hematologist</option>
+                            <option value="Infectious Disease Specialist"
+                                th:selected="${doctor.specialization == 'Infectious Disease Specialist'}">Infectious
+                                Disease Specialist</option>
+                            <option value="Allergist" th:selected="${doctor.specialization == 'Allergist'}">Allergist
+                            </option>
+                            <option value="Critical Care Specialist"
+                                th:selected="${doctor.specialization == 'Critical Care Specialist'}">Critical Care
+                                Specialist</option>
+                            <option value="Other" th:selected="${doctor.specialization == 'Other'}">Other</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Qualification -->
+                <div class="form-group">
+                    <label class="form-label" th:text="#{qualification}">योग्यता</label>
+                    <div class="input-wrapper">
+                        <span class="input-icon material-symbols-outlined">school</span>
+                        <input class="form-input title-case" placeholder="MBBS, MD" type="text" name="qualification"
+                            id="qualification" th:value="${doctor.qualification}" required />
+                    </div>
+                </div>
+
+                <!-- Hospital -->
+                <div class="form-group">
+                    <label class="form-label" th:text="#{hospital}">अस्पताल</label>
+                    <div class="input-wrapper">
+                        <span class="input-icon material-symbols-outlined">local_hospital</span>
+                        <select class="form-select" name="hospitalId" required>
+                            <option value="" th:text="#{choosehospital}">अस्पताल चुनें</option>
+                            <option th:each="hospital : ${HospitalList}" th:value="${hospital.hospitalId}"
+                                th:text="${hospital.name}"
+                                th:selected="${hospital.hospitalId == doctor.hospital.hospitalId}"></option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Contact -->
+                <div class="form-group">
+                    <label class="form-label" th:text="#{contact}">संपर्क नंबर</label>
+                    <div class="input-wrapper">
+                        <span class="input-icon material-symbols-outlined">call</span>
+                        <input class="form-input" placeholder="9876543210" type="tel" name="contact" id="contact"
+                            pattern="[0-9]{10}" th:value="${doctor.contact}" required />
+                    </div>
+                </div>
+
+                <!-- Section Divider -->
+                <hr class="section-divider">
+
+                <!-- Availability Section -->
+                <h3 class="section-subtitle">
+                    <span class="material-symbols-outlined">schedule</span>
+                    <span th:text="#{availability}">उपलब्धता</span>
+                </h3>
+
+                <!-- Time Slots -->
+                <div class="form-group">
+                    <label class="form-label" th:text="#{workinghours}">कार्य समय</label>
+                    <div class="time-slots">
+                        <div>
+                            <label class="form-label" style="font-size: 12px; margin-bottom: 8px; opacity: 0.8;"
+                                th:text="#{starttime}">शुरुआत का समय / Start Time</label>
+                            <div class="time-input-wrapper">
+                                <span class="input-icon material-symbols-outlined">login</span>
+                                <input type="time" class="time-input" name="startTime" id="startTime"
+                                    th:value="${doctor.startTime}" required />
+                            </div>
+                        </div>
+                        <div>
+                            <label class="form-label" style="font-size: 12px; margin-bottom: 8px; opacity: 0.8;"
+                                th:text="#{endtime}">समाप्ति का समय / End Time</label>
+                            <div class="time-input-wrapper">
+                                <span class="input-icon material-symbols-outlined">logout</span>
+                                <input type="time" class="time-input" name="endTime" id="endTime"
+                                    th:value="${doctor.endTime}" required />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Working Days -->
+                <div class="form-group">
+                    <label class="form-label" th:text="#{workingdays}">कार्य दिवस</label>
+                    <div class="days-grid">
+                        <div>
+                            <input type="checkbox" id="monday" name="workingDays" value="MONDAY" class="day-checkbox"
+                                th:checked="${doctor.workingDays != null and doctor.workingDays.contains('MONDAY')}">
+                            <label for="monday" class="day-label">
+                                <span class="material-symbols-outlined">event</span>
+                                <span th:text="#{monday}">सोमवार</span>
+                            </label>
+                        </div>
+                        <div>
+                            <input type="checkbox" id="tuesday" name="workingDays" value="TUESDAY" class="day-checkbox"
+                                th:checked="${doctor.workingDays != null and doctor.workingDays.contains('TUESDAY')}">
+                            <label for="tuesday" class="day-label">
+                                <span class="material-symbols-outlined">event</span>
+                                <span th:text="#{tuesday}">मंगलवार</span>
+                            </label>
+                        </div>
+                        <div>
+                            <input type="checkbox" id="wednesday" name="workingDays" value="WEDNESDAY"
+                                class="day-checkbox"
+                                th:checked="${doctor.workingDays != null and doctor.workingDays.contains('WEDNESDAY')}">
+                            <label for="wednesday" class="day-label">
+                                <span class="material-symbols-outlined">event</span>
+                                <span th:text="#{wednesday}">बुधवार</span>
+                            </label>
+                        </div>
+                        <div>
+                            <input type="checkbox" id="thursday" name="workingDays" value="THURSDAY"
+                                class="day-checkbox"
+                                th:checked="${doctor.workingDays != null and doctor.workingDays.contains('THURSDAY')}">
+                            <label for="thursday" class="day-label">
+                                <span class="material-symbols-outlined">event</span>
+                                <span th:text="#{thursday}">गुरुवार</span>
+                            </label>
+                        </div>
+                        <div>
+                            <input type="checkbox" id="friday" name="workingDays" value="FRIDAY" class="day-checkbox"
+                                th:checked="${doctor.workingDays != null and doctor.workingDays.contains('FRIDAY')}">
+                            <label for="friday" class="day-label">
+                                <span class="material-symbols-outlined">event</span>
+                                <span th:text="#{friday}">शुक्रवार</span>
+                            </label>
+                        </div>
+                        <div>
+                            <input type="checkbox" id="saturday" name="workingDays" value="SATURDAY"
+                                class="day-checkbox"
+                                th:checked="${doctor.workingDays != null and doctor.workingDays.contains('SATURDAY')}">
+                            <label for="saturday" class="day-label">
+                                <span class="material-symbols-outlined">event</span>
+                                <span th:text="#{saturday}">शनिवार</span>
+                            </label>
+                        </div>
+                        <div>
+                            <input type="checkbox" id="sunday" name="workingDays" value="SUNDAY" class="day-checkbox"
+                                th:checked="${doctor.workingDays != null and doctor.workingDays.contains('SUNDAY')}">
+                            <label for="sunday" class="day-label">
+                                <span class="material-symbols-outlined">event</span>
+                                <span th:text="#{sunday}">रविवार</span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Cancel + Submit Buttons -->
+                <div class="btn-row">
+                    <button type="button" onclick="window.history.back()" class="btn-cancel">
+                        <span class="material-symbols-outlined">close</span>
+                        <span th:text="#{cancel}">रद्द करें</span>
+                    </button>
+                    <button type="submit" class="btn-submit">
+                        <span th:text="#{update}">प्रोफाइल अपडेट करें</span>
+                        <span class="material-symbols-outlined">check</span>
+                    </button>
+                </div>
+
+            </form>
+        </div>
+    </main>
+
+    <!-- Alert Modal -->
+    <div class="modal-overlay" id="modalOverlay">
+        <div class="modal-content">
+            <div class="modal-icon" id="modalIcon">
+                <span class="material-symbols-outlined" id="modalIconSymbol"></span>
+            </div>
+            <h3 class="modal-title" id="modalTitle"></h3>
+            <p class="modal-message" id="modalMessage"></p>
+            <div class="modal-actions" id="modalActions"></div>
+        </div>
+    </div>
+
+    <!-- Image View Modal -->
+    <div class="img-modal-overlay" id="imgModalOverlay" onclick="closeImageModal()">
+        <button class="img-modal-close" onclick="closeImageModal()">
+            <span class="material-symbols-outlined">close</span>
+        </button>
+        <img id="fullSizeImage" class="img-modal-img" src="" alt="Profile" onclick="event.stopPropagation()" />
+    </div>
+
+    <script>
+        window.addEventListener('DOMContentLoaded', () => {
+
+            // ── Modal System ──────────────────────────────────────────────
+            const modal = {
+                overlay: document.getElementById('modalOverlay'),
+                icon: document.getElementById('modalIcon'),
+                iconSymbol: document.getElementById('modalIconSymbol'),
+                title: document.getElementById('modalTitle'),
+                message: document.getElementById('modalMessage'),
+                actions: document.getElementById('modalActions'),
+
+                show(config) {
+                    this.icon.className = 'modal-icon ' + (config.type || 'warning');
+                    this.iconSymbol.textContent = config.icon || 'info';
+                    this.title.textContent = config.title || '';
+                    this.message.textContent = config.message || '';
+                    this.actions.innerHTML = '';
+                    if (config.buttons) {
+                        config.buttons.forEach(btn => {
+                            const button = document.createElement('button');
+                            button.className = 'modal-btn modal-btn-' + (btn.type || 'secondary');
+                            button.innerHTML = btn.icon
+                                ? `<span class="material-symbols-outlined">${btn.icon}</span><span>${btn.text}</span>`
+                                : btn.text;
+                            button.onclick = () => { this.hide(); if (btn.onClick) btn.onClick(); };
+                            this.actions.appendChild(button);
+                        });
+                    }
+                    this.overlay.classList.add('active');
+                },
+
+                hide() { this.overlay.classList.remove('active'); },
+
+                alert(message, title = 'सूचना / Alert', type = 'warning') {
+                    this.show({
+                        type,
+                        icon: type === 'error' ? 'error' : type === 'success' ? 'check_circle' : 'warning',
+                        title,
+                        message,
+                        buttons: [{ text: 'ठीक है / OK', type: 'primary', icon: 'check' }]
+                    });
+                }
+            };
+
+            modal.overlay?.addEventListener('click', (e) => {
+                if (e.target === modal.overlay) modal.hide();
+            });
+
+            // ── Auto-hide alerts ──────────────────────────────────────────
+            ['successAlert', 'errorAlert'].forEach(id => {
+                const el = document.getElementById(id);
+                if (el) setTimeout(() => el.style.display = 'none', id === 'successAlert' ? 3000 : 5000);
+            });
+
+            // ── Title Case helper ─────────────────────────────────────────
+            function toTitleCase(value) {
+                return value.toLowerCase().split(/\s+/).map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
+            }
+
+            document.querySelectorAll('.title-case').forEach(input => {
+                input.addEventListener('blur', function () {
+                    let value = this.value.trim();
+                    if (!value) return;
+                    value = toTitleCase(value);
+                    if (this.id === 'name') {
+                        value = value.replace(/^Dr\.?\s*/i, '');
+                        value = 'Dr. ' + value;
+                    }
+                    this.value = value;
+                });
+            });
+
+            document.getElementById('contact')?.addEventListener('blur', function () {
+                this.value = this.value.trim();
+            });
+
+            // ── Profile picture preview ───────────────────────────────────
+            document.getElementById('profilePicture')?.addEventListener('change', function (e) {
+                const file = e.target.files[0];
+                if (file) {
+                    const reader = new FileReader();
+                    reader.onload = (event) => {
+                        document.getElementById('previewImg').src = event.target.result;
+                    };
+                    reader.readAsDataURL(file);
+                }
+            });
+
+            // ── Time validation ───────────────────────────────────────────
+            document.getElementById('endTime')?.addEventListener('change', function () {
+                const start = document.getElementById('startTime');
+                if (start.value && this.value && this.value <= start.value) {
+                    modal.alert(
+                        'समाप्ति का समय शुरुआत के समय से बाद होना चाहिए।\nEnd time must be after start time.',
+                        'अमान्य समय / Invalid Time',
+                        'error'
+                    );
+                    this.value = '';
+                }
+            });
+
+            // ── Working days validation on submit ─────────────────────────
+            document.querySelector('form')?.addEventListener('submit', function (e) {
+                const checkedDays = document.querySelectorAll('input[name="workingDays"]:checked');
+                if (checkedDays.length === 0) {
+                    e.preventDefault();
+                    modal.alert(
+                        'कृपया कम से कम एक कार्य दिवस चुनें।\nPlease select at least one working day.',
+                        'कार्य दिवस आवश्यक / Working Days Required',
+                        'error'
+                    );
+                }
+            });
+
+        });
+
+        // ── Image View Modal ──────────────────────────────────────────
+        function openImageModal(src, event) {
+            if (event) { event.stopPropagation(); event.preventDefault(); }
+            const overlay = document.getElementById('imgModalOverlay');
+            document.getElementById('fullSizeImage').src = src;
+            overlay.classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeImageModal() {
+            const overlay = document.getElementById('imgModalOverlay');
+            overlay.classList.remove('active');
+            setTimeout(() => { document.getElementById('fullSizeImage').src = ''; }, 200);
+            document.body.style.overflow = '';
+        }
+
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') closeImageModal();
+        });
+    </script>
+
+</body>
+
+</html>
