@@ -1,0 +1,846 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>अस्पताल चित्र प्रबंधन - हेल्थ साथी</title>
+    <link href="https://fonts.googleapis.com" rel="preconnect" />
+    <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect" />
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Devanagari:wght@400;500;600;700&display=swap"
+        rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap"
+        rel="stylesheet" />
+
+    <link th:href="@{/css/output.css}" rel="stylesheet">
+
+    <style>
+        /* Image Grid */
+        .image-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 16px;
+        }
+
+        @media (min-width: 640px) {
+            .image-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+
+        /* Image Card */
+        .image-card {
+            position: relative;
+            aspect-ratio: 1;
+            border-radius: 16px;
+            overflow: hidden;
+            background: #f1f5f9;
+            border: 2px solid #e2e8f0;
+            transition: all 0.3s;
+        }
+
+        .image-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 20px rgba(0, 88, 186, 0.15);
+            border-color: #0058ba;
+        }
+
+        .image-card.primary {
+            border-color: #10b981;
+            border-width: 3px;
+        }
+
+        .image-card img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        /* Image Overlay */
+        .image-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(to top, rgba(0, 0, 0, 0.7) 0%, transparent 50%);
+            opacity: 0;
+            transition: opacity 0.3s;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
+            padding: 12px;
+            pointer-events: none;
+        }
+
+        .image-overlay button,
+        .image-overlay form {
+            pointer-events: auto;
+        }
+
+        .image-card:hover .image-overlay {
+            opacity: 1;
+        }
+
+        /* Primary Badge */
+        .primary-badge {
+            position: absolute;
+            top: 8px;
+            left: 8px;
+            background: #10b981;
+            color: white;
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            z-index: 10;
+            box-shadow: 0 2px 8px rgba(16, 185, 129, 0.4);
+        }
+
+        /* Action Buttons */
+        .action-btn-small {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            border: none;
+        }
+
+        .action-btn-small:hover {
+            transform: scale(1.1);
+        }
+
+        .btn-delete {
+            background: rgba(239, 68, 68, 0.9);
+            color: white;
+        }
+
+        .btn-delete:hover {
+            background: #dc2626;
+        }
+
+        .btn-primary-toggle {
+            background: rgba(255, 255, 255, 0.9);
+            color: #0058ba;
+        }
+
+        .btn-primary-toggle:hover {
+            background: white;
+        }
+
+        /* Upload Area */
+        .upload-area {
+            border: 2px dashed #cbd5e1;
+            border-radius: 16px;
+            padding: 40px 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            background: white;
+        }
+
+        .upload-area:hover {
+            border-color: #0058ba;
+            background: #f8fafc;
+        }
+
+        .upload-area.dragover {
+            border-color: #0058ba;
+            background: #e3f2fd;
+        }
+
+        /* Disabled upload area */
+        .upload-area.disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            pointer-events: none;
+            background: #f8fafc;
+            border-color: #cbd5e1;
+        }
+
+        /* Modal */
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.7);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            padding: 20px;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: 20px;
+            padding: 24px;
+            max-width: 400px;
+            width: 100%;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        }
+
+        /* Empty State */
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+        }
+
+        /* Preview */
+        .preview-container {
+            margin-top: 16px;
+            display: none;
+        }
+
+        .preview-image {
+            width: 100%;
+            max-height: 200px;
+            object-fit: cover;
+            border-radius: 12px;
+            border: 2px solid #e2e8f0;
+        }
+
+        /* Info Banner */
+        .info-banner {
+            background: linear-gradient(135deg, #e3f2fd 0%, #dbeafe 100%);
+            border: 1px solid #bae6fd;
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 20px;
+        }
+
+        /* Confirmation Message */
+        .confirmation-message {
+            position: fixed;
+            top: 80px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 1000;
+            min-width: 320px;
+            max-width: 500px;
+            animation: slideDown 0.3s ease-out;
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateX(-50%) translateY(-20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateX(-50%) translateY(0);
+            }
+        }
+
+        .confirmation-message.hiding {
+            animation: slideUp 0.3s ease-out forwards;
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 1;
+                transform: translateX(-50%) translateY(0);
+            }
+
+            to {
+                opacity: 0;
+                transform: translateX(-50%) translateY(-20px);
+            }
+        }
+
+        /* Image count badge colours */
+        .count-ok {
+            background: #d1fae5;
+            color: #065f46;
+        }
+
+        .count-warn {
+            background: #fef3c7;
+            color: #92400e;
+        }
+
+        .count-bad {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+        /* Limit-reached banner */
+        #limitBanner {
+            display: none;
+            align-items: center;
+            gap: 10px;
+            padding: 12px 16px;
+            background: #fef3c7;
+            border-left: 4px solid #f59e0b;
+            border-radius: 10px;
+            font-size: 13px;
+            font-weight: 600;
+            color: #92400e;
+            margin-bottom: 12px;
+        }
+
+        /* Image Viewer Modal */
+        #imageViewerModal {
+            background: rgba(0, 0, 0, 0.9);
+        }
+
+        #imageViewerModal .modal-content {
+            background: transparent;
+            box-shadow: none;
+            max-width: 95vw;
+            width: auto;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        #fullSizeImage {
+            max-width: 100%;
+            max-height: 90vh;
+            object-fit: contain;
+            border-radius: 4px;
+        }
+
+        .close-viewer-btn {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            border-radius: 50%;
+            width: 44px;
+            height: 44px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            transition: all 0.2s;
+            z-index: 1010;
+        }
+
+        .close-viewer-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: scale(1.1);
+        }
+    </style>
+</head>
+
+<body class="bg-background antialiased text-text-main">
+    <div class="relative flex min-h-screen w-full flex-col pb-6">
+
+        <!-- Header -->
+        <header class="sticky top-0 z-20 bg-white/90 backdrop-blur-md px-5 py-4 border-b border-slate-100">
+            <div class="flex items-center gap-4">
+                <button id="backBtn"
+                    class="flex items-center justify-center size-10 rounded-full bg-slate-50 text-slate-600 hover:bg-slate-100 transition-colors">
+                    <span class="material-symbols-outlined text-[24px]">arrow_back</span>
+                </button>
+                <div class="flex-1">
+                    <h1 class="text-xl font-bold text-slate-900" th:text="#{picturemanagement}">चित्र प्रबंधन</h1>
+                    <p class="text-xs text-slate-500"
+                        th:text="${hospital != null && hospital.name != null ? hospital.name : 'Hospital Images'}">
+                        Hospital Images
+                    </p>
+                </div>
+
+                <!-- Live image count badge -->
+                <div id="imageCountBadge"
+                    class="flex items-center gap-2 px-3 py-1 rounded-full count-warn transition-all">
+                    <span class="material-symbols-outlined text-[20px]">photo_library</span>
+                    <span class="text-sm font-semibold" id="imageCountText"
+                        th:text="${images != null ? #lists.size(images) : 0}">0</span>
+                    <span class="text-sm font-semibold">/ 5</span>
+                </div>
+            </div>
+        </header>
+
+        <main class="flex-1 flex flex-col gap-6 p-5">
+
+            <!-- Success Message -->
+            <div th:if="${successMessage}" class="confirmation-message">
+                <div class="bg-green-50 border-l-4 border-green-500 rounded-xl p-4 shadow-lg">
+                    <div class="flex items-start gap-3">
+                        <span
+                            class="material-symbols-outlined text-green-500 text-[24px] flex-shrink-0">check_circle</span>
+                        <div class="flex-1">
+                            <h4 class="text-sm font-semibold text-green-900 mb-1" th:text="#{success}">सफल</h4>
+                            <p class="text-sm text-green-700" th:text="${successMessage}">Operation successful</p>
+                        </div>
+                        <button onclick="this.parentElement.parentElement.parentElement.remove()"
+                            class="text-green-500 hover:text-green-700">
+                            <span class="material-symbols-outlined text-[20px]">close</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Error Message -->
+            <div th:if="${errorMessage}" class="confirmation-message">
+                <div class="bg-red-50 border-l-4 border-red-500 rounded-xl p-4 shadow-lg">
+                    <div class="flex items-start gap-3">
+                        <span class="material-symbols-outlined text-red-500 text-[24px] flex-shrink-0">error</span>
+                        <div class="flex-1">
+                            <h4 class="text-sm font-semibold text-red-900 mb-1" th:text="#{error}">त्रुटि</h4>
+                            <p class="text-sm text-red-700" th:text="${errorMessage}">Operation failed</p>
+                        </div>
+                        <button onclick="this.parentElement.parentElement.parentElement.remove()"
+                            class="text-red-500 hover:text-red-700">
+                            <span class="material-symbols-outlined text-[20px]">close</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Info Banner -->
+            <div class="info-banner">
+                <div class="flex items-start gap-3">
+                    <span class="material-symbols-outlined text-primary text-[24px] flex-shrink-0">info</span>
+                    <div>
+                        <h3 class="text-sm font-semibold text-slate-900 mb-1" th:text="#{important}">महत्वपूर्ण</h3>
+                        <ul class="text-xs text-slate-600 leading-relaxed space-y-1">
+                            <li th:text="#{markthemainimagewithastaricon}">• मुख्य चित्र को स्टार आइकन से चिह्नित करें
+                            </li>
+                            <li th:text="#{onlyJPGPNGJPEGformatswillbeaccepted}">• केवल JPG, PNG, JPEG फॉर्मेट स्वीकार
+                                किए जाएंगे</li>
+                            <li th:text="#{maximumfilesizeMB}">• अधिकतम फाइल साइज: 5MB</li>
+                            <!-- ── NEW rule ── -->
+                            <li>• कम से कम <strong>1</strong> और अधिकतम <strong>5</strong> तस्वीरें अपलोड की जा सकती हैं
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Upload Section -->
+            <div class="bg-white rounded-2xl p-5 border border-slate-100 shadow-soft">
+                <h2 class="text-lg font-bold text-slate-900 mb-3 flex items-center gap-2">
+                    <span class="material-symbols-outlined text-primary text-[24px]">add_photo_alternate</span>
+                    <span th:text="#{addnewimage}">नया चित्र जोड़ें</span>
+                </h2>
+
+                <!-- Limit-reached banner (shown when count = 5) -->
+                <div id="limitBanner">
+                    <span class="material-symbols-outlined" style="font-size:20px;">warning</span>
+                    <span>अधिकतम 5 तस्वीरें अपलोड हो चुकी हैं। नई तस्वीर जोड़ने के लिए पहले कोई मौजूदा तस्वीर
+                        हटाएं।</span>
+                </div>
+
+                <form id="uploadForm" th:action="@{/admin/hospital/image/upload}" method="post"
+                    enctype="multipart/form-data">
+                    <input type="hidden" name="hospitalId" th:value="${hospital.hospitalId}">
+                    <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+
+                    <div class="upload-area" id="uploadArea">
+                        <input type="file" id="imageInput" name="image" accept="image/jpeg,image/png,image/jpg"
+                            style="display:none;" required>
+                        <span class="material-symbols-outlined text-slate-300 text-[64px] mb-3">cloud_upload</span>
+                        <h3 class="text-base font-semibold text-slate-900 mb-1" th:text="#{uploadimages}">चित्र अपलोड
+                            करें</h3>
+                        <p class="text-sm text-slate-500 mb-4" th:text="#{clickordragfilehere}">क्लिक करें या यहाँ फाइल
+                            खींचें</p>
+                        <button type="button" id="selectFileBtn"
+                            class="px-6 py-2 bg-primary hover:bg-primary-dark text-white text-sm font-semibold rounded-xl transition-colors">
+                            <span th:text="#{selectfile}">फाइल चुनें</span>
+                        </button>
+                    </div>
+
+                    <!-- Preview -->
+                    <div class="preview-container" id="previewContainer">
+                        <img id="previewImage" class="preview-image" alt="Preview">
+                        <button type="button" id="removePreviewBtn"
+                            class="mt-2 w-full px-4 py-2 bg-red-50 hover:bg-red-100 text-red-600 text-sm font-semibold rounded-xl transition-colors">
+                            <span class="material-symbols-outlined text-[16px] align-middle">close</span>
+                            <span th:text="#{removeselection}">चयन हटाएं</span>
+                        </button>
+                    </div>
+
+                    <button type="submit" id="uploadBtn"
+                        class="hidden mt-4 w-full px-6 py-3 bg-green-500 hover:bg-green-600 text-white text-sm font-semibold rounded-xl transition-colors flex items-center justify-center gap-2">
+                        <span class="material-symbols-outlined text-[20px]">upload</span>
+                        <span th:text="#{upload}">अपलोड करें</span>
+                    </button>
+                </form>
+            </div>
+
+            <!-- Images Grid -->
+            <div class="bg-white rounded-2xl p-5 border border-slate-100 shadow-soft">
+                <h2 class="text-lg font-bold text-slate-900 mb-4 flex items-center gap-2">
+                    <span class="material-symbols-outlined text-primary text-[24px]">collections</span>
+                    <span th:text="#{allimages}">सभी चित्र</span>
+                </h2>
+
+                <div th:if="${images != null && !#lists.isEmpty(images)}" class="image-grid" id="imageGrid">
+                    <div th:each="image : ${images}" th:if="${image != null && image.imageId != null}"
+                        class="image-card"
+                        th:classappend="${image.isPrimary != null && image.isPrimary} ? 'primary' : ''"
+                        th:attr="data-image-id=${image.imageId}, data-is-primary=${image.isPrimary != null && image.isPrimary}">
+
+                        <!-- Primary Badge -->
+                        <div th:if="${image.isPrimary != null && image.isPrimary}" class="primary-badge">
+                            <span class="material-symbols-outlined text-[14px]">star</span>
+                            <span th:text="#{main}">मुख्य</span>
+                        </div>
+
+                        <img th:src="@{'/admin/api/hospital/image/' + ${image.imageId}}"
+                            th:alt="'Hospital Image ' + ${image.imageId}" class="cursor-pointer"
+                            onclick="openImageViewer(this.src)">
+
+                        <div class="image-overlay">
+                            <div class="flex items-center justify-between">
+                                <form th:action="@{'/admin/hospital/image/' + ${image.imageId} + '/set-primary'}"
+                                    method="post" style="display:inline;">
+                                    <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+                                    <button type="submit" class="action-btn-small btn-primary-toggle">
+                                        <span class="material-symbols-outlined text-[20px]">
+                                            <span th:if="${image.isPrimary != null && image.isPrimary}">star</span>
+                                            <span
+                                                th:unless="${image.isPrimary != null && image.isPrimary}">star_border</span>
+                                        </span>
+                                    </button>
+                                </form>
+                                <button class="action-btn-small btn-delete" onclick="confirmDelete(this)"
+                                    th:attr="data-image-id=${image.imageId}">
+                                    <span class="material-symbols-outlined text-[20px]">delete</span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Empty State -->
+                <div th:unless="${images != null && !#lists.isEmpty(images)}" class="empty-state" id="emptyState">
+                    <span class="material-symbols-outlined text-slate-300 text-[80px] mb-4">photo_library</span>
+                    <h3 class="text-lg font-bold text-slate-900 mb-2" th:text="#{nopicture}">कोई चित्र नहीं</h3>
+                    <p class="text-slate-500 text-sm" th:text="#{uploadpicturesforhospital}">अस्पताल के लिए चित्र अपलोड
+                        करें</p>
+                </div>
+            </div>
+
+        </main>
+    </div>
+
+    <!-- Image Viewer Modal -->
+    <div id="imageViewerModal" class="modal" style="display:none;" onclick="if(event.target===this) closeImageViewer()">
+        <button class="close-viewer-btn" onclick="closeImageViewer()">
+            <span class="material-symbols-outlined text-[24px]">close</span>
+        </button>
+        <div class="modal-content">
+            <img id="fullSizeImage" src="" alt="Full size preview">
+        </div>
+    </div>
+
+    <!-- Delete Confirmation Modal -->
+    <div id="deleteModal" class="modal" style="display:none;">
+        <div class="modal-content">
+            <div class="text-center mb-6">
+                <span class="material-symbols-outlined text-red-500 text-[64px] mb-3">warning</span>
+                <h3 class="text-xl font-bold text-slate-900 mb-2" th:text="#{clearimage}">चित्र हटाएं?</h3>
+                <p class="text-sm text-slate-600"
+                    th:text="#{areyousureyouwanttodeletethispicturethisactioncannotbeundone}">
+                    क्या आप वाकई इस चित्र को हटाना चाहते हैं? यह क्रिया पूर्ववत नहीं की जा सकती।
+                </p>
+            </div>
+            <div class="flex gap-3">
+                <button id="cancelDeleteBtn"
+                    class="flex-1 px-4 py-3 bg-slate-100 hover:bg-slate-200 text-slate-900 font-semibold rounded-xl transition-colors">
+                    <span th:text="#{cancel}">रद्द करें</span>
+                </button>
+                <button id="confirmDeleteBtn"
+                    class="flex-1 px-4 py-3 bg-red-500 hover:bg-red-600 text-white font-semibold rounded-xl transition-colors">
+                    <span th:text="#{delete}">हटाएं</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Hidden Delete Form -->
+    <form id="deleteForm" method="post" style="display:none;">
+        <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+        <input type="hidden" name="_method" value="delete">
+    </form>
+
+    <script th:inline="javascript">
+        /*<![CDATA[*/
+        const hospitalId = /*[[${hospital.hospitalId}]]*/ null;
+        const MAX_IMAGES = 5;
+        const MIN_IMAGES = 1;
+
+        /* ── Initial count from server ── */
+        let imageCount = /*[[${images != null ? #lists.size(images) : 0}]]*/ 0;
+
+        let selectedImageIdToDelete = null;
+
+        /* ════════════════════════════════
+           Count badge + upload lock
+           ════════════════════════════════ */
+        function updateCountUI() {
+            const badge = document.getElementById('imageCountBadge');
+            const countText = document.getElementById('imageCountText');
+            const uploadArea = document.getElementById('uploadArea');
+            const limitBanner = document.getElementById('limitBanner');
+            const selectBtn = document.getElementById('selectFileBtn');
+
+            countText.textContent = imageCount;
+
+            /* badge colour */
+            badge.classList.remove('count-ok', 'count-warn', 'count-bad');
+            if (imageCount >= MAX_IMAGES) badge.classList.add('count-ok');
+            else if (imageCount >= MIN_IMAGES) badge.classList.add('count-warn');
+            else badge.classList.add('count-bad');
+
+            /* lock / unlock upload area */
+            if (imageCount >= MAX_IMAGES) {
+                uploadArea.classList.add('disabled');
+                limitBanner.style.display = 'flex';
+                if (selectBtn) selectBtn.disabled = true;
+            } else {
+                uploadArea.classList.remove('disabled');
+                limitBanner.style.display = 'none';
+                if (selectBtn) selectBtn.disabled = false;
+            }
+        }
+
+        /* ════════════════════════════════
+           DOM Ready
+           ════════════════════════════════ */
+        document.addEventListener('DOMContentLoaded', function () {
+
+            /* initial UI sync */
+            updateCountUI();
+
+            const uploadArea = document.getElementById('uploadArea');
+            const imageInput = document.getElementById('imageInput');
+            const selectFileBtn = document.getElementById('selectFileBtn');
+            const uploadBtn = document.getElementById('uploadBtn');
+            const previewContainer = document.getElementById('previewContainer');
+            const previewImage = document.getElementById('previewImage');
+            const removePreviewBtn = document.getElementById('removePreviewBtn');
+
+            /* file select */
+            selectFileBtn.addEventListener('click', () => {
+                if (imageCount >= MAX_IMAGES) {
+                    showErrorMessage(`अधिकतम ${MAX_IMAGES} तस्वीरें अपलोड हो चुकी हैं।`);
+                    return;
+                }
+                imageInput.click();
+            });
+
+            uploadArea.addEventListener('click', (e) => {
+                if (imageCount >= MAX_IMAGES) return;
+                if (e.target !== selectFileBtn) imageInput.click();
+            });
+
+            imageInput.addEventListener('change', handleFileSelect);
+
+            /* drag & drop */
+            uploadArea.addEventListener('dragover', (e) => {
+                if (imageCount >= MAX_IMAGES) return;
+                e.preventDefault();
+                uploadArea.classList.add('dragover');
+            });
+            uploadArea.addEventListener('dragleave', () => uploadArea.classList.remove('dragover'));
+            uploadArea.addEventListener('drop', (e) => {
+                e.preventDefault();
+                uploadArea.classList.remove('dragover');
+                if (imageCount >= MAX_IMAGES) {
+                    showErrorMessage(`अधिकतम ${MAX_IMAGES} तस्वीरें अपलोड हो चुकी हैं।`);
+                    return;
+                }
+                const files = e.dataTransfer.files;
+                if (files.length > 0) { imageInput.files = files; handleFileSelect(); }
+            });
+
+            /* remove preview */
+            removePreviewBtn.addEventListener('click', () => {
+                imageInput.value = '';
+                previewContainer.style.display = 'none';
+                uploadBtn.classList.add('hidden');
+            });
+
+            /* back button */
+            document.getElementById('backBtn')?.addEventListener('click', () => {
+                window.location.href = '/admin/list';
+            });
+
+            /* delete modal */
+            document.getElementById('cancelDeleteBtn').addEventListener('click', () => {
+                document.getElementById('deleteModal').style.display = 'none';
+                selectedImageIdToDelete = null;
+            });
+
+            document.getElementById('confirmDeleteBtn').addEventListener('click', () => {
+                if (selectedImageIdToDelete) deleteImage(selectedImageIdToDelete);
+            });
+
+            /* form submit — guard: don't allow upload if already at max */
+            document.getElementById('uploadForm').addEventListener('submit', function (e) {
+                if (imageCount >= MAX_IMAGES) {
+                    e.preventDefault();
+                    showErrorMessage(`अधिकतम ${MAX_IMAGES} तस्वीरें अपलोड हो चुकी हैं।`);
+                }
+            });
+
+            /* auto-hide server-side messages */
+            document.querySelectorAll('.confirmation-message').forEach(msg => {
+                setTimeout(() => {
+                    msg.classList.add('hiding');
+                    setTimeout(() => msg.remove(), 300);
+                }, 5000);
+            });
+        });
+
+        /* ════════════════════════════════
+           File validation & preview
+           ════════════════════════════════ */
+        function handleFileSelect() {
+            const imageInput = document.getElementById('imageInput');
+            const file = imageInput.files[0];
+            const previewContainer = document.getElementById('previewContainer');
+            const previewImage = document.getElementById('previewImage');
+            const uploadBtn = document.getElementById('uploadBtn');
+
+            if (!file) return;
+
+            /* type */
+            if (!['image/jpeg', 'image/png', 'image/jpg'].includes(file.type)) {
+                showErrorMessage('कृपया केवल JPG, PNG, या JPEG फाइल अपलोड करें।');
+                imageInput.value = '';
+                return;
+            }
+
+            /* size — 5 MB */
+            if (file.size > 5 * 1024 * 1024) {
+                showErrorMessage('फाइल साइज 5MB से अधिक नहीं होनी चाहिए।');
+                imageInput.value = '';
+                return;
+            }
+
+            /* max count guard */
+            if (imageCount >= MAX_IMAGES) {
+                showErrorMessage(`अधिकतम ${MAX_IMAGES} तस्वीरें अपलोड हो चुकी हैं।`);
+                imageInput.value = '';
+                return;
+            }
+
+            /* preview */
+            const reader = new FileReader();
+            reader.onload = e => {
+                previewImage.src = e.target.result;
+                previewContainer.style.display = 'block';
+                uploadBtn.classList.remove('hidden');
+            };
+            reader.readAsDataURL(file);
+        }
+
+        /* ════════════════════════════════
+           Delete
+           ════════════════════════════════ */
+        function confirmDelete(button) {
+            event.stopPropagation();
+            selectedImageIdToDelete = button.getAttribute('data-image-id');
+            document.getElementById('deleteModal').style.display = 'flex';
+        }
+
+        function deleteImage(imageId) {
+            document.getElementById('deleteModal').style.display = 'none';
+
+            /* optimistic count decrease so UI updates immediately */
+            if (imageCount > 0) {
+                imageCount--;
+                updateCountUI();
+            }
+
+            const deleteForm = document.getElementById('deleteForm');
+            deleteForm.action = `/admin/hospital/image/${imageId}/delete`;
+            deleteForm.submit();
+        }
+
+        /* ════════════════════════════════
+           Toast / error message
+           ════════════════════════════════ */
+        function showErrorMessage(message) {
+            const errorDiv = document.createElement('div');
+            errorDiv.className = 'confirmation-message';
+            errorDiv.innerHTML = `
+            <div class="bg-red-50 border-l-4 border-red-500 rounded-xl p-4 shadow-lg">
+                <div class="flex items-start gap-3">
+                    <span class="material-symbols-outlined text-red-500 text-[24px] flex-shrink-0">error</span>
+                    <div class="flex-1">
+                        <h4 class="text-sm font-semibold text-red-900 mb-1">त्रुटि / Error</h4>
+                        <p class="text-sm text-red-700">${message}</p>
+                    </div>
+                    <button onclick="this.parentElement.parentElement.parentElement.remove()"
+                            class="text-red-500 hover:text-red-700">
+                        <span class="material-symbols-outlined text-[20px]">close</span>
+                    </button>
+                </div>
+            </div>`;
+            document.body.appendChild(errorDiv);
+            setTimeout(() => {
+                errorDiv.classList.add('hiding');
+                setTimeout(() => errorDiv.remove(), 300);
+            }, 5000);
+        }
+
+        function showSuccessMessage(message) {
+            const div = document.createElement('div');
+            div.className = 'confirmation-message';
+            div.innerHTML = `
+            <div class="bg-green-50 border-l-4 border-green-500 rounded-xl p-4 shadow-lg">
+                <div class="flex items-start gap-3">
+                    <span class="material-symbols-outlined text-green-500 text-[24px] flex-shrink-0">check_circle</span>
+                    <div class="flex-1">
+                        <p class="text-sm text-green-700">${message}</p>
+                    </div>
+                    <button onclick="this.parentElement.parentElement.parentElement.remove()"
+                            class="text-green-500 hover:text-green-700">
+                        <span class="material-symbols-outlined text-[20px]">close</span>
+                    </button>
+                </div>
+            </div>`;
+            document.body.appendChild(div);
+            setTimeout(() => {
+                div.classList.add('hiding');
+                setTimeout(() => div.remove(), 300);
+            }, 4000);
+        }
+
+        /* ════════════════════════════════
+           Image viewer
+           ════════════════════════════════ */
+        function openImageViewer(src) {
+            document.getElementById('fullSizeImage').src = src;
+            document.getElementById('imageViewerModal').style.display = 'flex';
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeImageViewer() {
+            document.getElementById('imageViewerModal').style.display = 'none';
+            document.getElementById('fullSizeImage').src = '';
+            document.body.style.overflow = '';
+        }
+
+        document.addEventListener('keydown', function (e) {
+            if (e.key === 'Escape') {
+                if (document.getElementById('imageViewerModal').style.display === 'flex') closeImageViewer();
+                else if (document.getElementById('deleteModal').style.display === 'flex')
+                    document.getElementById('deleteModal').style.display = 'none';
+            }
+        });
+        /*]]>*/
+    </script>
+</body>
+
+</html>

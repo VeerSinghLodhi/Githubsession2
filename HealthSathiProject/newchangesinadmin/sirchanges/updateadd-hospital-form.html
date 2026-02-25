@@ -1,0 +1,1105 @@
+<!DOCTYPE html>
+<html lang="hi" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <meta name="_csrf" th:content="${_csrf.token}">
+    <meta name="_csrf_header" th:content="${_csrf.headerName}">
+    <title>अस्पताल जोड़ें - हेल्थ साथी</title>
+    <link href="https://fonts.googleapis.com" rel="preconnect" />
+    <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect" />
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Devanagari:wght@400;500;600;700&display=swap"
+        rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap"
+        rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap"
+        rel="stylesheet" />
+
+    <link th:href="@{/css/output.css}" rel="stylesheet">
+
+    <style>
+        :root {
+            --surface: #ffffff;
+            --border-light: #e2e8f0;
+            --primary: #1e73be;
+            --primary-light: #e3f2fd;
+            --text-main: #1e293b;
+            --text-secondary: #64748b;
+        }
+
+        body {
+            padding-top: env(safe-area-inset-top);
+            padding-bottom: env(safe-area-inset-bottom);
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+
+        .pb-safe {
+            padding-bottom: env(safe-area-inset-bottom);
+        }
+
+        .gradient-text {
+            background: linear-gradient(135deg, #1e73be 0%, #4a9fd8 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        input[type="text"],
+        input[type="number"],
+        input[type="email"],
+        input[type="url"],
+        textarea,
+        select {
+            transition: all 0.3s ease;
+        }
+
+        input[type="text"]:focus,
+        input[type="number"]:focus,
+        input[type="email"]:focus,
+        input[type="url"]:focus,
+        textarea:focus,
+        select:focus {
+            transform: translateY(-1px);
+        }
+
+        .sidebar {
+            position: fixed;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 280px;
+            background: var(--surface);
+            border-right: 1px solid var(--border-light);
+            padding: 24px;
+            overflow-y: auto;
+            z-index: 100;
+            transform: translateX(-100%);
+            transition: transform 0.3s ease-in-out;
+        }
+
+        .sidebar.open {
+            transform: translateX(0);
+        }
+
+        @media (min-width: 1024px) {
+            .sidebar {
+                transform: translateX(0);
+            }
+
+            .main-content {
+                margin-left: 280px;
+            }
+
+            .hamburger-btn {
+                display: none;
+            }
+        }
+
+        .sidebar-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 99;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.3s ease-in-out, visibility 0.3s ease-in-out;
+        }
+
+        .sidebar-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        @media (min-width: 1024px) {
+            .sidebar-overlay {
+                display: none;
+            }
+        }
+
+        .logo-section {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 32px;
+            padding-bottom: 24px;
+            border-bottom: 1px solid var(--border-light);
+        }
+
+        .logo-icon {
+            width: 48px;
+            height: 48px;
+            background: var(--primary);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transform: rotate(3deg);
+            transition: transform 0.3s;
+        }
+
+        .logo-icon:hover {
+            transform: rotate(0deg);
+        }
+
+        .logo-icon .material-symbols-outlined {
+            color: white;
+            font-size: 28px;
+        }
+
+        .logo-text h2 {
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--text-main);
+        }
+
+        .logo-text p {
+            font-size: 12px;
+            color: var(--text-secondary);
+        }
+
+        .nav-menu {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .nav-item {
+            margin-bottom: 8px;
+        }
+
+        .nav-link {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 16px;
+            border-radius: 12px;
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 14px;
+            transition: all 0.3s;
+            cursor: pointer;
+        }
+
+        .nav-link:hover {
+            background: var(--primary-light);
+            color: var(--primary);
+        }
+
+        .nav-link.active {
+            background: var(--primary);
+            color: white;
+        }
+
+        .nav-link .material-symbols-outlined {
+            font-size: 22px;
+        }
+
+        .hamburger-btn {
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            width: 56px;
+            height: 56px;
+            background: linear-gradient(135deg, #1e73be 0%, #4a9fd8 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 8px 24px rgba(30, 115, 190, 0.4);
+            cursor: pointer;
+            z-index: 98;
+            transition: all 0.3s ease;
+            border: none;
+        }
+
+        .hamburger-btn:hover {
+            transform: scale(1.1);
+            box-shadow: 0 12px 32px rgba(30, 115, 190, 0.5);
+        }
+
+        .hamburger-btn:active {
+            transform: scale(0.95);
+        }
+
+        .hamburger-btn .material-symbols-outlined {
+            color: white;
+            font-size: 28px;
+        }
+
+        @media (max-width: 640px) {
+            .hamburger-btn {
+                width: 48px;
+                height: 48px;
+                bottom: 20px;
+                right: 20px;
+            }
+
+            .hamburger-btn .material-symbols-outlined {
+                font-size: 24px;
+            }
+        }
+
+        .main-content {
+            transition: margin-left 0.3s ease-in-out;
+        }
+
+        /* Image Upload Preview */
+        .image-preview-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            gap: 12px;
+            margin-top: 12px;
+        }
+
+        .image-preview {
+            position: relative;
+            aspect-ratio: 1;
+            border-radius: 12px;
+            overflow: hidden;
+            border: 2px solid var(--border-light);
+        }
+
+        .image-preview img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .image-preview-remove {
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            background: rgba(239, 68, 68, 0.9);
+            color: white;
+            border-radius: 50%;
+            width: 28px;
+            height: 28px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .image-preview-remove:hover {
+            background: rgb(239, 68, 68);
+            transform: scale(1.1);
+        }
+
+        .image-preview-primary {
+            position: absolute;
+            bottom: 8px;
+            left: 8px;
+            background: rgba(30, 115, 190, 0.9);
+            color: white;
+            padding: 4px 8px;
+            border-radius: 6px;
+            font-size: 10px;
+            font-weight: 600;
+        }
+
+        .facility-tag {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 12px;
+            background: var(--primary-light);
+            border-radius: 20px;
+            font-size: 13px;
+            color: var(--primary);
+            margin: 4px;
+            font-weight: 500;
+        }
+
+        .facility-tag .remove-facility {
+            cursor: pointer;
+            font-size: 16px;
+            opacity: 0.7;
+            transition: opacity 0.3s;
+        }
+
+        .facility-tag .remove-facility:hover {
+            opacity: 1;
+        }
+
+        /* ── Image counter badge ── */
+        .image-counter {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 13px;
+            font-weight: 600;
+            padding: 6px 14px;
+            border-radius: 20px;
+            margin-top: 10px;
+            transition: all 0.3s;
+        }
+
+        .image-counter.ok {
+            background: #d1fae5;
+            color: #065f46;
+        }
+
+        .image-counter.warn {
+            background: #fef3c7;
+            color: #92400e;
+        }
+
+        .image-counter.bad {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+        /* ── Image error banner ── */
+        #imageErrorBanner {
+            display: none;
+            align-items: center;
+            gap: 10px;
+            margin-top: 10px;
+            padding: 12px 16px;
+            background: #fee2e2;
+            border-left: 4px solid #ef4444;
+            border-radius: 10px;
+            font-size: 13px;
+            font-weight: 600;
+            color: #991b1b;
+        }
+
+        /* ── Disabled upload area ── */
+        #imageInput.disabled-input {
+            opacity: 0.5;
+            pointer-events: none;
+            cursor: not-allowed;
+        }
+    </style>
+</head>
+
+<body class="bg-background font-hindi text-text-main relative overflow-y-auto pb-safe">
+
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+    <!--sidebar-->
+    <div th:replace="~{fragments/admin-sidebar::adminSidebar}"></div>
+
+    <button class="hamburger-btn lg:hidden" id="hamburgerBtn" aria-label="Open Menu">
+        <span class="material-symbols-outlined">menu</span>
+    </button>
+
+    <div class="main-content">
+
+        <main class="w-full max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 z-10 relative py-4 sm:py-6 lg:py-8 pb-24 sm:pb-28">
+            <div class="mb-4 sm:mb-6">
+                <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-4 mb-4">
+                    <div>
+                        <h1 class="text-xl sm:text-2xl lg:text-3xl font-bold text-text-main mb-1 tracking-tight"
+                            th:text="#{addhospital}"> अस्पताल जोड़ें </h1>
+                        <p class="text-xs sm:text-sm text-text-secondary font-medium"
+                            th:text="#{entercompletehospitaldetails}"> अस्पताल की संपूर्ण जानकारी दर्ज करें </p>
+                    </div>
+                    <a href="/admin/list"
+                        class="flex items-center justify-center sm:justify-start gap-2 bg-gray-100 hover:bg-gray-200 text-text-main font-bold px-4 sm:px-5 py-2.5 sm:py-3 rounded-xl sm:rounded-2xl shadow-soft transition-all active:scale-95 text-sm sm:text-base w-full sm:w-auto">
+                        <span class="material-symbols-outlined text-[18px] sm:text-[20px]">arrow_back</span>
+                        <span th:text="#{backtolist}">सूची में वापस जाएं</span>
+                    </a>
+                </div>
+            </div>
+
+            <div id="successAlert" th:if="${param.success}"
+                class="flex items-start sm:items-center mb-4 rounded-xl sm:rounded-2xl bg-green-50 border-l-4 border-green-500 text-green-800 px-4 sm:px-5 py-3 sm:py-4 shadow-soft text-sm">
+                <span
+                    class="material-symbols-outlined mr-2 sm:mr-3 text-green-500 text-[20px] sm:text-[24px] flex-shrink-0">check_circle</span>
+                <span th:text="#{hospitalsavedsuccessfully}"> अस्पताल सफलतापूर्वक सहेजा गया </span>
+            </div>
+
+            <div class="bg-white rounded-xl sm:rounded-2xl shadow-card border border-border-light p-4 sm:p-6 lg:p-8">
+                <form th:action="@{'/admin/save'}" th:object="${hospital}" method="post" id="hospitalForm"
+                    class="space-y-4 sm:space-y-6">
+
+                    <input type="hidden" th:field="*{hospitalId}">
+
+                    <!-- Basic Information Section -->
+                    <div class="border-b border-border-light pb-4">
+                        <h2 class="text-lg font-bold text-text-main mb-4 flex items-center gap-2">
+                            <span class="material-symbols-outlined text-primary">info</span>
+                            <span th:text="#{basicinfo}"> बुनियादी जानकारी</span>
+                        </h2>
+
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <!-- Hospital Name -->
+                            <div class="md:col-span-2">
+                                <label
+                                    class="flex items-center gap-2 text-sm sm:text-base font-semibold text-text-main mb-2 sm:mb-3">
+                                    <span
+                                        class="material-symbols-outlined text-primary text-[18px] sm:text-[20px]">business</span>
+                                    <span th:text="#{hospitalname}">अस्पताल का नाम </span>
+                                    <span class="text-red-500">*</span>
+                                </label>
+                                <input type="text" th:field="*{name}" required
+                                    th:placeholder="#{enterthenameofthehospital}"
+                                    class="w-full px-4 py-3 bg-primary-light/50 border-2 border-transparent rounded-xl text-sm sm:text-base outline-none focus:border-primary transition-all" />
+                            </div>
+
+                            <!-- Hospital Type -->
+                            <div>
+                                <label
+                                    class="flex items-center gap-2 text-sm sm:text-base font-semibold text-text-main mb-2 sm:mb-3">
+                                    <span
+                                        class="material-symbols-outlined text-primary text-[18px] sm:text-[20px]">category</span>
+                                    <span th:text="#{typeofhospital}">अस्पताल का प्रकार </span>
+                                    <span class="text-red-500">*</span>
+                                </label>
+                                <select th:field="*{type.id}" required
+                                    class="w-full px-4 py-3 bg-primary-light/50 border-2 border-transparent rounded-xl text-sm sm:text-base outline-none focus:border-primary transition-all cursor-pointer">
+                                    <option value="" th:text="#{selecttype}">-- प्रकार चुनें --</option>
+                                    <option th:each="t : ${types}" th:value="${t.id}" th:text="${t.type}"></option>
+                                </select>
+                            </div>
+
+                            <!-- Hospital Ownership -->
+                            <div>
+                                <label
+                                    class="flex items-center gap-2 text-sm sm:text-base font-semibold text-text-main mb-2 sm:mb-3">
+                                    <span
+                                        class="material-symbols-outlined text-primary text-[18px] sm:text-[20px]">account_balance</span>
+                                    <span th:text="#{hospitalownership}">अस्पताल का स्वामित्व</span>
+                                    <span class="text-red-500">*</span>
+                                </label>
+                                <select th:field="*{hospitalType}" required
+                                    class="w-full px-4 py-3 bg-primary-light/50 border-2 border-transparent rounded-xl text-sm sm:text-base outline-none focus:border-primary transition-all cursor-pointer">
+                                    <option value="Private" th:text="#{private}">निजी</option>
+                                    <option value="Government" th:text="#{government}">सरकारी</option>
+                                </select>
+                            </div>
+
+                            <!-- 24/7 Availability -->
+                            <div class="md:col-span-2">
+                                <label
+                                    class="flex items-center gap-2 text-sm sm:text-base font-semibold text-text-main mb-2 sm:mb-3">
+                                    <span
+                                        class="material-symbols-outlined text-primary text-[18px] sm:text-[20px]">access_time</span>
+                                    <span th:text="#{availability247}">24/7 उपलब्धता</span>
+                                </label>
+                                <div
+                                    class="flex items-center gap-3 px-4 py-3 bg-primary-light/50 border-2 border-transparent rounded-xl">
+                                    <input type="checkbox" th:field="*{is24x7}" id="is24x7Checkbox"
+                                        class="peer h-6 w-6 cursor-pointer transition-all appearance-none rounded-full bg-slate-100 shadow hover:shadow-md border border-blue-300 checked:bg-blue-900 checked:border-blue-800"
+                                        onchange="toggle24x7()" />
+                                    <label for="is24x7Checkbox" class="text-sm sm:text-base cursor-pointer select-none"
+                                        th:text="#{hospital247}">
+                                        यह अस्पताल 24/7 खुला रहता है
+                                    </label>
+                                </div>
+                            </div>
+
+                            <!-- Opening Time -->
+                            <div>
+                                <label
+                                    class="flex items-center gap-2 text-sm sm:text-base font-semibold text-text-main mb-2 sm:mb-3">
+                                    <span
+                                        class="material-symbols-outlined text-primary text-[18px] sm:text-[20px]">schedule</span>
+                                    <span th:text="#{openingtime}">खुलने का समय</span>
+                                    <span class="text-red-500" id="openingTimeRequired">*</span>
+                                </label>
+                                <input type="time" th:field="*{openingTime}" id="openingTimeInput" required
+                                    class="w-full px-4 py-3 bg-primary-light/50 border-2 border-transparent rounded-xl text-sm sm:text-base outline-none focus:border-primary transition-all" />
+                            </div>
+
+                            <!-- Closing Time -->
+                            <div>
+                                <label
+                                    class="flex items-center gap-2 text-sm sm:text-base font-semibold text-text-main mb-2 sm:mb-3">
+                                    <span
+                                        class="material-symbols-outlined text-primary text-[18px] sm:text-[20px]">schedule</span>
+                                    <span th:text="#{closingtime}">बंद होने का समय</span>
+                                    <span class="text-red-500" id="closingTimeRequired">*</span>
+                                </label>
+                                <input type="time" th:field="*{closingTime}" id="closingTimeInput" required
+                                    class="w-full px-4 py-3 bg-primary-light/50 border-2 border-transparent rounded-xl text-sm sm:text-base outline-none focus:border-primary transition-all" />
+                            </div>
+
+                            <!-- OPD Charge -->
+                            <div class="md:col-span-2">
+                                <label
+                                    class="flex items-center gap-2 text-sm sm:text-base font-semibold text-text-main mb-2 sm:mb-3">
+                                    <span
+                                        class="material-symbols-outlined text-primary text-[18px] sm:text-[20px]">payments</span>
+                                    <span th:text="#{opdcharge}">OPD शुल्क</span>
+                                </label>
+                                <div class="relative">
+                                    <span
+                                        class="absolute left-4 top-1/2 -translate-y-1/2 text-text-secondary font-semibold">₹</span>
+                                    <input id="opdChargeInput" type="number" th:field="*{opdCharge}" min="0" max="2000"
+                                        step="1" th:placeholder="#{enteropdcharge}"
+                                        class="w-full pl-10 pr-4 py-3 bg-primary-light/50 border-2 border-transparent rounded-xl text-sm sm:text-base outline-none focus:border-primary transition-all" />
+                                </div>
+                                <p id="opdErrorMsg" class="hidden text-red-500 text-xs mt-1 ml-1 font-medium"></p>
+                                <p class="text-xs text-text-secondary mt-1" th:text="#{opdchargeinfo}">यदि OPD निःशुल्क
+                                    है तो 0 दर्ज करें</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Contact Information Section -->
+                    <div class="border-b border-border-light pb-4">
+                        <h2 class="text-lg font-bold text-text-main mb-4 flex items-center gap-2">
+                            <span class="material-symbols-outlined text-primary">contact_phone</span>
+                            <span th:text="#{contactinformation}">contact information</span>
+                        </h2>
+
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <!-- Address -->
+                            <div class="md:col-span-2">
+                                <label
+                                    class="flex items-center gap-2 text-sm sm:text-base font-semibold text-text-main mb-2 sm:mb-3">
+                                    <span
+                                        class="material-symbols-outlined text-primary text-[18px] sm:text-[20px]">location_on</span>
+                                    <span th:text="#{address}">पता</span>
+                                    <span class="text-red-500">*</span>
+                                </label>
+                                <textarea th:field="*{address}" required rows="2"
+                                    th:placeholder="#{enterthecompleteaddressofthehospital}"
+                                    class="w-full px-4 py-3 bg-primary-light/50 border-2 border-transparent rounded-xl text-sm sm:text-base outline-none focus:border-primary transition-all resize-none"></textarea>
+                            </div>
+
+                            <!-- Contact -->
+                            <div>
+                                <label
+                                    class="flex items-center gap-2 text-sm sm:text-base font-semibold text-text-main mb-2 sm:mb-3">
+                                    <span
+                                        class="material-symbols-outlined text-primary text-[18px] sm:text-[20px]">call</span>
+                                    <span th:text="#{contactnumber}"> संपर्क नंबर </span>
+                                    <span class="text-red-500">*</span>
+                                </label>
+                                <input type="number" th:field="*{contact}" required
+                                    th:placeholder="#{entercontactnumber}"
+                                    class="w-full px-4 py-3 bg-primary-light/50 border-2 border-transparent rounded-xl text-sm sm:text-base outline-none focus:border-primary transition-all" />
+                            </div>
+
+                            <!-- Email -->
+                            <div>
+                                <label
+                                    class="flex items-center gap-2 text-sm sm:text-base font-semibold text-text-main mb-2 sm:mb-3">
+                                    <span
+                                        class="material-symbols-outlined text-primary text-[18px] sm:text-[20px]">email</span>
+                                    <span th:text="#{email}">ईमेल</span>
+                                </label>
+                                <input type="email" th:field="*{email}" placeholder="hospital@example.com"
+                                    id="emailInput"
+                                    class="w-full px-4 py-3 bg-primary-light/50 border-2 border-transparent rounded-xl text-sm sm:text-base outline-none focus:border-primary transition-all" />
+                                <p id="emailErrorMsg" class="hidden text-red-500 text-xs mt-1 ml-1 font-medium"></p>
+                            </div>
+
+                            <!-- Website -->
+                            <div class="md:col-span-2">
+                                <label
+                                    class="flex items-center gap-2 text-sm sm:text-base font-semibold text-text-main mb-2 sm:mb-3">
+                                    <span
+                                        class="material-symbols-outlined text-primary text-[18px] sm:text-[20px]">language</span>
+                                    <span th:text="#{website}"> वेबसाइट </span>
+                                </label>
+                                <input type="url" th:field="*{website}" placeholder="https://www.hospital.com"
+                                    class="w-full px-4 py-3 bg-primary-light/50 border-2 border-transparent rounded-xl text-sm sm:text-base outline-none focus:border-primary transition-all" />
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Description & Facilities Section -->
+                    <div class="border-b border-border-light pb-4">
+                        <h2 class="text-lg font-bold text-text-main mb-4 flex items-center gap-2">
+                            <span class="material-symbols-outlined text-primary">description</span>
+                            <span th:text="#{descriptionandfeatures}">विवरण और सुविधाएं</span>
+                        </h2>
+
+                        <!-- Description -->
+                        <div class="mb-4">
+                            <label
+                                class="flex items-center gap-2 text-sm sm:text-base font-semibold text-text-main mb-2 sm:mb-3">
+                                <span
+                                    class="material-symbols-outlined text-primary text-[18px] sm:text-[20px]">article</span>
+                                <span th:text="#{description}">विवरण</span>
+                            </label>
+                            <textarea th:field="*{description}" rows="4"
+                                th:placeholder="#{detailedinformationaboutthehospitalmaximumcharacters}"
+                                maxlength="1000"
+                                class="w-full px-4 py-3 bg-primary-light/50 border-2 border-transparent rounded-xl text-sm sm:text-base outline-none focus:border-primary transition-all resize-none"></textarea>
+                            <p class="text-xs text-text-secondary mt-1" th:text="#{remainingletters}">शेष अक्षर: <span
+                                    id="charCount">1000</span></p>
+                        </div>
+
+                        <!-- Facilities -->
+                        <div>
+                            <label
+                                class="flex items-center gap-2 text-sm sm:text-base font-semibold text-text-main mb-2 sm:mb-3">
+                                <span
+                                    class="material-symbols-outlined text-primary text-[18px] sm:text-[20px]">medical_services</span>
+                                <span th:text="#{facilities}"> सुविधाएं </span>
+                            </label>
+                            <div class="flex gap-2 mb-2">
+                                <input type="text" id="facilityInput" th:placeholder=" #{addthefeatureandpressenter} "
+                                    class="flex-1 px-4 py-3 bg-primary-light/50 border-2 border-transparent rounded-xl text-sm sm:text-base outline-none focus:border-primary transition-all" />
+                                <button type="button" onclick="addFacility()"
+                                    class="px-4 py-3 bg-primary hover:bg-primary-dark text-white rounded-xl transition-all">
+                                    <span class="material-symbols-outlined">add</span>
+                                </button>
+                            </div>
+                            <input type="hidden" th:field="*{facilities}" id="facilitiesHidden" />
+                            <div id="facilitiesTags" class="flex flex-wrap"></div>
+                        </div>
+                    </div>
+
+                    <!-- ══════════════════════════════════════════════
+             Images Section  — with min-1 / max-5 validation
+             ══════════════════════════════════════════════ -->
+                    <div th:if="${hospital_images}">
+                        <div class="border-b border-border-light pb-4">
+                            <h2 class="text-lg font-bold text-text-main mb-1 flex items-center gap-2">
+                                <span class="material-symbols-outlined text-primary">photo_library</span>
+                                <span th:text="#{hospitalphotos}">अस्पताल की तस्वीरें</span>
+                                <span class="text-red-500 text-base ml-1">*</span>
+                            </h2>
+
+                            <!-- Rule hint -->
+                            <p class="text-xs text-text-secondary mb-3">
+                                कम से कम <strong>1</strong> और अधिकतम <strong>5</strong> तस्वीरें अपलोड करें।
+                                पहली तस्वीर मुख्य/कवर इमेज होगी।
+                            </p>
+
+                            <input type="file" id="imageInput" accept="image/*" multiple
+                                class="w-full px-4 py-3 bg-primary-light/50 border-2 border-transparent rounded-xl"
+                                onchange="handleImages(this)">
+
+                            <!-- Hidden input submitted with form -->
+                            <input type="hidden" name="uploadedImagePaths" id="uploadedImagePaths">
+
+                            <!-- Live counter badge -->
+                            <div id="imageCounter" class="image-counter warn" style="display:none;">
+                                <span class="material-symbols-outlined" style="font-size:16px;">photo_library</span>
+                                <span id="imageCountText">0 / 5 तस्वीरें</span>
+                            </div>
+
+                            <!-- Error banner (shown on bad state) -->
+                            <div id="imageErrorBanner">
+                                <span class="material-symbols-outlined" style="font-size:18px;">error</span>
+                                <span id="imageErrorText"></span>
+                            </div>
+
+                            <div id="imagePreviewContainer" class="grid grid-cols-2 md:grid-cols-4 gap-3 mt-3">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Action Buttons -->
+                    <div class="flex flex-col sm:flex-row gap-3 sm:gap-4 pt-2 sm:pt-4">
+                        <button type="submit"
+                            class="flex-1 flex items-center justify-center gap-2 bg-gradient-to-r from-primary to-primary-dark hover:shadow-glow text-white font-bold px-5 py-4 rounded-2xl shadow-soft transition-all active:scale-95">
+                            <span class="material-symbols-outlined">save</span>
+                            <span th:text="#{savethehospital}">अस्पताल सहेजें</span>
+                        </button>
+                        <a href="/admin/list"
+                            class="flex-1 flex items-center justify-center gap-2 bg-gray-100 hover:bg-gray-200 text-text-main font-bold px-5 py-4 rounded-2xl shadow-soft transition-all active:scale-95">
+                            <span class="material-symbols-outlined">cancel</span>
+                            <span th:text="#{cancel}">रद्द करें</span>
+                        </a>
+                    </div>
+                </form>
+            </div>
+
+            <div class="mt-6 bg-primary-light/30 border-l-4 border-primary rounded-2xl p-5">
+                <div class="flex gap-3">
+                    <span class="material-symbols-outlined text-primary text-[24px] flex-shrink-0">info</span>
+                    <div>
+                        <h3 class="font-bold text-text-main mb-1" th:text="#{information}">जानकारी</h3>
+                        <ul class="text-sm text-text-secondary leading-relaxed space-y-1">
+                            <li th:text="#{hospital.form.rule1}">• सभी आवश्यक फ़ील्ड (*) को भरना अनिवार्य है</li>
+                            <li th:text="#{hospital.form.rule2}">• सुविधाएं जोड़ने के लिए टेक्स्ट बॉक्स में लिखें और
+                                Enter दबाएं</li>
+                            <li>• कम से कम 1 और अधिकतम 5 तस्वीरें अपलोड की जा सकती हैं</li>
+                            <li th:text="#{hospital.form.rule3}">• पहली अपलोड की गई तस्वीर मुख्य/कवर इमेज होगी</li>
+                            <li th:text="#{hospital.form.rule4}">• अस्पताल की जानकारी सहेजने के बाद, यह तुरंत सिस्टम में
+                                उपलब्ध होगी</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- ══════════════════════════════════════════════════════
+     OPD & Email Validation
+     ══════════════════════════════════════════════════════ -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+
+            /* ── OPD ── */
+            const opdInput = document.getElementById('opdChargeInput');
+            const opdError = document.getElementById('opdErrorMsg');
+            const MIN_OPD = 0, MAX_OPD = 2000;
+
+            opdInput.addEventListener('input', function () {
+                const v = parseFloat(this.value);
+                let ok = true, msg = '';
+
+                if (this.value !== '') {
+                    if (v < MIN_OPD) { ok = false; msg = `Charge cannot be less than ₹${MIN_OPD}`; }
+                    if (v > MAX_OPD) { ok = false; msg = `Charge cannot exceed ₹${MAX_OPD}`; }
+                }
+
+                if (ok) {
+                    opdError.classList.add('hidden'); opdError.textContent = '';
+                    opdInput.classList.remove('border-red-500', 'text-red-600', 'focus:border-red-500');
+                    opdInput.classList.add('border-transparent', 'focus:border-primary');
+                } else {
+                    opdError.textContent = msg; opdError.classList.remove('hidden');
+                    opdInput.classList.remove('border-transparent', 'focus:border-primary');
+                    opdInput.classList.add('border-red-500', 'text-red-600', 'focus:border-red-500');
+                }
+            });
+
+            /* ── Email ── */
+            const emailInput = document.getElementById('emailInput');
+            const emailError = document.getElementById('emailErrorMsg');
+            const emailPat = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+            emailInput.addEventListener('input', function () {
+                const ok = this.value.length === 0 || emailPat.test(this.value);
+                const msg = 'Please enter a valid email address (e.g. user@domain.com)';
+
+                if (ok) {
+                    emailError.classList.add('hidden'); emailError.textContent = '';
+                    emailInput.classList.remove('border-red-500', 'text-red-600', 'focus:border-red-500');
+                    emailInput.classList.add('border-transparent', 'focus:border-primary');
+                } else {
+                    emailError.textContent = msg; emailError.classList.remove('hidden');
+                    emailInput.classList.remove('border-transparent', 'focus:border-primary');
+                    emailInput.classList.add('border-red-500', 'text-red-600', 'focus:border-red-500');
+                }
+            });
+        });
+    </script>
+
+    <!-- ══════════════════════════════════════════════════════
+     FILE UPLOAD  — min 1 / max 5 validation
+     ══════════════════════════════════════════════════════ -->
+    <script>
+        const MAX_IMAGES = 5;
+        const MIN_IMAGES = 1;
+        let uploadedPaths = [];
+
+        /* ── helpers ── */
+        function updateImageUI() {
+            const count = uploadedPaths.length;
+            const counter = document.getElementById('imageCounter');
+            const text = document.getElementById('imageCountText');
+            const banner = document.getElementById('imageErrorBanner');
+            const errText = document.getElementById('imageErrorText');
+            const input = document.getElementById('imageInput');
+
+            /* show counter once at least 1 image exists */
+            if (count > 0) {
+                counter.style.display = 'inline-flex';
+                text.textContent = `${count} / ${MAX_IMAGES} तस्वीरें`;
+
+                counter.classList.remove('ok', 'warn', 'bad');
+                if (count === MAX_IMAGES) counter.classList.add('ok');
+                else if (count >= MIN_IMAGES) counter.classList.add('warn');
+                else counter.classList.add('bad');
+            } else {
+                counter.style.display = 'none';
+            }
+
+            /* disable file picker when limit reached */
+            if (count >= MAX_IMAGES) {
+                input.classList.add('disabled-input');
+                input.setAttribute('disabled', true);
+            } else {
+                input.classList.remove('disabled-input');
+                input.removeAttribute('disabled');
+            }
+
+            /* clear error banner (errors are shown inline during upload) */
+            banner.style.display = 'none';
+            errText.textContent = '';
+        }
+
+        function showImageError(msg) {
+            const banner = document.getElementById('imageErrorBanner');
+            const errText = document.getElementById('imageErrorText');
+            banner.style.display = 'flex';
+            errText.textContent = msg;
+            /* auto-hide after 4 s */
+            setTimeout(() => { banner.style.display = 'none'; }, 4000);
+        }
+
+        /* ── main handler ── */
+        function handleImages(input) {
+            const files = Array.from(input.files);
+            input.value = ''; // reset so same file can be re-chosen
+
+            if (files.length === 0) return;
+
+            const currentCount = uploadedPaths.length;
+            const remaining = MAX_IMAGES - currentCount;
+
+            /* nothing left to upload */
+            if (remaining <= 0) {
+                showImageError(`अधिकतम ${MAX_IMAGES} तस्वीरें ही अपलोड की जा सकती हैं।`);
+                return;
+            }
+
+            /* trim selection if user chose too many at once */
+            const toUpload = files.slice(0, remaining);
+            if (files.length > remaining) {
+                showImageError(
+                    `आपने ${files.length} तस्वीरें चुनी हैं, लेकिन केवल ${remaining} और जोड़ी जा सकती हैं। ` +
+                    `पहली ${remaining} तस्वीरें अपलोड की जाएंगी।`
+                );
+            }
+
+            toUpload.forEach(file => {
+
+                /* type check */
+                if (!file.type.startsWith('image/')) {
+                    showImageError('केवल इमेज फ़ाइलें (JPG, PNG, WEBP आदि) अनुमत हैं।');
+                    return;
+                }
+
+                /* size check — 10 MB */
+                if (file.size > 10 * 1024 * 1024) {
+                    showImageError(`"${file.name}" बहुत बड़ी है। अधिकतम आकार 10MB है।`);
+                    return;
+                }
+
+                /* build preview wrapper */
+                const wrapper = document.createElement('div');
+                wrapper.className = 'relative';
+
+                const img = document.createElement('img');
+                img.className = 'w-full h-32 object-cover rounded-xl shadow';
+
+                /* loading indicator */
+                const loader = document.createElement('div');
+                loader.className =
+                    'absolute inset-0 flex items-center justify-center bg-white/70 rounded-xl';
+                loader.innerHTML =
+                    '<span class="material-symbols-outlined text-primary animate-spin">progress_activity</span>';
+
+                wrapper.appendChild(img);
+                wrapper.appendChild(loader);
+                document.getElementById('imagePreviewContainer').appendChild(wrapper);
+
+                /* preview */
+                const reader = new FileReader();
+                reader.onload = e => { img.src = e.target.result; };
+                reader.readAsDataURL(file);
+
+                /* upload */
+                uploadImage(file, wrapper, loader);
+            });
+        }
+
+        const csrfToken = document.querySelector('meta[name="_csrf"]').getAttribute('content');
+        const csrfHeader = document.querySelector('meta[name="_csrf_header"]').getAttribute('content');
+
+        function uploadImage(file, wrapper, loader) {
+            const formData = new FormData();
+            formData.append('file', file);
+
+            fetch('/admin/api/upload/hospital-image', {
+                method: 'POST',
+                headers: { [csrfHeader]: csrfToken },
+                body: formData
+            })
+                .then(res => res.json())
+                .then(data => {
+                    const path = data.path;
+                    uploadedPaths.push(path);
+                    document.getElementById('uploadedImagePaths').value = uploadedPaths.join(',');
+
+                    /* remove loader */
+                    if (loader && loader.parentNode) loader.remove();
+
+                    /* remove button — also decrements count */
+                    const removeBtn = document.createElement('button');
+                    removeBtn.innerHTML = '✕';
+                    removeBtn.type = 'button';
+                    removeBtn.className =
+                        'absolute top-1 right-1 bg-red-500 text-white text-xs w-6 h-6 rounded-full ' +
+                        'flex items-center justify-center shadow hover:bg-red-600';
+
+                    removeBtn.onclick = function () {
+                        wrapper.remove();
+                        uploadedPaths = uploadedPaths.filter(p => p !== path);
+                        document.getElementById('uploadedImagePaths').value = uploadedPaths.join(',');
+                        updateImageUI();
+                    };
+
+                    wrapper.appendChild(removeBtn);
+                    updateImageUI();
+                })
+                .catch(() => {
+                    wrapper.remove();
+                    showImageError(`"${file.name}" अपलोड विफल हुई। कृपया पुनः प्रयास करें।`);
+                });
+        }
+    </script>
+
+    <!-- ══════════════════════════════════════════════════════
+     General page scripts
+     ══════════════════════════════════════════════════════ -->
+    <script>
+        /* ── Sidebar ── */
+        const hamburgerBtn = document.getElementById('hamburgerBtn');
+        const sidebar = document.getElementById('sidebar');
+        const sidebarOverlay = document.getElementById('sidebarOverlay');
+
+        function toggleSidebar() {
+            sidebar.classList.toggle('open');
+            sidebarOverlay.classList.toggle('active');
+        }
+
+        if (hamburgerBtn) hamburgerBtn.addEventListener('click', toggleSidebar);
+        if (sidebarOverlay) sidebarOverlay.addEventListener('click', toggleSidebar);
+
+        document.querySelectorAll('.nav-link').forEach(link => {
+            link.addEventListener('click', () => {
+                if (window.innerWidth < 1024) toggleSidebar();
+            });
+        });
+
+        /* ── Char counter ── */
+        const descriptionField = document.querySelector('textarea[name="description"]');
+        if (descriptionField) {
+            const charCount = document.getElementById('charCount');
+            descriptionField.addEventListener('input', function () {
+                charCount.textContent = 1000 - this.value.length;
+            });
+        }
+
+        /* ── Facilities ── */
+        let facilities = [];
+
+        function addFacility() {
+            const input = document.getElementById('facilityInput');
+            const value = input.value.trim();
+            if (value && !facilities.includes(value)) {
+                facilities.push(value);
+                updateFacilitiesDisplay();
+                input.value = '';
+            }
+        }
+
+        function removeFacility(index) {
+            facilities.splice(index, 1);
+            updateFacilitiesDisplay();
+        }
+
+        function updateFacilitiesDisplay() {
+            const container = document.getElementById('facilitiesTags');
+            const hidden = document.getElementById('facilitiesHidden');
+            container.innerHTML = facilities.map((f, i) => `
+      <div class="facility-tag">
+        <span>${f}</span>
+        <span class="material-symbols-outlined remove-facility" onclick="removeFacility(${i})">close</span>
+      </div>`).join('');
+            hidden.value = facilities.join(',');
+        }
+
+        document.getElementById('facilityInput').addEventListener('keypress', function (e) {
+            if (e.key === 'Enter') { e.preventDefault(); addFacility(); }
+        });
+
+        window.addEventListener('DOMContentLoaded', () => {
+            const existing = document.getElementById('facilitiesHidden').value;
+            if (existing) {
+                facilities = existing.split(',').filter(f => f.trim());
+                updateFacilitiesDisplay();
+            }
+        });
+
+        /* ── Auto-hide success alert ── */
+        window.addEventListener('DOMContentLoaded', () => {
+            const el = document.getElementById('successAlert');
+            if (el && !el.classList.contains('hidden')) {
+                setTimeout(() => {
+                    el.style.opacity = '0';
+                    el.style.transition = 'opacity 0.5s ease';
+                    setTimeout(() => { el.style.display = 'none'; }, 500);
+                }, 3000);
+            }
+        });
+
+        /* ── Form submit — validate image count ── */
+        document.getElementById('hospitalForm').addEventListener('submit', function (e) {
+            const imageSection = document.getElementById('imageInput');
+
+            /* only validate if image section is present on the page */
+            if (imageSection) {
+                if (uploadedPaths.length < MIN_IMAGES) {
+                    e.preventDefault();
+                    showImageError(`कृपया कम से कम ${MIN_IMAGES} तस्वीर अपलोड करें।`);
+                    /* scroll to image section */
+                    imageSection.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    return;
+                }
+            }
+
+            /* other required fields */
+            const inputs = this.querySelectorAll('input[required], select[required], textarea[required]');
+            let allOk = true;
+            inputs.forEach(inp => {
+                if (!inp.value.trim()) { allOk = false; inp.classList.add('border-red-500'); }
+                else { inp.classList.remove('border-red-500'); }
+            });
+
+            if (!allOk) {
+                e.preventDefault();
+                alert('कृपया सभी आवश्यक फ़ील्ड भरें।');
+            }
+        });
+
+        /* ── Trim whitespace ── */
+        document.addEventListener('DOMContentLoaded', function () {
+            document.querySelectorAll('input[type="text"], input[type="email"], input[type="url"], textarea')
+                .forEach(inp => {
+                    inp.addEventListener('input', function () { this.value = this.value.replace(/^\s+/g, ''); });
+                    inp.addEventListener('blur', function () { this.value = this.value.trim(); });
+                });
+        });
+    </script>
+
+    <!-- ── 24/7 toggle ── -->
+    <script>
+        function toggle24x7() {
+            const cb = document.getElementById('is24x7Checkbox');
+            const ot = document.getElementById('openingTimeInput');
+            const ct = document.getElementById('closingTimeInput');
+            const otr = document.getElementById('openingTimeRequired');
+            const ctr = document.getElementById('closingTimeRequired');
+
+            if (cb.checked) {
+                ot.disabled = ct.disabled = true;
+                ot.required = ct.required = false;
+                ot.value = ct.value = '';
+                if (otr) otr.style.display = 'none';
+                if (ctr) ctr.style.display = 'none';
+                ot.classList.add('opacity-50', 'cursor-not-allowed');
+                ct.classList.add('opacity-50', 'cursor-not-allowed');
+            } else {
+                ot.disabled = ct.disabled = false;
+                ot.required = ct.required = true;
+                if (otr) otr.style.display = 'inline';
+                if (ctr) ctr.style.display = 'inline';
+                ot.classList.remove('opacity-50', 'cursor-not-allowed');
+                ct.classList.remove('opacity-50', 'cursor-not-allowed');
+            }
+        }
+
+        window.addEventListener('DOMContentLoaded', toggle24x7);
+    </script>
+
+</body>
+
+</html>

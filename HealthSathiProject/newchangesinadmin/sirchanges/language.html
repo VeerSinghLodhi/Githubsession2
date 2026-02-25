@@ -1,0 +1,1018 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>भाषा सेटिंग्स - हेल्थ साथी</title>
+    <link href="https://fonts.googleapis.com" rel="preconnect" />
+    <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Devanagari:wght@400;500;600;700&display=swap"
+        rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap"
+        rel="stylesheet" />
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #0058ba;
+            --primary-dark: #155a96;
+            --primary-light: #e3f2fd;
+            --text-main: #1e293b;
+            --text-secondary: #64748b;
+            --border-light: #e2e8f0;
+            --surface: #ffffff;
+            --background: #f8fafc;
+            --success: #10b981;
+            --success-light: #d1fae5;
+            --warning: #f59e0b;
+            --warning-light: #fef3c7;
+            --danger: #ef4444;
+            --danger-light: #fee2e2;
+        }
+
+        body {
+            font-family: 'Noto Sans Devanagari', 'Inter', sans-serif;
+            background: var(--background);
+            color: var(--text-main);
+            min-height: 100vh;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        /* Hamburger */
+        .hamburger {
+            display: none;
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            z-index: 1001;
+            background: transparent;
+            border: none;
+            padding: 6px;
+            cursor: pointer;
+        }
+
+        .hamburger span {
+            display: block;
+            width: 25px;
+            height: 3px;
+            background: var(--primary);
+            margin: 5px 0;
+            transition: all 0.3s ease;
+            border-radius: 2px;
+        }
+
+        /* Sidebar Overlay */
+        .sidebar-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 99;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .sidebar-overlay.active {
+            display: block;
+            opacity: 1;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            position: fixed;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 280px;
+            background: var(--surface);
+            border-right: 1px solid var(--border-light);
+            padding: 24px;
+            overflow-y: auto;
+            z-index: 100;
+            transition: transform 0.3s ease;
+        }
+
+        .logo-section {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 32px;
+            padding-bottom: 24px;
+            border-bottom: 1px solid var(--border-light);
+        }
+
+        .logo-icon {
+            width: 48px;
+            height: 48px;
+            background: var(--primary);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transform: rotate(3deg);
+            transition: transform 0.3s;
+        }
+
+        .logo-icon:hover {
+            transform: rotate(0deg);
+        }
+
+        .logo-icon .material-symbols-outlined {
+            color: white;
+            font-size: 28px;
+        }
+
+        .logo-text h2 {
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--text-main);
+        }
+
+        .logo-text p {
+            font-size: 12px;
+            color: var(--text-secondary);
+        }
+
+        .nav-menu {
+            list-style: none;
+        }
+
+        .nav-item {
+            margin-bottom: 8px;
+        }
+
+        .nav-link {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 16px;
+            border-radius: 12px;
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 14px;
+            transition: all 0.3s;
+        }
+
+        .nav-link:hover {
+            background: var(--primary-light);
+            color: var(--primary);
+        }
+
+        .nav-link.active {
+            background: var(--primary);
+            color: white;
+        }
+
+        .nav-link .material-symbols-outlined {
+            font-size: 22px;
+        }
+
+        /* Main */
+        .main-content {
+            margin-left: 280px;
+            padding: 24px;
+            min-height: 100vh;
+            transition: margin-left 0.3s ease;
+        }
+
+        /* Header */
+        .header {
+            background: var(--surface);
+            border-radius: 16px;
+            padding: 20px 24px;
+            margin-bottom: 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .back-btn {
+            width: 40px;
+            height: 40px;
+            border-radius: 12px;
+            border: 2px solid var(--border-light);
+            background: var(--surface);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-decoration: none;
+            color: var(--text-secondary);
+        }
+
+        .back-btn:hover {
+            background: var(--primary-light);
+            border-color: var(--primary);
+            color: var(--primary);
+        }
+
+        .header h1 {
+            font-size: 28px;
+            font-weight: 700;
+            color: var(--text-main);
+        }
+
+        .user-profile {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            background: transparent;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* Content Section */
+        .content-section {
+            background: var(--surface);
+            border-radius: 16px;
+            padding: 32px;
+            box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
+            margin-bottom: 24px;
+        }
+
+        .section-title {
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--text-main);
+            margin-bottom: 24px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .section-title .material-symbols-outlined {
+            color: var(--primary);
+            font-size: 28px;
+        }
+
+        /* Hero Icon Block */
+        .language-hero {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 32px 24px;
+            background: linear-gradient(135deg, var(--primary-light) 0%, #fff 100%);
+            border-radius: 16px;
+            border: 1px solid var(--border-light);
+            margin-bottom: 28px;
+            text-align: center;
+        }
+
+        .hero-icon-wrap {
+            width: 96px;
+            height: 96px;
+            background: var(--primary);
+            border-radius: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 20px;
+            box-shadow: 0 8px 24px rgba(0, 88, 186, 0.3);
+            transform: rotate(3deg);
+            transition: transform 0.3s;
+        }
+
+        .hero-icon-wrap:hover {
+            transform: rotate(0deg) scale(1.05);
+        }
+
+        .hero-icon-wrap .material-symbols-outlined {
+            font-size: 52px;
+            color: white;
+        }
+
+        .language-hero h2 {
+            font-size: 22px;
+            font-weight: 700;
+            color: var(--text-main);
+            margin-bottom: 8px;
+        }
+
+        .language-hero p {
+            font-size: 14px;
+            color: var(--text-secondary);
+            line-height: 1.6;
+        }
+
+        /* Language Cards */
+        .language-options {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+
+        .language-label {
+            display: block;
+            cursor: pointer;
+        }
+
+        .language-card {
+            border: 2px solid var(--border-light);
+            border-radius: 16px;
+            padding: 24px;
+            background: var(--surface);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .language-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: var(--primary);
+            transform: scaleX(0);
+            transition: transform 0.3s ease;
+        }
+
+        .language-card:hover {
+            border-color: var(--primary);
+            transform: translateY(-4px);
+            box-shadow: 0 12px 24px rgba(0, 88, 186, 0.12);
+        }
+
+        .language-card:hover::before {
+            transform: scaleX(1);
+        }
+
+        .language-card.selected {
+            border-color: var(--primary);
+            background: var(--primary-light);
+        }
+
+        .language-card.selected::before {
+            transform: scaleX(1);
+        }
+
+        .lang-left {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .lang-flag {
+            width: 60px;
+            height: 60px;
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 34px;
+            transition: transform 0.3s;
+        }
+
+        .language-card:hover .lang-flag {
+            transform: scale(1.1) rotate(5deg);
+        }
+
+        .lang-flag.en {
+            background: #eff6ff;
+        }
+
+        .lang-flag.hi {
+            background: #fff7ed;
+        }
+
+        .lang-name {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--text-main);
+        }
+
+        .lang-sub {
+            font-size: 13px;
+            color: var(--text-secondary);
+            margin-top: 2px;
+        }
+
+        .lang-right {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .check-icon {
+            display: none;
+            color: var(--primary);
+            font-size: 26px;
+        }
+
+        .language-card.selected .check-icon {
+            display: block;
+        }
+
+        .arrow-icon {
+            color: var(--text-secondary);
+            font-size: 22px;
+            transition: color 0.3s;
+        }
+
+        .language-card:hover .arrow-icon {
+            color: var(--primary);
+        }
+
+        .language-card.selected .arrow-icon {
+            color: var(--primary);
+        }
+
+        /* Info Box */
+        .info-box {
+            background: linear-gradient(135deg, var(--primary-light) 0%, #f0f9ff 100%);
+            border: 1px solid rgba(0, 88, 186, 0.15);
+            border-radius: 14px;
+            padding: 20px;
+            display: flex;
+            gap: 14px;
+            align-items: flex-start;
+            margin-bottom: 28px;
+        }
+
+        .info-box .material-symbols-outlined {
+            color: var(--primary);
+            font-size: 22px;
+            flex-shrink: 0;
+            margin-top: 2px;
+        }
+
+        .info-box strong {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-main);
+            display: block;
+            margin-bottom: 8px;
+        }
+
+        .info-box ul {
+            list-style: none;
+        }
+
+        .info-box li {
+            font-size: 13px;
+            color: var(--text-secondary);
+            line-height: 1.8;
+        }
+
+        /* Current Language Badge */
+        .current-lang-bar {
+            background: linear-gradient(135deg, var(--primary-light) 0%, #f0f9ff 100%);
+            border: 1px solid rgba(0, 88, 186, 0.2);
+            border-radius: 14px;
+            padding: 18px 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 28px;
+        }
+
+        .current-lang-left {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+
+        .current-lang-icon {
+            width: 44px;
+            height: 44px;
+            background: var(--primary);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .current-lang-icon .material-symbols-outlined {
+            color: white;
+            font-size: 22px;
+        }
+
+        .current-lang-label {
+            font-size: 12px;
+            color: var(--text-secondary);
+        }
+
+        .current-lang-value {
+            font-size: 15px;
+            font-weight: 700;
+            color: var(--text-main);
+            margin-top: 2px;
+        }
+
+        .current-lang-badge {
+            background: var(--success-light);
+            color: var(--success);
+            font-size: 12px;
+            font-weight: 600;
+            padding: 5px 12px;
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        /* Action Buttons */
+        .action-buttons {
+            display: flex;
+            gap: 14px;
+        }
+
+        .btn-cancel {
+            flex: 1;
+            padding: 14px;
+            background: var(--background);
+            border: 2px solid var(--border-light);
+            border-radius: 12px;
+            color: var(--text-secondary);
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            transition: all 0.3s;
+            font-family: inherit;
+        }
+
+        .btn-cancel:hover {
+            background: var(--border-light);
+            color: var(--text-main);
+            border-color: #cbd5e1;
+        }
+
+        .btn-save {
+            flex: 2;
+            padding: 14px;
+            background: var(--primary);
+            border: none;
+            border-radius: 12px;
+            color: white;
+            font-size: 15px;
+            font-weight: 700;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            transition: all 0.3s;
+            font-family: inherit;
+            box-shadow: 0 4px 16px rgba(0, 88, 186, 0.3);
+        }
+
+        .btn-save:hover {
+            background: var(--primary-dark);
+            box-shadow: 0 8px 24px rgba(0, 88, 186, 0.4);
+            transform: translateY(-2px);
+        }
+
+        .btn-save:disabled {
+            background: #94a3b8;
+            box-shadow: none;
+            transform: none;
+            cursor: not-allowed;
+        }
+
+        .btn-save .material-symbols-outlined,
+        .btn-cancel .material-symbols-outlined {
+            font-size: 20px;
+        }
+
+        /* Success Popup */
+        .success-popup {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: var(--success);
+            color: white;
+            padding: 14px 20px;
+            border-radius: 12px;
+            font-size: 14px;
+            font-weight: 600;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+            opacity: 0;
+            transform: translateY(-10px);
+            transition: all 0.4s ease;
+            z-index: 9999;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .success-popup.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* Spin animation */
+        @keyframes spin {
+            from {
+                transform: rotate(0deg);
+            }
+
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        .spin {
+            animation: spin 1s linear infinite;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .hamburger {
+                display: block;
+            }
+
+            .sidebar {
+                transform: translateX(-100%);
+            }
+
+            .sidebar.active {
+                transform: translateX(0);
+                z-index: 100;
+            }
+
+            .main-content {
+                margin-left: 0;
+                padding: 70px 16px 16px;
+            }
+
+            .header {
+                padding: 16px;
+                flex-direction: column;
+                gap: 12px;
+                align-items: flex-start;
+            }
+
+            .header h1 {
+                font-size: 20px;
+            }
+
+            .content-section {
+                padding: 20px;
+            }
+
+            .action-buttons {
+                flex-direction: column;
+            }
+
+            .btn-cancel,
+            .btn-save {
+                flex: unset;
+                width: 100%;
+            }
+
+            .language-card {
+                padding: 18px;
+            }
+
+            .lang-flag {
+                width: 50px;
+                height: 50px;
+                font-size: 28px;
+            }
+
+            .lang-name {
+                font-size: 16px;
+            }
+        }
+
+        @media (min-width: 769px) and (max-width: 1024px) {
+            .sidebar {
+                width: 240px;
+            }
+
+            .main-content {
+                margin-left: 240px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- Hamburger Menu -->
+    <button class="hamburger" id="hamburger">
+        <span></span>
+        <span></span>
+        <span></span>
+    </button>
+
+    <!-- Sidebar Overlay -->
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+    <!-- Sidebar (fragment) -->
+    <div th:replace="~{fragments/admin-sidebar::adminSidebar}"></div>
+
+    <!-- Main Content -->
+    <main class="main-content">
+
+        <!-- Header -->
+        <div class="header">
+            <div class="header-left">
+                <a th:href="@{/admin/settings}" class="back-btn">
+                    <span class="material-symbols-outlined">arrow_back</span>
+                </a>
+                <h1 th:text="#{language.settings.title}">भाषा सेटिंग्स</h1>
+            </div>
+            <div class="user-profile">
+                <div class="user-avatar">
+                    <img th:src="@{/images/app-logo.png}" alt="Health Saathi Logo"
+                        style="width:40px;height:40px;border-radius:50%;" />
+                </div>
+                <div>
+                    <div style="font-weight:600;font-size:14px;" th:text="#{administrator}">प्रशासक</div>
+                    <div style="font-size:12px;color:var(--text-secondary);" th:text="${loggedInUser.email}">
+                        admin@healthsathi.com</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Card -->
+        <div class="content-section">
+
+            <h3 class="section-title">
+                <span class="material-symbols-outlined">language</span>
+                <span th:text="#{selectlanguage}">भाषा चुनें</span>
+            </h3>
+
+            <!-- Hero -->
+            <div class="language-hero">
+                <div class="hero-icon-wrap">
+                    <span class="material-symbols-outlined">translate</span>
+                </div>
+                <h2 th:text="#{language.choose.heading}">अपनी भाषा चुनें</h2>
+                <p th:text="#{language.choose.subheading}">वह भाषा चुनें जिसमें आप सबसे सहज हैं। इंटरफ़ेस तुरंत बदल
+                    जाएगा।</p>
+            </div>
+
+            <!-- Current Language Bar -->
+            <div class="current-lang-bar">
+                <div class="current-lang-left">
+                    <div class="current-lang-icon">
+                        <span class="material-symbols-outlined">verified</span>
+                    </div>
+                    <div>
+                        <div class="current-lang-label" th:text="#{currentlanguage}">वर्तमान भाषा</div>
+                        <div class="current-lang-value" id="currentLanguageDisplay"
+                            th:text="${#locale.language == 'hi' ? 'हिंदी (Hindi)' : 'English'}">English</div>
+                    </div>
+                </div>
+                <div class="current-lang-badge">
+                    <span class="material-symbols-outlined" style="font-size:16px;">check_circle</span>
+                    <span th:text="#{active}">Active</span>
+                </div>
+            </div>
+
+            <!-- Language Form -->
+            <form th:action="@{/admin/language/update}" method="post" id="languageForm"
+                onsubmit="return handleSave(event)">
+
+                <div class="language-options">
+
+                    <!-- English -->
+                    <label class="language-label">
+                        <input type="radio" name="language" value="en_IN" class="hidden-radio" id="radioEnglish"
+                            th:checked="${#locale.language == 'en'}" />
+                        <div class="language-card" id="cardEnglish">
+                            <div class="lang-left">
+                                <div class="lang-flag en">🇬🇧</div>
+                                <div>
+                                    <div class="lang-name" th:text="#{english}">English</div>
+                                    <div class="lang-sub" th:text="#{english.sub}">International Language</div>
+                                </div>
+                            </div>
+                            <div class="lang-right">
+                                <span class="material-symbols-outlined check-icon">check_circle</span>
+                                <span class="material-symbols-outlined arrow-icon">chevron_right</span>
+                            </div>
+                        </div>
+                    </label>
+
+                    <!-- Hindi -->
+                    <label class="language-label">
+                        <input type="radio" name="language" value="hi_IN" class="hidden-radio" id="radioHindi"
+                            th:checked="${#locale.language == 'hi'}" />
+                        <div class="language-card" id="cardHindi">
+                            <div class="lang-left">
+                                <div class="lang-flag hi">🇮🇳</div>
+                                <div>
+                                    <div class="lang-name" style="font-family:'Noto Sans Devanagari',sans-serif;">हिंदी
+                                    </div>
+                                    <div class="lang-sub" th:text="#{hindi.sub}">भारतीय भाषा</div>
+                                </div>
+                            </div>
+                            <div class="lang-right">
+                                <span class="material-symbols-outlined check-icon">check_circle</span>
+                                <span class="material-symbols-outlined arrow-icon">chevron_right</span>
+                            </div>
+                        </div>
+                    </label>
+
+                </div>
+
+                <!-- Info Box -->
+                <div class="info-box">
+                    <span class="material-symbols-outlined">info</span>
+                    <div>
+                        <strong th:text="#{language.info.title}">भाषा जानकारी</strong>
+                        <ul>
+                            <li th:text="#{language.tip.one}">• ऐप इंटरफ़ेस चुनी हुई भाषा में बदल जाएगा</li>
+                            <li th:text="#{language.tip.two}">• सभी मेनू और लेबल अनुवादित होंगे</li>
+                            <li th:text="#{language.tip.three}">• आप सेटिंग्स से कभी भी भाषा बदल सकते हैं</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Buttons -->
+                <div class="action-buttons">
+                    <button type="button" class="btn-cancel" onclick="window.history.back()">
+                        <span class="material-symbols-outlined">close</span>
+                        <span th:text="#{cancel}">रद्द करें</span>
+                    </button>
+                    <button type="submit" class="btn-save" id="saveBtn">
+                        <span class="material-symbols-outlined">save</span>
+                        <span th:text="#{savechanges}">परिवर्तन सहेजें</span>
+                    </button>
+                </div>
+
+            </form>
+
+        </div>
+
+        <!-- Security Info Section -->
+        <div class="content-section" style="background: linear-gradient(135deg, var(--primary-light) 0%, #fff 100%);">
+            <h3 class="section-title">
+                <span class="material-symbols-outlined">security</span>
+                <span th:text="#{security.info}">सुरक्षा सूचना</span>
+            </h3>
+            <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:20px;">
+                <div style="display:flex;gap:12px;align-items:start;">
+                    <span class="material-symbols-outlined"
+                        style="color:var(--success);font-size:24px;">verified_user</span>
+                    <div>
+                        <strong style="display:block;margin-bottom:4px;" th:text="#{secure.connection}">सुरक्षित
+                            कनेक्शन</strong>
+                        <span style="font-size:13px;color:var(--text-secondary);"
+                            th:text="#{secure.connection.desc}">आपका डेटा एन्क्रिप्टेड और सुरक्षित है</span>
+                    </div>
+                </div>
+                <div style="display:flex;gap:12px;align-items:start;">
+                    <span class="material-symbols-outlined"
+                        style="color:var(--primary);font-size:24px;">translate</span>
+                    <div>
+                        <strong style="display:block;margin-bottom:4px;" th:text="#{language.instant}">तुरंत
+                            प्रभाव</strong>
+                        <span style="font-size:13px;color:var(--text-secondary);"
+                            th:text="#{language.instant.desc}">भाषा बदलने पर पेज तुरंत अपडेट हो जाएगा</span>
+                    </div>
+                </div>
+                <div style="display:flex;gap:12px;align-items:start;">
+                    <span class="material-symbols-outlined" style="color:var(--warning);font-size:24px;">shield</span>
+                    <div>
+                        <strong style="display:block;margin-bottom:4px;" th:text="#{privacy.protected}">गोपनीयता
+                            संरक्षित</strong>
+                        <span style="font-size:13px;color:var(--text-secondary);"
+                            th:text="#{privacy.protected.desc}">आपकी व्यक्तिगत जानकारी सुरक्षित रहती है</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- Success Popup -->
+    <div id="successPopup" class="success-popup">
+        <span class="material-symbols-outlined">check_circle</span>
+        <span th:text="#{languageupdatedsuccessfully}">भाषा सफलतापूर्वक अपडेट की गई!</span>
+    </div>
+
+    <style>
+        .hidden-radio {
+            display: none;
+        }
+    </style>
+
+    <script>
+        /* ── Sidebar toggle ── */
+        const hamburger = document.getElementById('hamburger');
+        const sidebar = document.getElementById('sidebar');
+        const overlay = document.getElementById('sidebarOverlay');
+
+        hamburger.addEventListener('click', () => {
+            hamburger.classList.toggle('active');
+            sidebar.classList.toggle('active');
+            overlay.classList.toggle('active');
+        });
+
+        overlay.addEventListener('click', () => {
+            hamburger.classList.remove('active');
+            sidebar.classList.remove('active');
+            overlay.classList.remove('active');
+        });
+
+        document.querySelectorAll('.nav-link').forEach(link => {
+            link.addEventListener('click', () => {
+                if (window.innerWidth <= 768) {
+                    hamburger.classList.remove('active');
+                    sidebar.classList.remove('active');
+                    overlay.classList.remove('active');
+                }
+            });
+        });
+
+        /* ── Language card selection ── */
+        const radios = document.querySelectorAll('.hidden-radio');
+        const cards = { radioEnglish: 'cardEnglish', radioHindi: 'cardHindi' };
+
+        function syncCards() {
+            radios.forEach(radio => {
+                const card = document.getElementById(cards[radio.id]);
+                if (card) {
+                    if (radio.checked) {
+                        card.classList.add('selected');
+                    } else {
+                        card.classList.remove('selected');
+                    }
+                }
+            });
+        }
+
+        radios.forEach(radio => {
+            radio.addEventListener('change', syncCards);
+        });
+
+        /* Set initial state on load */
+        document.addEventListener('DOMContentLoaded', syncCards);
+
+        /* ── Save handler ── */
+        function handleSave(event) {
+            event.preventDefault();
+
+            const selected = document.querySelector('.hidden-radio:checked');
+            if (!selected) {
+                alert('कृपया एक भाषा चुनें।');
+                return false;
+            }
+
+            /* Update current language display optimistically */
+            const displayEl = document.getElementById('currentLanguageDisplay');
+            if (displayEl) {
+                displayEl.textContent = selected.value.startsWith('hi') ? 'हिंदी (Hindi)' : 'English';
+            }
+
+            /* Loading state on button */
+            const btn = document.getElementById('saveBtn');
+            btn.disabled = true;
+            btn.innerHTML = '<span class="material-symbols-outlined spin">progress_activity</span> Saving...';
+
+            /* Show success popup */
+            const popup = document.getElementById('successPopup');
+            popup.classList.add('show');
+            setTimeout(() => popup.classList.remove('show'), 3000);
+
+            /* Submit after short delay so user sees feedback */
+            setTimeout(() => {
+                document.getElementById('languageForm').submit();
+            }, 1200);
+
+            return false;
+        }
+    </script>
+
+</body>
+
+</html>
